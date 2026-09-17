@@ -1321,6 +1321,7 @@ internal fun PagerScreen(
                     lockMovement = experimentalSettings.lockMovement,
                     dragIntOffset = pagerScreenState.dragIntOffset,
                     showFolderEblanApplicationGridItemPopup = pagerScreenState.showFolderEblanApplicationInfoGridItemPopup,
+                    iconPackInfoFilePaths = getEblanApplicationInfosByLabelAndTag.iconPackInfoFilePaths,
                     onDeleteFolderEblanApplicationInfoPopupEntry = onDeleteFolderEblanApplicationInfoPopupEntry,
                     onUpsertFolderEblanApplicationInfoPopupEntry = onUpsertFolderEblanApplicationInfoPopupEntry,
                     onUpdateIsVisibleFolders = pagerScreenState::updateIsVisibleFolderEblanApplicationInfos,

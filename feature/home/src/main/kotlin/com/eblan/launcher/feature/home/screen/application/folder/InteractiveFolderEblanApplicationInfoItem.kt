@@ -120,6 +120,7 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
     folderEblanApplicationInfoPopups: List<FolderEblanApplicationInfoPopup>,
     drag: Drag,
     showFolderEblanApplicationGridItemPopup: Boolean,
+    iconPackInfoFilePaths: Map<String, String?>,
     onUpdateIsVisibleFolders: (Boolean) -> Unit,
     onUpsertFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -224,6 +225,7 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
                 sharedElementKey = sharedElementKey,
                 padding = padding,
                 iconSize = iconSize,
+                iconPackInfoFilePaths = iconPackInfoFilePaths,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -258,6 +260,7 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
                 padding = padding,
                 iconSize = iconSize,
                 isVisibleFolder = isVisibleFolder,
+                iconPackInfoFilePaths = iconPackInfoFilePaths,
                 onUpdateIsVisibleFolders = onUpdateIsVisibleFolders,
                 onUpsertFolderEblanApplicationInfoPopupEntry = onUpsertFolderEblanApplicationInfoPopupEntry,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -291,6 +294,7 @@ private fun InteractiveEblanApplicationInfoItem(
     sharedElementKey: SharedElementKey,
     padding: Dp,
     iconSize: Dp,
+    iconPackInfoFilePaths: Map<String, String?>,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
@@ -316,7 +320,7 @@ private fun InteractiveEblanApplicationInfoItem(
 
     val scope = rememberCoroutineScope()
 
-    val icon = data.icon
+    val icon = iconPackInfoFilePaths[data.componentName] ?: data.icon
 
     val leftPadding = with(density) {
         paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
@@ -481,6 +485,7 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
     padding: Dp,
     iconSize: Dp,
     isVisibleFolder: Boolean,
+    iconPackInfoFilePaths: Map<String, String?>,
     onUpdateIsVisibleFolders: (Boolean) -> Unit,
     onUpsertFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -501,8 +506,6 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
     val scope = rememberCoroutineScope()
 
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
-
-    val icon = data.icon
 
     val textAlpha = if (hasInteraction) 0f else 1f
     val iconAlpha = if (hasInteraction || isVisibleFolder) 0f else 1f
@@ -605,9 +608,9 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
             )
             .alpha(iconAlpha)
 
-        if (icon != null) {
+        if (data.icon != null) {
             AsyncImage(
-                model = icon,
+                model = data.icon,
                 contentDescription = null,
                 modifier = commonModifier,
             )
@@ -635,6 +638,7 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
                             customFolderBackgroundColor = customFolderBackgroundColor,
                             systemTextColor = systemTextColor,
                             systemCustomTextColor = systemCustomTextColor,
+                            iconPackInfoFilePaths = iconPackInfoFilePaths,
                         )
                     },
                 )
@@ -667,6 +671,7 @@ private fun PreviewFolderEblanApplicationInfoItem(
     customFolderBackgroundColor: Int,
     systemTextColor: TextColor,
     systemCustomTextColor: Int,
+    iconPackInfoFilePaths: Map<String, String?>,
 ) {
     key(folderEblanApplicationInfoGridItem.id) {
         val context = LocalContext.current
@@ -687,9 +692,11 @@ private fun PreviewFolderEblanApplicationInfoItem(
 
         when (val data = folderEblanApplicationInfoGridItem.data) {
             is FolderEblanApplicationInfoGridItemData.ApplicationInfo -> {
+                val icon = iconPackInfoFilePaths[data.componentName] ?: data.icon
+
                 AsyncImage(
                     model = Builder(context)
-                        .data(data.customIcon ?: data.icon)
+                        .data(data.customIcon ?: icon)
                         .addLastModifiedToFileCacheKey(true)
                         .size(Size.ORIGINAL)
                         .build(),

@@ -111,6 +111,7 @@ internal fun FolderEblanApplicationInfoItem(
     previewFolderEblanApplicationInfos: Map<String, PreviewFolderEblanApplicationInfo>,
     isVisibleFolderEblanApplicationInfos: Boolean,
     folderEblanApplicationInfoPopups: List<FolderEblanApplicationInfoPopup>,
+    iconPackInfoFilePaths: Map<String, String?>,
     onUpdateIsVisibleFolderEblanApplicationInfos: (Boolean) -> Unit,
     onUpsertFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -153,8 +154,6 @@ internal fun FolderEblanApplicationInfoItem(
     )
 
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
-
-    val icon = folderEblanApplicationInfo.icon
 
     val horizontalAlignment =
         getHorizontalAlignment(horizontalAlignment = appDrawerSettings.gridItemSettings.horizontalAlignment)
@@ -298,9 +297,9 @@ internal fun FolderEblanApplicationInfoItem(
             }
             .alpha(iconAlpha)
 
-        if (icon != null) {
+        if (folderEblanApplicationInfo.icon != null) {
             AsyncImage(
-                model = icon,
+                model = folderEblanApplicationInfo.icon,
                 contentDescription = null,
                 modifier = commonModifier,
             )
@@ -327,6 +326,7 @@ internal fun FolderEblanApplicationInfoItem(
                             customFolderBackgroundColor = customFolderBackgroundColor,
                             systemTextColor = systemTextColor,
                             systemCustomTextColor = systemCustomTextColor,
+                            iconPackInfoFilePaths = iconPackInfoFilePaths,
                         )
                     },
                 )
@@ -358,6 +358,7 @@ private fun PreviewFolderEblanApplicationInfoItem(
     customFolderBackgroundColor: Int,
     systemTextColor: TextColor,
     systemCustomTextColor: Int,
+    iconPackInfoFilePaths: Map<String, String?>,
 ) {
     key(folderEblanApplicationInfoGridItem.id) {
         val context = LocalContext.current
@@ -376,9 +377,11 @@ private fun PreviewFolderEblanApplicationInfoItem(
 
         when (val data = folderEblanApplicationInfoGridItem.data) {
             is FolderEblanApplicationInfoGridItemData.ApplicationInfo -> {
+                val icon = iconPackInfoFilePaths[data.componentName] ?: data.icon
+
                 AsyncImage(
                     model = Builder(context)
-                        .data(data.customIcon ?: data.icon)
+                        .data(data.customIcon ?: icon)
                         .addLastModifiedToFileCacheKey(true)
                         .size(Size.ORIGINAL)
                         .build(),

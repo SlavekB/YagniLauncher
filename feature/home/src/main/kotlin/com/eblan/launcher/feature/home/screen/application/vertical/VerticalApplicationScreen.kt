@@ -669,6 +669,7 @@ private fun EblanApplicationInfos(
                             drag = drag,
                             isVisibleFolderEblanApplicationInfos = isVisibleFolderEblanApplicationInfos,
                             folderEblanApplicationInfoPopups = folderEblanApplicationInfoPopups,
+                            iconPackInfoFilePaths = getEblanApplicationInfosByLabelAndTag.iconPackInfoFilePaths,
                             onUpdateIsVisibleFolderEblanApplicationInfos = onUpdateIsVisibleFolderEblanApplicationInfos,
                             onUpsertFolderEblanApplicationInfoPopupEntry = onUpsertFolderEblanApplicationInfoPopupEntry,
                             onUpdateImageBitmap = onUpdateImageBitmap,

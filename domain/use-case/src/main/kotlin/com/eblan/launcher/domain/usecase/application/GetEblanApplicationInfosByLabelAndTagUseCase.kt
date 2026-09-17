@@ -80,12 +80,19 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
             tagId = tagId,
         )
 
+        val iconPackInfoFilePaths = getIconPackInfoFilePaths(
+            iconPackInfoPackageName = iconPackInfoPackageName,
+            componentNames = eblanApplicationInfos.map { it.componentName },
+            fileManager = fileManager,
+            iconKeyGenerator = iconKeyGenerator,
+        )
+
         when (userData.appDrawerSettings.appDrawerType) {
             AppDrawerType.Vertical, AppDrawerType.List ->
                 getVerticalOrListEblanApplicationInfosByLabel(
                     eblanApplicationInfos = eblanApplicationInfosByLabel,
                     folderEblanApplicationInfos = folderEblanApplicationInfosByLabel,
-                    iconPackInfoPackageName = iconPackInfoPackageName,
+                    iconPackInfoFilePaths = iconPackInfoFilePaths,
                 )
 
             AppDrawerType.Horizontal ->
@@ -93,7 +100,7 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
                     horizontalAppDrawerColumns = userData.appDrawerSettings.horizontalAppDrawerColumns,
                     horizontalAppDrawerRows = userData.appDrawerSettings.horizontalAppDrawerRows,
                     eblanApplicationInfos = eblanApplicationInfosByLabel,
-                    iconPackInfoPackageName = iconPackInfoPackageName,
+                    iconPackInfoFilePaths = iconPackInfoFilePaths,
                 )
         }
     }.flowOn(defaultDispatcher)
@@ -101,7 +108,7 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
     private suspend fun getVerticalOrListEblanApplicationInfosByLabel(
         eblanApplicationInfos: List<EblanApplicationInfo>,
         folderEblanApplicationInfos: List<FolderEblanApplicationInfo>,
-        iconPackInfoPackageName: String,
+        iconPackInfoFilePaths: Map<String, String?>,
     ): GetEblanApplicationInfosByLabelAndTag {
         val groupedEblanApplicationInfos = eblanApplicationInfos
             .groupBy {
@@ -134,13 +141,6 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
                 it.eblanUser.eblanUserType == EblanUserType.Private
             }
 
-        val iconPackInfoFilePaths = getIconPackInfoFilePaths(
-            iconPackInfoPackageName = iconPackInfoPackageName,
-            componentNames = eblanApplicationInfos.map { it.componentName },
-            fileManager = fileManager,
-            iconKeyGenerator = iconKeyGenerator,
-        )
-
         return GetEblanApplicationInfosByLabelAndTag(
             eblanApplicationInfos = groupedEblanApplicationInfosWithFolders
                 .filterKeys { it != privateEblanUserPageKey },
@@ -155,7 +155,7 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         horizontalAppDrawerColumns: Int,
         horizontalAppDrawerRows: Int,
         eblanApplicationInfos: List<EblanApplicationInfo>,
-        iconPackInfoPackageName: String,
+        iconPackInfoFilePaths: Map<String, String?>,
     ): GetEblanApplicationInfosByLabelAndTag {
         val groupedEblanApplicationInfos = eblanApplicationInfos.groupBy {
             launcherAppsWrapper.getUser(serialNumber = it.serialNumber)
@@ -169,13 +169,6 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
                         ) to eblanApplicationInfos
                     }
             }.toMap()
-
-        val iconPackInfoFilePaths = getIconPackInfoFilePaths(
-            iconPackInfoPackageName = iconPackInfoPackageName,
-            componentNames = eblanApplicationInfos.map { it.componentName },
-            fileManager = fileManager,
-            iconKeyGenerator = iconKeyGenerator,
-        )
 
         return GetEblanApplicationInfosByLabelAndTag(
             eblanApplicationInfos = groupedEblanApplicationInfos,
