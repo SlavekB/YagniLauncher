@@ -75,12 +75,12 @@ internal fun ApplicationInfoPopup(
     eblanApplicationInfo: EblanApplicationInfo?,
     gridItemSettings: GridItemSettings,
     hasShortcutHostPermission: Boolean,
-    popupIntOffset: IntOffset,
-    popupIntSize: IntSize,
+    popupIntOffset: IntOffset?,
+    popupIntSize: IntSize?,
     isVisibleOverlay: Boolean,
     paddingValues: PaddingValues,
     animations: Boolean,
-    onUpdateShowPopupApplicationMenu: (Boolean) -> Unit,
+    onUpdateShowApplicationMenu: (Boolean) -> Unit,
     onEditApplicationInfo: (
         serialNumber: Long,
         componentName: String,
@@ -95,6 +95,8 @@ internal fun ApplicationInfoPopup(
     ) -> Unit,
 ) {
     requireNotNull(eblanApplicationInfo)
+    requireNotNull(popupIntOffset)
+    requireNotNull(popupIntSize)
 
     val launcherApps = LocalLauncherApps.current
 
@@ -125,7 +127,7 @@ internal fun ApplicationInfoPopup(
         key2 = transitionState.isIdle,
     ) {
         if (!transitionState.targetState && transitionState.isIdle) {
-            onUpdateShowPopupApplicationMenu(false)
+            onUpdateShowApplicationMenu(false)
         }
     }
 
@@ -249,16 +251,18 @@ internal fun PrivateApplicationInfoPopup(
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     eblanApplicationInfo: EblanApplicationInfo?,
     hasShortcutHostPermission: Boolean,
-    popupIntOffset: IntOffset,
-    popupIntSize: IntSize,
+    popupIntOffset: IntOffset?,
+    popupIntSize: IntSize?,
     paddingValues: PaddingValues,
-    onUpdateShowPrivatePopupApplicationMenu: (Boolean) -> Unit,
+    onUpdateShowPrivateApplicationMenu: (Boolean) -> Unit,
     onEditApplicationInfo: (
         serialNumber: Long,
         componentName: String,
     ) -> Unit,
 ) {
     requireNotNull(eblanApplicationInfo)
+    requireNotNull(popupIntOffset)
+    requireNotNull(popupIntSize)
 
     val launcherApps = LocalLauncherApps.current
 
@@ -289,7 +293,7 @@ internal fun PrivateApplicationInfoPopup(
         key2 = transitionState.isIdle,
     ) {
         if (!transitionState.targetState && transitionState.isIdle) {
-            onUpdateShowPrivatePopupApplicationMenu(false)
+            onUpdateShowPrivateApplicationMenu(false)
         }
     }
 

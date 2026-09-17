@@ -132,7 +132,9 @@ import com.eblan.launcher.feature.home.component.PageIndicator
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.screen.application.ApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.ApplicationScreen
+import com.eblan.launcher.feature.home.screen.application.PrivateApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.folder.FolderApplicationInfoGridItemPopup
 import com.eblan.launcher.feature.home.screen.application.folder.FolderApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.folder.FolderApplicationScreen
@@ -1225,11 +1227,8 @@ internal fun PagerScreen(
                 appDrawerSettings = appDrawerSettings,
                 cornerSize = pagerScreenState.applicationScreenCornerSize,
                 drag = pagerScreenState.drag,
-                eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanApplicationInfoTags = eblanApplicationInfoTags,
-                eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
-                hasShortcutHostPermission = hasShortcutHostPermission,
                 paddingValues = paddingValues,
                 screenHeight = screenHeight,
                 swipeY = pagerScreenState.applicationScreenSwipeY.value,
@@ -1243,23 +1242,12 @@ internal fun PagerScreen(
                 customFolderBackgroundColor = folderSettings.customFolderBackgroundColor,
                 isVisibleFolderEblanApplicationInfos = isVisibleFolderEblanApplicationInfos,
                 folderEblanApplicationInfoPopups = folderEblanApplicationInfoPopups,
-                popupIntOffset = pagerScreenState.popupIntOffset,
-                popupIntSize = pagerScreenState.popupIntSize,
-                showPopupApplicationMenu = pagerScreenState.showPopupApplicationMenu,
-                showPrivatePopupApplicationMenu = pagerScreenState.showPrivateApplicationMenu,
+                showPopupApplicationMenu = pagerScreenState.showApplicationMenu,
                 onDismiss = pagerScreenState::dismissApplicationScreen,
                 onDragEnd = pagerScreenState::handleOnDragEndApplicationScreen,
-                onEditApplicationInfo = onEditApplicationInfo,
                 onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
                 onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
                 onVerticalDrag = pagerScreenState::verticalDragApplicationScreen,
-                onWidgets = {
-                    pagerScreenState.openAppWidgetScreen(
-                        value = it,
-                        onResetFolderGridItemPopupEntries = onResetFolderGridItemPopupEntries,
-                        onResetFolderEblanApplicationInfoPopupEntries = onResetFolderEblanApplicationInfoPopupEntries,
-                    )
-                },
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateFolderPopupMenu = pagerScreenState::updateShowFolderApplicationInfoPopup,
                 onDragFolderEblanApplicationInfo = { folderEblanApplicationInfo, movingGridItem ->
@@ -1271,18 +1259,6 @@ internal fun PagerScreen(
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                     )
                 },
-                onDragShortcutInfo = { gridItem, imageBitmap, intOffset, intSize, newSharedElementKey ->
-                    pagerScreenState.dragShortcutInfoFromApplicationScreen(
-                        gridItem = gridItem,
-                        imageBitmap = imageBitmap,
-                        intOffset = intOffset,
-                        intSize = intSize,
-                        newSharedElementKey = newSharedElementKey,
-                        onUpdateGridItemSource = onUpdateGridItemSource,
-                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                    )
-                },
                 onDragApplicationInfo = {
                     pagerScreenState.dragApplicationInfo(
                         gridItem = it,
@@ -1290,8 +1266,7 @@ internal fun PagerScreen(
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                     )
                 },
-                onUpdateShowApplicationMenu = pagerScreenState::updateShowPopupApplicationMenu,
-                onUpdateShowPrivateApplicationMenu = pagerScreenState::updateShowPrivateApplicationMenu,
+                onUpdateShowApplicationMenu = pagerScreenState::updateShowApplicationMenu,
                 onLongPressApplicationInfo = { eblanApplicationInfo, imageBitmap, intOffset, intSize, sharedElementKey ->
                     pagerScreenState.longPressApplicationInfo(
                         eblanApplicationInfo = eblanApplicationInfo,
@@ -1325,6 +1300,63 @@ internal fun PagerScreen(
                         onUpsertFolderEblanApplicationInfoPopupEntry = onUpsertFolderEblanApplicationInfoPopupEntry,
                     )
                 },
+            )
+        }
+
+        if (pagerScreenState.showApplicationMenu &&
+            pagerScreenState.selectedEblanApplicationInfo != null &&
+            pagerScreenState.popupIntOffset != null &&
+            pagerScreenState.popupIntSize != null
+        ) {
+            ApplicationInfoPopup(
+                eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfosGroup,
+                eblanShortcutInfosGroup = eblanShortcutInfosGroup,
+                eblanApplicationInfo = pagerScreenState.selectedEblanApplicationInfo,
+                gridItemSettings = appDrawerSettings.gridItemSettings,
+                hasShortcutHostPermission = hasShortcutHostPermission,
+                popupIntOffset = pagerScreenState.popupIntOffset,
+                popupIntSize = pagerScreenState.popupIntSize,
+                isVisibleOverlay = isVisibleOverlay,
+                paddingValues = paddingValues,
+                animations = experimentalSettings.gridItemAnimation,
+                onUpdateShowApplicationMenu = pagerScreenState::updateShowApplicationMenu,
+                onEditApplicationInfo = onEditApplicationInfo,
+                onWidgets = {
+                    pagerScreenState.openAppWidgetScreen(
+                        value = it,
+                        onResetFolderGridItemPopupEntries = onResetFolderGridItemPopupEntries,
+                        onResetFolderEblanApplicationInfoPopupEntries = onResetFolderEblanApplicationInfoPopupEntries,
+                    )
+                },
+                onDragShortcutInfo = { gridItem, imageBitmap, intOffset, intSize, newSharedElementKey ->
+                    pagerScreenState.dragShortcutInfoFromGridItemPopup(
+                        gridItem = gridItem,
+                        imageBitmap = imageBitmap,
+                        intOffset = intOffset,
+                        intSize = intSize,
+                        newSharedElementKey = newSharedElementKey,
+                        onUpdateGridItemSource = onUpdateGridItemSource,
+                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                    )
+                },
+            )
+        }
+
+        if (pagerScreenState.showPrivateApplicationMenu &&
+            pagerScreenState.selectedEblanApplicationInfo != null &&
+            pagerScreenState.popupIntOffset != null &&
+            pagerScreenState.popupIntSize != null
+        ) {
+            PrivateApplicationInfoPopup(
+                eblanShortcutInfosGroup = eblanShortcutInfosGroup,
+                eblanApplicationInfo = pagerScreenState.selectedEblanApplicationInfo,
+                hasShortcutHostPermission = hasShortcutHostPermission,
+                popupIntOffset = pagerScreenState.popupIntOffset,
+                popupIntSize = pagerScreenState.popupIntSize,
+                paddingValues = paddingValues,
+                onUpdateShowPrivateApplicationMenu = pagerScreenState::updateShowPrivateApplicationMenu,
+                onEditApplicationInfo = onEditApplicationInfo,
             )
         }
 

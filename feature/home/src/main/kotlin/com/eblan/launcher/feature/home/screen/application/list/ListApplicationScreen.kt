@@ -90,7 +90,6 @@ import coil3.request.addLastModifiedToFileCacheKey
 import coil3.request.crossfade
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.application.EblanApplicationInfo
-import com.eblan.launcher.domain.model.application.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.application.EblanApplicationInfoTag
 import com.eblan.launcher.domain.model.application.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.grid.GridItem
@@ -98,21 +97,16 @@ import com.eblan.launcher.domain.model.launcherapps.EblanUser
 import com.eblan.launcher.domain.model.launcherapps.EblanUserPageKey
 import com.eblan.launcher.domain.model.launcherapps.EblanUserType
 import com.eblan.launcher.domain.model.launcherapps.ManagedProfileResult
-import com.eblan.launcher.domain.model.shortcutinfo.EblanShortcutInfo
-import com.eblan.launcher.domain.model.shortcutinfo.EblanShortcutInfoByGroup
 import com.eblan.launcher.domain.model.userdata.AppDrawerSettings
 import com.eblan.launcher.domain.model.userdata.TextColor
-import com.eblan.launcher.domain.model.widget.EblanAppWidgetProviderInfo
 import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
 import com.eblan.launcher.feature.home.component.gridItemSharedElement
 import com.eblan.launcher.feature.home.component.rememberNestedScrollConnectionEffect
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.SharedElementKey
-import com.eblan.launcher.feature.home.screen.application.ApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.ApplicationScreenEffect
 import com.eblan.launcher.feature.home.screen.application.ApplicationSearchBar
 import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoTabRow
-import com.eblan.launcher.feature.home.screen.application.PrivateApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.QuiteModeScreen
 import com.eblan.launcher.feature.home.screen.application.TagElevatedFilterChip
 import com.eblan.launcher.feature.home.screen.application.handleDragEblanApplicationInfoItem
@@ -135,11 +129,8 @@ internal fun ListApplicationScreen(
     sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
-    eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanApplicationInfoTags: List<EblanApplicationInfoTag>,
-    eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
-    hasShortcutHostPermission: Boolean,
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
     screenHeight: Int,
@@ -150,22 +141,10 @@ internal fun ListApplicationScreen(
     animations: Boolean,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
-    onEditApplicationInfo: (
-        serialNumber: Long,
-        componentName: String,
-    ) -> Unit,
     onGetEblanApplicationInfosByLabel: (String) -> Unit,
     onGetEblanApplicationInfosByTagId: (Long?) -> Unit,
     onVerticalDrag: (Float) -> Unit,
-    onWidgets: (EblanApplicationInfoGroup) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onDragShortcutInfo: (
-        gridItem: GridItem,
-        imageBitmap: ImageBitmap,
-        intOffset: IntOffset,
-        intSize: IntSize,
-        sharedElementKey: SharedElementKey,
-    ) -> Unit,
     onDragApplicationInfo: (GridItem) -> Unit,
     onLongPressApplicationInfo: (
         eblanApplicationInfo: EblanApplicationInfo,
@@ -184,12 +163,6 @@ internal fun ListApplicationScreen(
 
     var showPopupApplicationMenu by remember { mutableStateOf(false) }
 
-    var showPrivatePopupApplicationMenu by remember { mutableStateOf(false) }
-
-    var popupIntOffset by remember { mutableStateOf(IntOffset.Zero) }
-
-    var popupIntSize by remember { mutableStateOf(IntSize.Zero) }
-
     val horizontalPagerState = rememberPagerState(
         pageCount = {
             getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.size
@@ -201,8 +174,6 @@ internal fun ListApplicationScreen(
     val textFieldState = rememberTextFieldState()
 
     var selectedEblanApplicationInfoTagId by remember { mutableStateOf<Long?>(null) }
-
-    var selectedEblanApplicationInfo by remember { mutableStateOf<EblanApplicationInfo?>(null) }
 
     val eblanUserPageKeys =
         remember(key1 = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos) {
@@ -305,42 +276,6 @@ internal fun ListApplicationScreen(
                 onLongPressPrivateSpaceApplicationInfoItem = onLongPressPrivateSpaceApplicationInfoItem,
             )
         }
-    }
-
-    if (showPopupApplicationMenu && selectedEblanApplicationInfo != null) {
-        ApplicationInfoPopup(
-            eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfosGroup,
-            eblanShortcutInfosGroup = eblanShortcutInfosGroup,
-            eblanApplicationInfo = selectedEblanApplicationInfo,
-            gridItemSettings = appDrawerSettings.gridItemSettings,
-            hasShortcutHostPermission = hasShortcutHostPermission,
-            popupIntOffset = popupIntOffset,
-            popupIntSize = popupIntSize,
-            isVisibleOverlay = isVisibleOverlay,
-            paddingValues = paddingValues,
-            animations = animations,
-            onUpdateShowPopupApplicationMenu = {
-                showPopupApplicationMenu = false
-            },
-            onEditApplicationInfo = onEditApplicationInfo,
-            onWidgets = onWidgets,
-            onDragShortcutInfo = onDragShortcutInfo,
-        )
-    }
-
-    if (showPrivatePopupApplicationMenu && selectedEblanApplicationInfo != null) {
-        PrivateApplicationInfoPopup(
-            eblanShortcutInfosGroup = eblanShortcutInfosGroup,
-            eblanApplicationInfo = selectedEblanApplicationInfo,
-            hasShortcutHostPermission = hasShortcutHostPermission,
-            popupIntOffset = popupIntOffset,
-            popupIntSize = popupIntSize,
-            paddingValues = paddingValues,
-            onUpdateShowPrivatePopupApplicationMenu = {
-                showPrivatePopupApplicationMenu = false
-            },
-            onEditApplicationInfo = onEditApplicationInfo,
-        )
     }
 }
 
