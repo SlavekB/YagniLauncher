@@ -51,6 +51,13 @@ internal suspend fun onLongPressFolderGridItem(
     ) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onLongPressFolderGridItem: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        sharedElementKey: SharedElementKey,
+    ) -> Unit,
 ) {
     onUpdateMoveGridItemResult(
         MoveGridItemResult(

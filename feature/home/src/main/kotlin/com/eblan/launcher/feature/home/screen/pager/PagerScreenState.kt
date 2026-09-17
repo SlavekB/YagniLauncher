@@ -437,17 +437,6 @@ internal class PagerScreenState(
         isCloseGridItemPopup = false
     }
 
-    fun showFolderGridItemPopup(
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) {
-        popupIntOffset = intOffset
-
-        popupIntSize = intSize
-
-        showFolderGridItemPopup = true
-    }
-
     fun dismissFolderGridItemPopup() {
         popupIntOffset = null
 
@@ -906,10 +895,6 @@ internal class PagerScreenState(
         }
     }
 
-    fun updateIsCloseFolderGridItemPopup(value: Boolean) {
-        isCloseFolderGridItemPopup = value
-    }
-
     fun handleOnDragEndApplicationScreen() {
         scope.launch {
             if (applicationScreenSwipeY.value > 200f) {
@@ -1145,10 +1130,6 @@ internal class PagerScreenState(
 
     fun updateDockPageDirection(value: PageDirection?) {
         dockPageDirection = value
-    }
-
-    fun updateIsVisibleFolderGridItems(value: Boolean) {
-        isVisibleFolderGridItems = value
     }
 
     fun updateIsVisibleFolderEblanApplicationInfos(value: Boolean) {
@@ -1415,6 +1396,66 @@ internal class PagerScreenState(
         isDragging = true
 
         isCloseGridItemPopup = true
+    }
+
+    fun longPressFolderGridItem(
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        newSharedElementKey: SharedElementKey,
+        onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+        onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    ) {
+        onUpdateMoveGridItemResult(
+            MoveGridItemResult(
+                isSuccess = true,
+                movingGridItem = gridItem,
+                conflictingGridItem = null,
+            ),
+        )
+
+        overlayImageBitmap = imageBitmap
+
+        overlayIntOffset = intOffset
+
+        overlayIntSize = intSize
+
+        sharedElementKey = newSharedElementKey
+
+        popupIntOffset = intOffset
+
+        popupIntSize = intSize
+
+        showFolderGridItemPopup = true
+
+        onUpdateIsVisibleOverlay(true)
+    }
+
+    fun dragFolderGridItem() {
+        isDragging = true
+
+        isCloseFolderGridItemPopup = true
+    }
+
+    fun moveFolderGridItemOutsideFolder(
+        gridItem: GridItem,
+        newSharedElementKey: SharedElementKey,
+        onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
+    ) {
+        sharedElementKey = newSharedElementKey
+
+        onMoveFolderGridItemOutsideFolder(gridItem)
+    }
+
+    fun closeFolder(
+        folderPopupEntry: FolderPopupEntry,
+        isFirstFolderGridItem: Boolean,
+        onDeleteFolderGridItemPopupEntry: (FolderPopupEntry) -> Unit,
+    ) {
+        isVisibleFolderGridItems = !isFirstFolderGridItem
+
+        onDeleteFolderGridItemPopupEntry(folderPopupEntry)
     }
 }
 

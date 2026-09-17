@@ -107,23 +107,14 @@ internal fun FolderScreen(
     folderBackgroundColor: BackgroundColor,
     folderCornerRadius: Int,
     customFolderBackgroundColor: Int,
-    onDeleteFolderGridItemPopupEntry: (FolderPopupEntry) -> Unit,
-    onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
+    onMoveFolderGridItemOutsideFolder: (
+        gridItem: GridItem,
+        sharedElementKey: SharedElementKey,
+    ) -> Unit,
     onOpenAppDrawer: () -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onMoveFolderGridItem: (
         folderGridItemPopup: FolderGridItemPopup,
         movingFolderGridItem: GridItem,
@@ -137,7 +128,18 @@ internal fun FolderScreen(
     onResetGrid: () -> Unit,
     onResetGridAfterMoveFolder: () -> Unit,
     onUpsertFolderGridItemPopupEntry: (FolderPopupEntry) -> Unit,
-    onUpdateIsVisibleFolderGridItems: (Boolean) -> Unit,
+    onLongPressFolderGridItem: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        sharedElementKey: SharedElementKey,
+    ) -> Unit,
+    onDragFolderGridItem: () -> Unit,
+    onCloseFolder: (
+        folderPopupEntry: FolderPopupEntry,
+        isFirstFolderGridItem: Boolean,
+    ) -> Unit,
 ) {
     val folderPopupIntOffset = IntOffset(
         x = folderGridItemPopup.folderPopupEntry.x,
@@ -250,10 +252,8 @@ internal fun FolderScreen(
             animations = animations,
             isLastFolderGridItem = isLastFolderGridItem,
             onAnimateToScrollToPage = folderGridHorizontalPagerState::animateScrollToPage,
-            onDeleteFolderPopupEntry = onDeleteFolderGridItemPopupEntry,
             onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
-            onUpdateSharedElementKey = onUpdateSharedElementKey,
-            onUpdateIsVisibleFolderGridItems = onUpdateIsVisibleFolderGridItems,
+            onCloseFolder = onCloseFolder,
         )
     }
 
@@ -469,15 +469,9 @@ internal fun FolderScreen(
                                 customFolderBackgroundColor = customFolderBackgroundColor,
                                 folderGridItemPopups = folderGridItemPopups,
                                 onOpenAppDrawer = onOpenAppDrawer,
-                                onUpdateImageBitmap = onUpdateImageBitmap,
-                                onUpdateIsDragging = onUpdateIsDragging,
-                                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                onShowGridItemPopup = onShowGridItemPopup,
-                                onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
-                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                                 onUpsertFolderGridItemPopupEntry = onUpsertFolderGridItemPopupEntry,
+                                onLongPressFolderGridItem = onLongPressFolderGridItem,
+                                onDragFolderGridItem = onDragFolderGridItem,
                             )
                         },
                     )
@@ -511,10 +505,14 @@ private suspend fun handleIsCloseFolder(
     animations: Boolean,
     isLastFolderGridItem: Boolean,
     onAnimateToScrollToPage: suspend (Int) -> Unit,
-    onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
-    onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsVisibleFolderGridItems: (Boolean) -> Unit,
+    onMoveFolderGridItemOutsideFolder: (
+        gridItem: GridItem,
+        sharedElementKey: SharedElementKey,
+    ) -> Unit,
+    onCloseFolder: (
+        folderPopupEntry: FolderPopupEntry,
+        isFirstFolderGridItem: Boolean,
+    ) -> Unit,
 ) {
     if (!folderGridItemPopup.folderPopupEntry.isCloseFolder || !isLastFolderGridItem) return
 
@@ -533,14 +531,12 @@ private suspend fun handleIsCloseFolder(
         isVisibleOverlay = isVisibleOverlay,
         moveGridItemResult = moveGridItemResult,
         onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
-        onUpdateSharedElementKey = onUpdateSharedElementKey,
     )
 
-    if (isFirstFolderGridItem) {
-        onUpdateIsVisibleFolderGridItems(false)
-    }
-
-    onDeleteFolderPopupEntry(folderGridItemPopup.folderPopupEntry)
+    onCloseFolder(
+        folderGridItemPopup.folderPopupEntry,
+        isFirstFolderGridItem,
+    )
 }
 
 private fun handleMoveFolderGridItemOutsideFolder(
@@ -549,8 +545,10 @@ private fun handleMoveFolderGridItemOutsideFolder(
     isDragging: State<Boolean>,
     isVisibleOverlay: State<Boolean>,
     moveGridItemResult: State<MoveGridItemResult?>,
-    onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onMoveFolderGridItemOutsideFolder: (
+        gridItem: GridItem,
+        sharedElementKey: SharedElementKey,
+    ) -> Unit,
 ) {
     val gridItem = moveGridItemResult.value?.movingGridItem ?: return
 
@@ -613,7 +611,8 @@ private fun handleMoveFolderGridItemOutsideFolder(
         is GridItemData.Widget -> error("Unsupported Folder Grid Item")
     }
 
-    onUpdateSharedElementKey(
+    onMoveFolderGridItemOutsideFolder(
+        newGridItem,
         SharedElementKey(
             id = gridItem.id,
             parent = when (folderGridItemPopup.gridItem.associate) {
@@ -622,6 +621,4 @@ private fun handleMoveFolderGridItemOutsideFolder(
             },
         ),
     )
-
-    onMoveFolderGridItemOutsideFolder(newGridItem)
 }

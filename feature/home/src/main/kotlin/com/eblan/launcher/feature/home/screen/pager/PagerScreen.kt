@@ -1139,23 +1139,41 @@ internal fun PagerScreen(
                     folderBackgroundColor = folderSettings.folderBackgroundColor,
                     folderCornerRadius = folderSettings.folderCornerRadius,
                     customFolderBackgroundColor = folderSettings.customFolderBackgroundColor,
-                    onDeleteFolderGridItemPopupEntry = onDeleteFolderGridItemPopupEntry,
-                    onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
+                    onMoveFolderGridItemOutsideFolder = { gridItem, sharedElementKey ->
+                        pagerScreenState.moveFolderGridItemOutsideFolder(
+                            gridItem = gridItem,
+                            newSharedElementKey = sharedElementKey,
+                            onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
+                        )
+                    },
                     onOpenAppDrawer = pagerScreenState::openApplicationScreen,
-                    onUpdateImageBitmap = pagerScreenState::updateOverlayImageBitmap,
                     onUpdateIsDragging = pagerScreenState::updateIsDragging,
-                    onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
                     onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
-                    onShowGridItemPopup = pagerScreenState::showFolderGridItemPopup,
-                    onUpdateIsCloseFolderGridItemPopup = pagerScreenState::updateIsCloseFolderGridItemPopup,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                     onUpsertFolderGridItemPopupEntry = onUpsertFolderGridItemPopupEntry,
                     onMoveFolderGridItem = onMoveFolderGridItem,
                     onDismissFolderGridItemPopup = pagerScreenState::dismissFolderGridItemPopup,
                     onResetGrid = onResetGrid,
                     onResetGridAfterMoveFolder = onResetGridAfterMoveFolder,
-                    onUpdateIsVisibleFolderGridItems = pagerScreenState::updateIsVisibleFolderGridItems,
+                    onLongPressFolderGridItem = { gridItem, imageBitmap, intOffset, intSize, sharedElementKey ->
+                        pagerScreenState.longPressFolderGridItem(
+                            gridItem = gridItem,
+                            imageBitmap = imageBitmap,
+                            intOffset = intOffset,
+                            intSize = intSize,
+                            newSharedElementKey = sharedElementKey,
+                            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                        )
+                    },
+                    onDragFolderGridItem = pagerScreenState::dragFolderGridItem,
+                    onCloseFolder = { folderPopupEntry, isFirstFolderGridItem ->
+                        pagerScreenState.closeFolder(
+                            folderPopupEntry = folderPopupEntry,
+                            isFirstFolderGridItem = isFirstFolderGridItem,
+                            onDeleteFolderGridItemPopupEntry = onDeleteFolderGridItemPopupEntry,
+                        )
+                    },
                 )
             }
         }
