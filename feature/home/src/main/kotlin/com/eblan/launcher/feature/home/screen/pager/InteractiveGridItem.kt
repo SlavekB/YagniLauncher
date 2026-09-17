@@ -372,8 +372,6 @@ private fun InteractiveApplicationInfoGridItem(
 ) {
     val androidLauncherAppsWrapper = LocalLauncherApps.current
 
-    val launcherApps = LocalLauncherApps.current
-
     val context = LocalContext.current
 
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
@@ -416,7 +414,7 @@ private fun InteractiveApplicationInfoGridItem(
                             onDoubleTap(
                                 context = context,
                                 doubleTap = gridItem.doubleTap,
-                                launcherApps = launcherApps,
+                                launcherApps = androidLauncherAppsWrapper,
                                 onOpenAppDrawer = currentOnOpenAppDrawer,
                             )
                         }
