@@ -56,6 +56,7 @@ import com.eblan.launcher.domain.model.application.EblanApplicationInfo
 import com.eblan.launcher.domain.model.application.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.application.EblanApplicationInfoTag
 import com.eblan.launcher.domain.model.application.GetEblanApplicationInfosByLabelAndTag
+import com.eblan.launcher.domain.model.grid.GridItem
 import com.eblan.launcher.domain.model.grid.MoveGridItemResult
 import com.eblan.launcher.domain.model.launcherapps.EblanUser
 import com.eblan.launcher.domain.model.launcherapps.EblanUserPageKey
@@ -125,6 +126,13 @@ internal fun HorizontalApplicationScreen(
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onDragShortcutInfo: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        sharedElementKey: SharedElementKey,
+    ) -> Unit,
 ) {
     var showPopupApplicationMenu by remember { mutableStateOf(false) }
 
@@ -277,21 +285,9 @@ internal fun HorizontalApplicationScreen(
             onDismissRequest = {
                 showPopupApplicationMenu = false
             },
-            onUpdateIsDragging = {
-                showPopupApplicationMenu = false
-
-                onDismiss()
-
-                onUpdateIsDragging(it)
-            },
             onEditApplicationInfo = onEditApplicationInfo,
-            onUpdateGridItemSource = onUpdateGridItemSource,
-            onUpdateImageBitmap = onUpdateImageBitmap,
-            onUpdateOverlayBounds = onUpdateOverlayBounds,
-            onUpdateSharedElementKey = onUpdateSharedElementKey,
             onWidgets = onWidgets,
-            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+            onDragShortcutInfo = onDragShortcutInfo,
         )
     }
 

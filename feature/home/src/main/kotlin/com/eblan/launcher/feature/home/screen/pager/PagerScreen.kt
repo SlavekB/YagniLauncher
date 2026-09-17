@@ -509,10 +509,10 @@ internal fun PagerScreen(
     }
 
     val isVisibleGridItemPopup = gridItemSource != null &&
-        pagerScreenState.showGridItemPopup &&
-        pagerScreenState.popupIntOffset != null &&
-        pagerScreenState.popupIntSize != null &&
-        moveGridItemResult != null
+            pagerScreenState.showGridItemPopup &&
+            pagerScreenState.popupIntOffset != null &&
+            pagerScreenState.popupIntSize != null &&
+            moveGridItemResult != null
 
     val isVisibleSettingsPopup =
         pagerScreenState.showSettingsPopup && pagerScreenState.settingsPopupIntOffset != null
@@ -522,33 +522,33 @@ internal fun PagerScreen(
 
     val isVisibleFolderEblanApplicationInfos =
         pagerScreenState.isVisibleFolderEblanApplicationInfos &&
-            folderEblanApplicationInfoPopups.isNotEmpty()
+                folderEblanApplicationInfoPopups.isNotEmpty()
 
     val isVisibleFolderGridItemPopup = pagerScreenState.showFolderGridItemPopup &&
-        pagerScreenState.popupIntOffset != null &&
-        pagerScreenState.popupIntSize != null &&
-        moveGridItemResult != null
+            pagerScreenState.popupIntOffset != null &&
+            pagerScreenState.popupIntSize != null &&
+            moveGridItemResult != null
 
     val isResizing = pagerScreenState.isResizing && resizeGridItem != null
 
     val shouldLockScreenOrientation = homeSettings.lockScreenOrientation ||
-        isVisibleGridItemPopup ||
-        isVisibleSettingsPopup ||
-        isVisibleFolderGridItems ||
-        isVisibleFolderGridItemPopup ||
-        isResizing ||
-        pagerScreenState.showApplicationScreen ||
-        pagerScreenState.showWidgetScreen ||
-        pagerScreenState.showShortcutConfigScreen ||
-        pagerScreenState.eblanApplicationInfoGroup != null
+            isVisibleGridItemPopup ||
+            isVisibleSettingsPopup ||
+            isVisibleFolderGridItems ||
+            isVisibleFolderGridItemPopup ||
+            isResizing ||
+            pagerScreenState.showApplicationScreen ||
+            pagerScreenState.showWidgetScreen ||
+            pagerScreenState.showShortcutConfigScreen ||
+            pagerScreenState.eblanApplicationInfoGroup != null
 
     val statusBarNotifications by rememberStatusBarNotifications()
 
     val isVisibleFolderEblanApplicationInfoGridItemPopup =
         pagerScreenState.showFolderEblanApplicationInfoGridItemPopup &&
-            pagerScreenState.popupIntOffset != null &&
-            pagerScreenState.popupIntSize != null &&
-            moveFolderEblanApplicationInfoGridItemResult != null
+                pagerScreenState.popupIntOffset != null &&
+                pagerScreenState.popupIntSize != null &&
+                moveFolderEblanApplicationInfoGridItemResult != null
 
     LaunchedEffect(
         key1 = pinGridItem,
@@ -1042,17 +1042,22 @@ internal fun PagerScreen(
                 animations = experimentalSettings.gridItemAnimation,
                 onDeleteGridItem = onDeleteGridItem,
                 onDismissRequest = pagerScreenState::dismissGridItemPopup,
-                onUpdateIsDragging = pagerScreenState::updateIsDragging,
                 onEdit = onEditGridItem,
                 onResize = onUpdateResizeGridItem,
-                onUpdateGridItemSource = onUpdateGridItemSource,
-                onUpdateImageBitmap = pagerScreenState::updateOverlayImageBitmap,
-                onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
-                onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
                 onWidgets = pagerScreenState::openAppWidgetScreen,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 onUpdateIsResizing = pagerScreenState::updateIsResizing,
+                onDragShortcutInfo = { gridItem, imageBitmap, intOffset, intSize, newSharedElementKey ->
+                    pagerScreenState.dragShortcutInfoFromGridItemPopup(
+                        gridItem = gridItem,
+                        imageBitmap = imageBitmap,
+                        intOffset = intOffset,
+                        intSize = intSize,
+                        newSharedElementKey = newSharedElementKey,
+                        onUpdateGridItemSource = onUpdateGridItemSource,
+                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                    )
+                },
             )
         }
 
@@ -1136,16 +1141,21 @@ internal fun PagerScreen(
                 animations = experimentalSettings.gridItemAnimation,
                 onDeleteGridItem = onDeleteGridItem,
                 onDismissRequest = pagerScreenState::dismissFolderGridItemPopup,
-                onUpdateIsDragging = pagerScreenState::updateIsDragging,
                 onEdit = onEditGridItem,
-                onUpdateGridItemSource = onUpdateGridItemSource,
-                onUpdateImageBitmap = pagerScreenState::updateOverlayImageBitmap,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
-                onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
                 onWidgets = pagerScreenState::openAppWidgetScreen,
-                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 onResetFolderGridItemPopupEntries = onResetFolderGridItemPopupEntries,
+                onDragShortcutInfo = { gridItem, imageBitmap, intOffset, intSize, newSharedElementKey ->
+                    pagerScreenState.dragShortcutInfoFromFolderGridItemPopup(
+                        gridItem = gridItem,
+                        imageBitmap = imageBitmap,
+                        intOffset = intOffset,
+                        intSize = intSize,
+                        newSharedElementKey = newSharedElementKey,
+                        onUpdateGridItemSource = onUpdateGridItemSource,
+                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                    )
+                },
             )
         }
 
@@ -1194,6 +1204,18 @@ internal fun PagerScreen(
                 onUpdateFolderPopupBounds = pagerScreenState::showFolderApplicationPopup,
                 onUpdateFolderPopupMenu = pagerScreenState::updateShowFolderApplicationInfoPopup,
                 onDragFolderEblanApplicationInfo = onDragFolderEblanApplicationInfo,
+                onDragShortcutInfo = { gridItem, imageBitmap, intOffset, intSize, newSharedElementKey ->
+                    pagerScreenState.dragShortcutInfoFromApplicationScreen(
+                        gridItem = gridItem,
+                        imageBitmap = imageBitmap,
+                        intOffset = intOffset,
+                        intSize = intSize,
+                        newSharedElementKey = newSharedElementKey,
+                        onUpdateGridItemSource = onUpdateGridItemSource,
+                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                    )
+                },
             )
         }
 
@@ -1369,18 +1391,24 @@ internal fun PagerScreen(
                 animations = experimentalSettings.gridItemAnimation,
                 isCloseFolderEblanApplicationInfoGridItemPopup = pagerScreenState.isCloseFolderEblanApplicationInfoGridItemPopup,
                 onDismissRequest = pagerScreenState::dismissFolderEblanApplicationInfoGridItemPopup,
-                onUpdateIsDragging = pagerScreenState::updateIsDragging,
                 onEditFolderApplicationInfo = onEditFolderApplicationInfo,
                 onEditApplicationInfo = onEditApplicationInfo,
-                onUpdateGridItemSource = onUpdateGridItemSource,
-                onUpdateImageBitmap = pagerScreenState::updateOverlayImageBitmap,
-                onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
-                onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
                 onWidgets = pagerScreenState::openAppWidgetScreen,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 onResetFolderEblanApplicationInfoPopupEntries = onResetFolderEblanApplicationInfoPopupEntries,
                 onDeleteFolderEblanApplicationInfoGridItems = onDeleteFolderEblanApplicationInfoGridItems,
+                onDragShortcutInfo = { gridItem, imageBitmap, intOffset, intSize, newSharedElementKey ->
+                    pagerScreenState.dragShortcutInfoFromFolderApplicationInfoGridItemPopup(
+                        gridItem = gridItem,
+                        imageBitmap = imageBitmap,
+                        intOffset = intOffset,
+                        intSize = intSize,
+                        newSharedElementKey = newSharedElementKey,
+                        onUpdateGridItemSource = onUpdateGridItemSource,
+                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                        onResetFolderEblanApplicationInfoPopupEntries = onResetFolderEblanApplicationInfoPopupEntries,
+                    )
+                },
             )
         }
 

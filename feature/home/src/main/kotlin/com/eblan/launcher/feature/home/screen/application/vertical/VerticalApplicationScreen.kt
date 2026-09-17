@@ -161,6 +161,13 @@ internal fun VerticalApplicationScreen(
         folderEblanApplicationInfo: FolderEblanApplicationInfo,
         movingGridItem: GridItem,
     ) -> Unit,
+    onDragShortcutInfo: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        sharedElementKey: SharedElementKey,
+    ) -> Unit,
 ) {
     val layoutDirection = LocalLayoutDirection.current
 
@@ -331,21 +338,9 @@ internal fun VerticalApplicationScreen(
             onDismissRequest = {
                 showPopupApplicationMenu = false
             },
-            onUpdateIsDragging = {
-                showPopupApplicationMenu = false
-
-                onDismiss()
-
-                onUpdateIsDragging(it)
-            },
             onEditApplicationInfo = onEditApplicationInfo,
-            onUpdateGridItemSource = onUpdateGridItemSource,
-            onUpdateImageBitmap = onUpdateImageBitmap,
-            onUpdateOverlayBounds = onUpdateOverlayBounds,
-            onUpdateSharedElementKey = onUpdateSharedElementKey,
             onWidgets = onWidgets,
-            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+            onDragShortcutInfo = onDragShortcutInfo,
         )
     }
 

@@ -178,6 +178,13 @@ internal fun ApplicationScreen(
         folderEblanApplicationInfo: FolderEblanApplicationInfo,
         movingGridItem: GridItem,
     ) -> Unit,
+    onDragShortcutInfo: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        sharedElementKey: SharedElementKey,
+    ) -> Unit,
 ) {
     val managedProfileResult by rememberManagedProfileResult()
 
@@ -248,6 +255,7 @@ internal fun ApplicationScreen(
                     onUpdateFolderPopupBounds = onUpdateFolderPopupBounds,
                     onUpdateFolderPopupMenu = onUpdateFolderPopupMenu,
                     onDragFolderEblanApplicationInfo = onDragFolderEblanApplicationInfo,
+                    onDragShortcutInfo = onDragShortcutInfo,
                 )
             }
 
@@ -283,6 +291,7 @@ internal fun ApplicationScreen(
                     onWidgets = onWidgets,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                    onDragShortcutInfo = onDragShortcutInfo,
                 )
             }
 
@@ -318,6 +327,7 @@ internal fun ApplicationScreen(
                     onWidgets = onWidgets,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                    onDragShortcutInfo = onDragShortcutInfo,
                 )
             }
         }
