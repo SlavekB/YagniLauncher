@@ -894,19 +894,33 @@ internal fun PagerScreen(
                             systemCustomTextColor = homeSettings.gridItemSettings.customTextColor,
                             folderGridItemPopups = folderGridItemPopups,
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
-                            onUpsertFolderGridItemPopupEntry = onUpsertFolderGridItemPopupEntry,
-                            onUpdateGridItemSource = onUpdateGridItemSource,
-                            onUpdateImageBitmap = pagerScreenState::updateOverlayImageBitmap,
-                            onUpdateIsDragging = pagerScreenState::updateIsDragging,
-                            onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
-                            onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
-                            onShowGridItemPopup = pagerScreenState::showGridItemPopup,
-                            onUpdateIsCloseGridItemPopup = pagerScreenState::updateIsCloseGridItemPopup,
-                            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                            onShowFolderWhenDragging = onShowFolderWhenDragging,
+                            onShowFolderWhenDragging = { folderPopupEntry, gridItem ->
+                                pagerScreenState.showFolderWhenDragging(
+                                    folderPopupEntry = folderPopupEntry,
+                                    movingGridItem = gridItem,
+                                    onShowFolderWhenDragging = onShowFolderWhenDragging,
+                                )
+                            },
                             onResetGrid = onResetGrid,
-                            onUpdateIsVisibleFolders = pagerScreenState::updateIsVisibleFolderGridItems,
+                            onLongPressGridItem = { gridItem, imageBitmap, intOffset, intSize, sharedElementKey ->
+                                pagerScreenState.longPressGridItem(
+                                    gridItem = gridItem,
+                                    imageBitmap = imageBitmap,
+                                    intOffset = intOffset,
+                                    intSize = intSize,
+                                    newSharedElementKey = sharedElementKey,
+                                    onUpdateGridItemSource = onUpdateGridItemSource,
+                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                )
+                            },
+                            onTapFolderGridItem = { folderPopupEntry ->
+                                pagerScreenState.tapFolderGridItem(
+                                    folderPopupEntry = folderPopupEntry,
+                                    onUpsertFolderGridItemPopupEntry = onUpsertFolderGridItemPopupEntry,
+                                )
+                            },
+                            onDragGridItem = pagerScreenState::dragGridItem,
                         )
                     },
                 )
@@ -1007,19 +1021,33 @@ internal fun PagerScreen(
                                 systemCustomTextColor = homeSettings.gridItemSettings.customTextColor,
                                 folderGridItemPopups = folderGridItemPopups,
                                 onOpenAppDrawer = pagerScreenState::openApplicationScreen,
-                                onUpsertFolderGridItemPopupEntry = onUpsertFolderGridItemPopupEntry,
-                                onUpdateGridItemSource = onUpdateGridItemSource,
-                                onUpdateImageBitmap = pagerScreenState::updateOverlayImageBitmap,
-                                onUpdateIsDragging = pagerScreenState::updateIsDragging,
-                                onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
-                                onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
-                                onShowGridItemPopup = pagerScreenState::showGridItemPopup,
-                                onUpdateIsCloseGridItemPopup = pagerScreenState::updateIsCloseGridItemPopup,
-                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                                onShowFolderWhenDragging = onShowFolderWhenDragging,
+                                onShowFolderWhenDragging = { folderPopupEntry, gridItem ->
+                                    pagerScreenState.showFolderWhenDragging(
+                                        folderPopupEntry = folderPopupEntry,
+                                        movingGridItem = gridItem,
+                                        onShowFolderWhenDragging = onShowFolderWhenDragging,
+                                    )
+                                },
                                 onResetGrid = onResetGrid,
-                                onUpdateIsVisibleFolders = pagerScreenState::updateIsVisibleFolderGridItems,
+                                onLongPressGridItem = { gridItem, imageBitmap, intOffset, intSize, sharedElementKey ->
+                                    pagerScreenState.longPressGridItem(
+                                        gridItem = gridItem,
+                                        imageBitmap = imageBitmap,
+                                        intOffset = intOffset,
+                                        intSize = intSize,
+                                        newSharedElementKey = sharedElementKey,
+                                        onUpdateGridItemSource = onUpdateGridItemSource,
+                                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                    )
+                                },
+                                onTapFolderGridItem = { folderPopupEntry ->
+                                    pagerScreenState.tapFolderGridItem(
+                                        folderPopupEntry = folderPopupEntry,
+                                        onUpsertFolderGridItemPopupEntry = onUpsertFolderGridItemPopupEntry,
+                                    )
+                                },
+                                onDragGridItem = pagerScreenState::dragGridItem,
                             )
                         },
                     )

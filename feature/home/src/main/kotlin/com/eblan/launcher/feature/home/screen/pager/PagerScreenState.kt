@@ -58,6 +58,7 @@ import com.eblan.launcher.domain.common.FileManager
 import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.model.application.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfo
+import com.eblan.launcher.domain.model.folder.FolderPopupEntry
 import com.eblan.launcher.domain.model.grid.Associate
 import com.eblan.launcher.domain.model.grid.GridItem
 import com.eblan.launcher.domain.model.grid.MoveGridItemResult
@@ -424,17 +425,6 @@ internal class PagerScreenState(
 
     fun updateHasDoubleTap(value: Boolean) {
         hasDoubleTap = value
-    }
-
-    fun showGridItemPopup(
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) {
-        popupIntOffset = intOffset
-
-        popupIntSize = intSize
-
-        showGridItemPopup = true
     }
 
     fun dismissGridItemPopup() {
@@ -916,10 +906,6 @@ internal class PagerScreenState(
         }
     }
 
-    fun updateIsCloseGridItemPopup(value: Boolean) {
-        isCloseGridItemPopup = value
-    }
-
     fun updateIsCloseFolderGridItemPopup(value: Boolean) {
         isCloseFolderGridItemPopup = value
     }
@@ -1356,6 +1342,79 @@ internal class PagerScreenState(
         dismissAppWidgetScreen()
 
         onUpdateIsVisibleOverlay(true)
+    }
+
+    fun longPressGridItem(
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        newSharedElementKey: SharedElementKey,
+        onUpdateGridItemSource: (GridItemSource) -> Unit,
+        onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+        onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    ) {
+        onUpdateGridItemSource(GridItemSource.Existing)
+
+        onUpdateMoveGridItemResult(
+            MoveGridItemResult(
+                isSuccess = false,
+                movingGridItem = gridItem,
+                conflictingGridItem = null,
+            ),
+        )
+
+        overlayImageBitmap = imageBitmap
+
+        overlayIntOffset = intOffset
+
+        overlayIntSize = intSize
+
+        sharedElementKey = newSharedElementKey
+
+        popupIntOffset = intOffset
+
+        popupIntSize = intSize
+
+        showGridItemPopup = true
+
+        onUpdateIsVisibleOverlay(true)
+    }
+
+    fun showFolderWhenDragging(
+        folderPopupEntry: FolderPopupEntry,
+        movingGridItem: GridItem,
+        onShowFolderWhenDragging: (
+            folderPopupEntry: FolderPopupEntry,
+            movingGridItem: GridItem,
+        ) -> Unit,
+    ) {
+        sharedElementKey = SharedElementKey(
+            id = movingGridItem.id,
+            parent = SharedElementKey.Parent.Folder,
+        )
+
+        isVisibleFolderGridItems = true
+
+        onShowFolderWhenDragging(
+            folderPopupEntry,
+            movingGridItem,
+        )
+    }
+
+    fun tapFolderGridItem(
+        folderPopupEntry: FolderPopupEntry,
+        onUpsertFolderGridItemPopupEntry: (FolderPopupEntry) -> Unit,
+    ) {
+        isVisibleFolderGridItems = true
+
+        onUpsertFolderGridItemPopupEntry(folderPopupEntry)
+    }
+
+    fun dragGridItem() {
+        isDragging = true
+
+        isCloseGridItemPopup = true
     }
 }
 

@@ -318,10 +318,8 @@ internal suspend fun handleConflictingGridItem(
     folderGridItems: State<List<GridItem>?>,
     onShowFolderWhenDragging: (
         folderPopupEntry: FolderPopupEntry,
-        movingGridItem: GridItem,
+        gridItem: GridItem,
     ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsVisibleFolders: (Boolean) -> Unit,
 ) {
     delay(1000L.milliseconds)
 
@@ -342,15 +340,6 @@ internal suspend fun handleConflictingGridItem(
         conflictingGridItem = conflictingGridItem,
         folderGridItems = folderGridItems.value,
     )
-
-    onUpdateSharedElementKey(
-        SharedElementKey(
-            id = movingFolderGridItem.id,
-            parent = SharedElementKey.Parent.Folder,
-        ),
-    )
-
-    onUpdateIsVisibleFolders(true)
 
     onShowFolderWhenDragging(
         FolderPopupEntry(
