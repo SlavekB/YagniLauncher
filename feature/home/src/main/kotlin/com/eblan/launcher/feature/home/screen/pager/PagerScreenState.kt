@@ -304,12 +304,12 @@ internal class PagerScreenState(
 
     val isAvailableSystemNavigation
         get() = applicationScreenSwipeY.value == screenHeight.toFloat() &&
-                !showWidgetScreen &&
-                !showShortcutConfigScreen &&
-                !showGridItemPopup &&
-                !showSettingsPopup &&
-                !showFolderGridItemPopup &&
-                eblanApplicationInfoGroup == null
+            !showWidgetScreen &&
+            !showShortcutConfigScreen &&
+            !showGridItemPopup &&
+            !showSettingsPopup &&
+            !showFolderGridItemPopup &&
+            eblanApplicationInfoGroup == null
 
     var folderEblanApplicationInfo by mutableStateOf<FolderEblanApplicationInfo?>(null)
         private set
@@ -533,7 +533,7 @@ internal class PagerScreenState(
     fun verticalDragStart() {
         showApplicationScreen =
             gestureSettings.swipeUp.eblanActionType == EblanActionType.OpenAppDrawer ||
-                    gestureSettings.swipeDown.eblanActionType == EblanActionType.OpenAppDrawer
+            gestureSettings.swipeDown.eblanActionType == EblanActionType.OpenAppDrawer
     }
 
     fun verticalDrag(dragAmount: Float) {
@@ -744,15 +744,21 @@ internal class PagerScreenState(
             )
 
             eblanApplicationInfoGroup = null
-
-            if (applicationScreenSwipeY.value < screenHeight) {
-                dismissApplicationScreen()
-            }
         }
     }
 
-    fun openAppWidgetScreen(value: EblanApplicationInfoGroup) {
+    fun openAppWidgetScreen(
+        value: EblanApplicationInfoGroup,
+        onResetFolderGridItemPopupEntries: () -> Unit,
+        onResetFolderEblanApplicationInfoPopupEntries: () -> Unit,
+    ) {
         scope.launch {
+            onResetFolderGridItemPopupEntries()
+
+            onResetFolderEblanApplicationInfoPopupEntries()
+
+            dismissApplicationScreen()
+
             eblanApplicationInfoGroup = value
 
             appWidgetScreenSwipeY.animateTo(
@@ -1252,6 +1258,7 @@ internal class PagerScreenState(
         onUpdateGridItemSource: (GridItemSource) -> Unit,
         onUpdateIsVisibleOverlay: (Boolean) -> Unit,
         onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+        onResetFolderGridItemPopupEntries: () -> Unit,
     ) {
         onUpdateGridItemSource(GridItemSource.New)
 
@@ -1272,6 +1279,8 @@ internal class PagerScreenState(
         sharedElementKey = newSharedElementKey
 
         isDragging = true
+
+        onResetFolderGridItemPopupEntries()
 
         onUpdateIsVisibleOverlay(true)
     }
@@ -1307,11 +1316,44 @@ internal class PagerScreenState(
 
         isDragging = true
 
-        dismissFolderEblanApplicationInfoGridItemPopup()
+        onResetFolderEblanApplicationInfoPopupEntries()
 
         dismissApplicationScreen()
 
-        onResetFolderEblanApplicationInfoPopupEntries()
+        onUpdateIsVisibleOverlay(true)
+    }
+
+    fun dragAppWidgetProviderInfo(
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        newSharedElementKey: SharedElementKey,
+        onUpdateGridItemSource: (GridItemSource) -> Unit,
+        onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+        onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    ) {
+        onUpdateGridItemSource(GridItemSource.New)
+
+        onUpdateMoveGridItemResult(
+            MoveGridItemResult(
+                isSuccess = false,
+                movingGridItem = gridItem,
+                conflictingGridItem = null,
+            ),
+        )
+
+        overlayImageBitmap = imageBitmap
+
+        overlayIntOffset = intOffset
+
+        overlayIntSize = intSize
+
+        sharedElementKey = newSharedElementKey
+
+        isDragging = true
+
+        dismissAppWidgetScreen()
 
         onUpdateIsVisibleOverlay(true)
     }
