@@ -59,7 +59,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -90,29 +89,29 @@ import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
 import coil3.request.crossfade
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
-import com.eblan.launcher.domain.model.AppDrawerSettings
-import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
-import com.eblan.launcher.domain.model.EblanApplicationInfo
-import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
-import com.eblan.launcher.domain.model.EblanApplicationInfoTag
-import com.eblan.launcher.domain.model.EblanShortcutInfo
-import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
-import com.eblan.launcher.domain.model.EblanUser
-import com.eblan.launcher.domain.model.EblanUserPageKey
-import com.eblan.launcher.domain.model.EblanUserType
-import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
-import com.eblan.launcher.domain.model.ManagedProfileResult
-import com.eblan.launcher.domain.model.MoveGridItemResult
-import com.eblan.launcher.domain.model.TextColor
-import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
+import com.eblan.launcher.domain.model.application.EblanApplicationInfo
+import com.eblan.launcher.domain.model.application.EblanApplicationInfoGroup
+import com.eblan.launcher.domain.model.application.EblanApplicationInfoTag
+import com.eblan.launcher.domain.model.application.GetEblanApplicationInfosByLabelAndTag
+import com.eblan.launcher.domain.model.grid.MoveGridItemResult
+import com.eblan.launcher.domain.model.launcherapps.EblanUser
+import com.eblan.launcher.domain.model.launcherapps.EblanUserPageKey
+import com.eblan.launcher.domain.model.launcherapps.EblanUserType
+import com.eblan.launcher.domain.model.launcherapps.ManagedProfileResult
+import com.eblan.launcher.domain.model.shortcutinfo.EblanShortcutInfo
+import com.eblan.launcher.domain.model.shortcutinfo.EblanShortcutInfoByGroup
+import com.eblan.launcher.domain.model.userdata.AppDrawerSettings
+import com.eblan.launcher.domain.model.userdata.TextColor
+import com.eblan.launcher.domain.model.widget.EblanAppWidgetProviderInfo
 import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
 import com.eblan.launcher.feature.home.component.gridItemSharedElement
+import com.eblan.launcher.feature.home.component.rememberNestedScrollConnectionEffect
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.ApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.ApplicationScreenEffect
-import com.eblan.launcher.feature.home.screen.application.ApplicationSearchBarWithoutMenu
+import com.eblan.launcher.feature.home.screen.application.ApplicationSearchBar
 import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoTabRow
 import com.eblan.launcher.feature.home.screen.application.PrivateApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.QuiteModeScreen
@@ -183,7 +182,7 @@ internal fun ListApplicationScreen(
 
     val horizontalPagerState = rememberPagerState(
         pageCount = {
-            getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.size
+            getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.size
         },
     )
 
@@ -196,8 +195,8 @@ internal fun ListApplicationScreen(
     var selectedEblanApplicationInfo by remember { mutableStateOf<EblanApplicationInfo?>(null) }
 
     val eblanUserPageKeys =
-        remember(key1 = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos) {
-            getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.distinctBy { it.eblanUser.serialNumber }
+        remember(key1 = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos) {
+            getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.distinctBy { it.eblanUser.serialNumber }
         }
 
     val focusRequester = remember { FocusRequester() }
@@ -228,7 +227,7 @@ internal fun ListApplicationScreen(
                 end = paddingValues.calculateEndPadding(layoutDirection),
             ),
     ) {
-        ApplicationSearchBarWithoutMenu(
+        ApplicationSearchBar(
             focusRequester = focusRequester,
             searchBarState = searchBarState,
             textFieldState = textFieldState,
@@ -252,11 +251,11 @@ internal fun ListApplicationScreen(
             }
         }
 
-        if (getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.size > 1) {
+        if (getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.size > 1) {
             EblanApplicationInfoTabRow(
                 currentPage = horizontalPagerState.currentPage,
                 eblanUserPageKeys = eblanUserPageKeys,
-                eblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos,
+                eblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos,
                 backgroundColor = appDrawerSettings.backgroundColor,
                 customBackgroundColor = appDrawerSettings.customBackgroundColor,
                 systemTextColor = systemTextColor,
@@ -290,13 +289,7 @@ internal fun ListApplicationScreen(
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
-                onUpdateOverlayBounds = { intOffset, intSize ->
-                    onUpdateOverlayBounds(intOffset, intSize)
-
-                    popupIntOffset = intOffset
-
-                    popupIntSize = intSize
-                },
+                onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdatePopupMenu = {
                     showPopupApplicationMenu = it
                 },
@@ -310,6 +303,11 @@ internal fun ListApplicationScreen(
                 },
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                onUpdatePopupBounds = { intOffset, intSize ->
+                    popupIntOffset = intOffset
+
+                    popupIntSize = intSize
+                },
             )
         }
     }
@@ -397,13 +395,17 @@ private fun EblanApplicationInfosPage(
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onUpdatePopupBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
     val userManager = LocalUserManager.current
 
     val eblanUserPageKey =
-        getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.toList()
+        getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.toList()
             .getOrElse(
                 index = index,
                 defaultValue = {
@@ -469,6 +471,7 @@ private fun EblanApplicationInfosPage(
                 onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                onUpdatePopupBounds = onUpdatePopupBounds,
             )
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isDefaultLauncher && eblanUserPageKey.eblanUser.serialNumber > 0 && userHandle != null) {
@@ -532,6 +535,10 @@ private fun EblanApplicationInfos(
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onUpdatePopupBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
 ) {
     val userManager = LocalUserManager.current
 
@@ -543,15 +550,12 @@ private fun EblanApplicationInfos(
         }
     }
 
-    val currentOnVerticalDrag by rememberUpdatedState(onVerticalDrag)
-    val currentOnDragEnd by rememberUpdatedState(onDragEnd)
-
-    val nestedScrollConnection = remember {
-        OffsetNestedScrollConnection(
-            onVerticalDrag = currentOnVerticalDrag,
-            onDragEnd = currentOnDragEnd,
-        )
-    }
+    val nestedScrollConnection = rememberNestedScrollConnectionEffect(
+        scrollableState = lazyListState,
+        swipeY = swipeY,
+        onVerticalDrag = onVerticalDrag,
+        onDragEnd = onDragEnd,
+    )
 
     val privateIsQuiteModeEnabled by rememberIsQuietModeEnabled(
         userHandle = getEblanApplicationInfosByLabelAndTag.privateEblanUser?.serialNumber?.let(
@@ -573,15 +577,6 @@ private fun EblanApplicationInfos(
         }
     }
 
-    LaunchedEffect(
-        key1 = nestedScrollConnection,
-        key2 = swipeY,
-        key3 = lazyListState.canScrollBackward,
-    ) {
-        nestedScrollConnection.updateSwipeY(swipeY)
-        nestedScrollConnection.updateCanScrollBackward(lazyListState.canScrollBackward)
-    }
-
     Box(
         modifier = modifier
             .nestedScroll(nestedScrollConnection)
@@ -598,12 +593,12 @@ private fun EblanApplicationInfos(
             when (eblanUserPageKey.eblanUser.eblanUserType) {
                 EblanUserType.Personal -> {
                     items(
-                        items = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos[eblanUserPageKey].orEmpty(),
+                        items = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos[eblanUserPageKey].orEmpty(),
                         key = {
                             it.serialNumber to it.componentName
                         },
                     ) {
-                        EblanApplicationInfoListItem(
+                        EblanApplicationInfoItem(
                             sharedTransitionScope = sharedTransitionScope,
                             appDrawerSettings = appDrawerSettings,
                             drag = drag,
@@ -626,6 +621,7 @@ private fun EblanApplicationInfos(
                             onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                            onUpdatePopupBounds = onUpdatePopupBounds,
                         )
                     }
 
@@ -633,7 +629,7 @@ private fun EblanApplicationInfos(
                         appDrawerSettings = appDrawerSettings,
                         isQuietModeEnabled = privateIsQuiteModeEnabled,
                         paddingValues = paddingValues,
-                        privateEblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfoWithIconPackInfos,
+                        privateEblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfos,
                         privateEblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
                         isVisibleOverlay = isVisibleOverlay,
                         backgroundColor = appDrawerSettings.backgroundColor,
@@ -650,12 +646,12 @@ private fun EblanApplicationInfos(
 
                 else -> {
                     items(
-                        getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos[eblanUserPageKey].orEmpty(),
+                        getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos[eblanUserPageKey].orEmpty(),
                         key = {
                             it.serialNumber to it.componentName
                         },
                     ) {
-                        EblanApplicationInfoListItem(
+                        EblanApplicationInfoItem(
                             sharedTransitionScope = sharedTransitionScope,
                             appDrawerSettings = appDrawerSettings,
                             drag = drag,
@@ -678,6 +674,7 @@ private fun EblanApplicationInfos(
                             onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                            onUpdatePopupBounds = onUpdatePopupBounds,
                         )
                     }
                 }
@@ -703,7 +700,7 @@ private fun EblanApplicationInfos(
     ExperimentalLayoutApi::class,
 )
 @Composable
-private fun EblanApplicationInfoListItem(
+private fun EblanApplicationInfoItem(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
@@ -730,6 +727,10 @@ private fun EblanApplicationInfoListItem(
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onUpdatePopupBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
 ) {
     val graphicsLayer = rememberGraphicsLayer()
 
@@ -824,7 +825,8 @@ private fun EblanApplicationInfoListItem(
                         {
                             scope.launch {
                                 handleOnTapEblanApplicationInfoItem(
-                                    eblanApplicationInfo = eblanApplicationInfo,
+                                    componentName = eblanApplicationInfo.componentName,
+                                    serialNumber = eblanApplicationInfo.serialNumber,
                                     intOffset = intOffset,
                                     intSize = intSize,
                                     keyboardController = keyboardController,
@@ -842,18 +844,19 @@ private fun EblanApplicationInfoListItem(
                             scope.launch {
                                 handleOnLongPressEblanApplicationInfoItem(
                                     sharedElementKey = sharedElementKey,
-                                    eblanApplicationInfo = eblanApplicationInfo,
+                                    item = eblanApplicationInfo,
                                     graphicsLayer = graphicsLayer,
                                     intOffset = intOffset,
                                     intSize = intSize,
                                     keyboardController = keyboardController,
-                                    onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                                    onUpdate = onUpdateEblanApplicationInfo,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateIsLongPress = { isLongPress = it },
                                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdatePopupMenu = onUpdatePopupMenu,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
+                                    onUpdatePopupBounds = onUpdatePopupBounds,
                                 )
                             }
                         }
@@ -883,8 +886,8 @@ private fun EblanApplicationInfoListItem(
                     intSize = it.size
                 }
                 .gridItemScaleAnimation(
+                    enabled = animations,
                     isVisibleOverlay = isVisibleOverlay,
-                    animations = animations,
                     scale = scale,
                 )
                 .gridItemSharedElement(

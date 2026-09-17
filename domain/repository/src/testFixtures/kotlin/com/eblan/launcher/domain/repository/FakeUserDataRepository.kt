@@ -17,12 +17,13 @@
  */
 package com.eblan.launcher.domain.repository
 
-import com.eblan.launcher.domain.model.AppDrawerSettings
-import com.eblan.launcher.domain.model.ExperimentalSettings
-import com.eblan.launcher.domain.model.GeneralSettings
-import com.eblan.launcher.domain.model.GestureSettings
-import com.eblan.launcher.domain.model.HomeSettings
-import com.eblan.launcher.domain.model.UserData
+import com.eblan.launcher.domain.model.userdata.AppDrawerSettings
+import com.eblan.launcher.domain.model.userdata.ExperimentalSettings
+import com.eblan.launcher.domain.model.userdata.FolderSettings
+import com.eblan.launcher.domain.model.userdata.GeneralSettings
+import com.eblan.launcher.domain.model.userdata.GestureSettings
+import com.eblan.launcher.domain.model.userdata.HomeSettings
+import com.eblan.launcher.domain.model.userdata.UserData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -33,52 +34,50 @@ class FakeUserDataRepository(initialUserData: UserData) : UserDataRepository {
     override val userDataFlow: Flow<UserData>
         get() = _userDataFlow
 
-    override suspend fun updateHomeSettings(
-        homeSettings: HomeSettings,
-    ) {
-        _userDataFlow.update { userData ->
-            userData.copy(
+    override suspend fun updateHomeSettings(homeSettings: HomeSettings) {
+        _userDataFlow.update {
+            it.copy(
                 homeSettings = homeSettings,
             )
         }
     }
 
-    override suspend fun updateAppDrawerSettings(
-        appDrawerSettings: AppDrawerSettings,
-    ) {
-        _userDataFlow.update { userData ->
-            userData.copy(
+    override suspend fun updateAppDrawerSettings(appDrawerSettings: AppDrawerSettings) {
+        _userDataFlow.update {
+            it.copy(
                 appDrawerSettings = appDrawerSettings,
             )
         }
     }
 
-    override suspend fun updateGeneralSettings(
-        generalSettings: GeneralSettings,
-    ) {
-        _userDataFlow.update { userData ->
-            userData.copy(
+    override suspend fun updateGeneralSettings(generalSettings: GeneralSettings) {
+        _userDataFlow.update {
+            it.copy(
                 generalSettings = generalSettings,
             )
         }
     }
 
-    override suspend fun updateGestureSettings(
-        gestureSettings: GestureSettings,
-    ) {
-        _userDataFlow.update { userData ->
-            userData.copy(
+    override suspend fun updateGestureSettings(gestureSettings: GestureSettings) {
+        _userDataFlow.update {
+            it.copy(
                 gestureSettings = gestureSettings,
             )
         }
     }
 
-    override suspend fun updateExperimentalSettings(
-        experimentalSettings: ExperimentalSettings,
-    ) {
-        _userDataFlow.update { userData ->
-            userData.copy(
+    override suspend fun updateExperimentalSettings(experimentalSettings: ExperimentalSettings) {
+        _userDataFlow.update {
+            it.copy(
                 experimentalSettings = experimentalSettings,
+            )
+        }
+    }
+
+    override suspend fun updateFolderSettings(folderSettings: FolderSettings) {
+        _userDataFlow.update {
+            it.copy(
+                folderSettings = folderSettings,
             )
         }
     }

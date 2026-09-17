@@ -19,21 +19,22 @@ package com.eblan.launcher.domain.usecase.launcherapps
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.FileManager
 import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.AppWidgetManagerWrapper
-import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.IconPackManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
-import com.eblan.launcher.domain.model.ApplicationInfoGridItem
-import com.eblan.launcher.domain.model.Associate
-import com.eblan.launcher.domain.model.EblanAction
-import com.eblan.launcher.domain.model.EblanActionType
-import com.eblan.launcher.domain.model.EblanApplicationInfo
-import com.eblan.launcher.domain.model.EblanShortcutConfig
-import com.eblan.launcher.domain.model.ExperimentalSettings
-import com.eblan.launcher.domain.model.HomeSettings
-import com.eblan.launcher.domain.model.SyncEblanApplicationInfo
+import com.eblan.launcher.domain.model.application.EblanApplicationInfo
+import com.eblan.launcher.domain.model.application.SyncEblanApplicationInfo
+import com.eblan.launcher.domain.model.grid.ApplicationInfoGridItem
+import com.eblan.launcher.domain.model.grid.Associate
+import com.eblan.launcher.domain.model.shortcutconfig.EblanShortcutConfig
+import com.eblan.launcher.domain.model.userdata.EblanAction
+import com.eblan.launcher.domain.model.userdata.EblanActionType
+import com.eblan.launcher.domain.model.userdata.ExperimentalSettings
+import com.eblan.launcher.domain.model.userdata.FolderSettings
+import com.eblan.launcher.domain.model.userdata.HomeSettings
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
 import com.eblan.launcher.domain.repository.EblanAppWidgetProviderInfoRepository
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
@@ -45,7 +46,7 @@ import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
 import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
-import com.eblan.launcher.domain.usecase.grid.isTopLevel
+import com.eblan.launcher.domain.usecase.util.isTopLevel
 import com.eblan.launcher.domain.usecase.util.toGridItems
 import com.eblan.launcher.domain.usecase.util.updateIconPackInfos
 import kotlinx.coroutines.CoroutineDispatcher
@@ -86,6 +87,7 @@ class SyncDataUseCase @Inject constructor(
                 updateEblanApplicationInfos(
                     experimentalSettings = userData.experimentalSettings,
                     homeSettings = userData.homeSettings,
+                    folderSettings = userData.folderSettings,
                 )
             }
 
@@ -113,6 +115,7 @@ class SyncDataUseCase @Inject constructor(
     private suspend fun updateEblanApplicationInfos(
         experimentalSettings: ExperimentalSettings,
         homeSettings: HomeSettings,
+        folderSettings: FolderSettings,
     ) {
         val newEblanShortcutConfigs = mutableSetOf<EblanShortcutConfig>()
 
@@ -124,26 +127,27 @@ class SyncDataUseCase @Inject constructor(
             }
 
         val newSyncEblanApplicationInfos = buildList {
-            launcherAppsWrapper.getActivityListWithCacheIcons().forEach { launcherAppsActivityInfo ->
-                currentCoroutineContext().ensureActive()
+            launcherAppsWrapper.getActivityListWithCacheIcons()
+                .forEach { launcherAppsActivityInfo ->
+                    currentCoroutineContext().ensureActive()
 
-                newEblanShortcutConfigs.addAll(
-                    launcherAppsWrapper.getShortcutConfigActivityListWithCacheIcons(
-                        serialNumber = launcherAppsActivityInfo.serialNumber,
-                        packageName = launcherAppsActivityInfo.packageName,
-                    ).map {
-                        currentCoroutineContext().ensureActive()
+                    newEblanShortcutConfigs.addAll(
+                        launcherAppsWrapper.getShortcutConfigActivityListWithCacheIcons(
+                            serialNumber = launcherAppsActivityInfo.serialNumber,
+                            packageName = launcherAppsActivityInfo.packageName,
+                        ).map {
+                            currentCoroutineContext().ensureActive()
 
-                        it.toEblanShortcutConfig(
-                            fileManager = fileManager,
-                            packageManagerWrapper = packageManagerWrapper,
-                            iconKeyGenerator = iconKeyGenerator,
-                        )
-                    },
-                )
+                            it.toEblanShortcutConfig(
+                                fileManager = fileManager,
+                                packageManagerWrapper = packageManagerWrapper,
+                                iconKeyGenerator = iconKeyGenerator,
+                            )
+                        },
+                    )
 
-                add(launcherAppsActivityInfo.toSyncEblanApplicationInfo())
-            }
+                    add(launcherAppsActivityInfo.toSyncEblanApplicationInfo())
+                }
         }
 
         addNewApplicationsToHomeScreen(
@@ -152,6 +156,7 @@ class SyncDataUseCase @Inject constructor(
             newSyncEblanApplicationInfos = newSyncEblanApplicationInfos,
             oldSyncEblanApplicationInfos = oldSyncEblanApplicationInfos,
             applicationInfoGridItems = newApplicationInfoGridItems,
+            folderSettings = folderSettings,
         )
 
         val newDeleteEblanApplicationInfos =
@@ -203,8 +208,14 @@ class SyncDataUseCase @Inject constructor(
         newSyncEblanApplicationInfos: List<SyncEblanApplicationInfo>,
         oldSyncEblanApplicationInfos: List<SyncEblanApplicationInfo>,
         applicationInfoGridItems: MutableList<ApplicationInfoGridItem>,
+        folderSettings: FolderSettings,
     ) {
-        if (!homeSettings.addNewAppsToHomeScreen || experimentalSettings.firstLaunch) return
+        if (!homeSettings.addNewAppsToHomeScreen ||
+            experimentalSettings.firstLaunch ||
+            oldSyncEblanApplicationInfos.isEmpty()
+        ) {
+            return
+        }
 
         val gridItems = gridRepository.getGridItems().toGridItems()
             .filter {
@@ -245,6 +256,7 @@ class SyncDataUseCase @Inject constructor(
                 homeSettings = homeSettings,
                 applicationInfoGridItems = applicationInfoGridItems,
                 folderGridItemRepository = folderGridItemRepository,
+                folderSettings = folderSettings,
             )
         }
     }
@@ -252,7 +264,8 @@ class SyncDataUseCase @Inject constructor(
     private suspend fun updateAppWidgetProviderInfos() {
         if (!packageManagerWrapper.hasSystemFeatureAppWidgets) return
 
-        val appWidgetManagerAppWidgetProviderInfos = appWidgetManagerWrapper.getInstalledProvidersWithCacheIcons()
+        val appWidgetManagerAppWidgetProviderInfos =
+            appWidgetManagerWrapper.getInstalledProvidersWithCacheIcons()
 
         val oldEblanAppWidgetProviderInfos =
             eblanAppWidgetProviderInfoRepository.getEblanAppWidgetProviderInfos()
@@ -388,6 +401,19 @@ class SyncDataUseCase @Inject constructor(
         homeSettings: HomeSettings,
     ) {
         if (!experimentalSettings.firstLaunch) return
+
+        val gridItems = gridRepository.getGridItems().toGridItems()
+            .filter {
+                it.isTopLevel() && it.associate == Associate.Grid
+            }
+
+        if (gridItems.isNotEmpty()) {
+            userDataRepository.updateExperimentalSettings(
+                experimentalSettings.copy(firstLaunch = false),
+            )
+
+            return
+        }
 
         val eblanApplicationInfosBySystem = eblanApplicationInfos.filter {
             currentCoroutineContext().ensureActive()
