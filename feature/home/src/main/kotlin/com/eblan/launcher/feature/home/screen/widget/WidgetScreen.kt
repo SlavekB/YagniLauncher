@@ -81,15 +81,14 @@ import coil3.compose.AsyncImage
 import com.eblan.launcher.designsystem.component.VerticalSlideReveal
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.application.EblanApplicationInfoGroup
+import com.eblan.launcher.domain.model.grid.GridItem
 import com.eblan.launcher.domain.model.grid.GridItemSettings
-import com.eblan.launcher.domain.model.grid.MoveGridItemResult
 import com.eblan.launcher.domain.model.widget.EblanAppWidgetProviderInfo
 import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.component.ScreenEffect
 import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
 import com.eblan.launcher.feature.home.component.rememberNestedScrollConnectionEffect
 import com.eblan.launcher.feature.home.model.Drag
-import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.SCALE
 import kotlinx.coroutines.FlowPreview
@@ -117,17 +116,15 @@ internal fun WidgetScreen(
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
     onGetEblanAppWidgetProviderInfosByLabel: (String) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onUpdateOverlayBounds: (
+    onVerticalDrag: (Float) -> Unit,
+    onDragWidget: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onVerticalDrag: (Float) -> Unit,
 ) {
     val layoutDirection = LocalLayoutDirection.current
 
@@ -219,14 +216,7 @@ internal fun WidgetScreen(
                             screenWidth = screenWidth,
                             isVisibleOverlay = isVisibleOverlay,
                             animations = animations,
-                            onUpdateOverlayBounds = onUpdateOverlayBounds,
-                            onUpdateImageBitmap = onUpdateImageBitmap,
-                            onUpdateGridItemSource = onUpdateGridItemSource,
-                            onUpdateSharedElementKey = onUpdateSharedElementKey,
-                            onDismiss = onDismiss,
-                            onUpdateIsDragging = onUpdateIsDragging,
-                            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                            onDragWidget = onDragWidget,
                         )
                     }
                 }
@@ -248,17 +238,13 @@ private fun EblanApplicationInfoItem(
     screenWidth: Int,
     isVisibleOverlay: Boolean,
     animations: Boolean,
-    onUpdateOverlayBounds: (
+    onDragWidget: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onDismiss: () -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -313,14 +299,7 @@ private fun EblanApplicationInfoItem(
                         screenWidth = screenWidth,
                         isVisibleOverlay = isVisibleOverlay,
                         animations = animations,
-                        onUpdateOverlayBounds = onUpdateOverlayBounds,
-                        onUpdateImageBitmap = onUpdateImageBitmap,
-                        onUpdateGridItemSource = onUpdateGridItemSource,
-                        onUpdateSharedElementKey = onUpdateSharedElementKey,
-                        onDismiss = onDismiss,
-                        onUpdateIsDragging = onUpdateIsDragging,
-                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                        onDragWidget = onDragWidget,
                     )
                 }
             }
@@ -340,17 +319,13 @@ private fun EblanAppWidgetProviderInfoItem(
     screenWidth: Int,
     isVisibleOverlay: Boolean,
     animations: Boolean,
-    onUpdateOverlayBounds: (
+    onDragWidget: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onDismiss: () -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -387,14 +362,7 @@ private fun EblanAppWidgetProviderInfoItem(
                                 keyboardController = keyboardController,
                                 scale = scale,
                                 animations = animations,
-                                onDismiss = onDismiss,
-                                onUpdateGridItemSource = onUpdateGridItemSource,
-                                onUpdateImageBitmap = onUpdateImageBitmap,
-                                onUpdateIsDragging = onUpdateIsDragging,
-                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                onUpdateSharedElementKey = onUpdateSharedElementKey,
+                                onDragWidget = onDragWidget,
                             )
                         }
                     },
@@ -487,17 +455,13 @@ private suspend fun handleOnLongPress(
     keyboardController: SoftwareKeyboardController?,
     scale: Animatable<Float, AnimationVector1D>,
     animations: Boolean,
-    onDismiss: () -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onUpdateOverlayBounds: (
+    onDragWidget: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
     val id = Uuid.random().toHexString()
 
@@ -527,35 +491,16 @@ private suspend fun handleOnLongPress(
         scale.animateTo(SCALE)
     }
 
-    onUpdateGridItemSource(GridItemSource.New)
+    keyboardController?.hide()
 
-    onUpdateMoveGridItemResult(
-        MoveGridItemResult(
-            isSuccess = false,
-            movingGridItem = gridItem,
-            conflictingGridItem = null,
-        ),
-    )
-
-    onUpdateImageBitmap(graphicsLayer.toImageBitmap())
-
-    onUpdateOverlayBounds(
+    onDragWidget(
+        gridItem,
+        graphicsLayer.toImageBitmap(),
         intOffset,
         intSize,
-    )
-
-    onUpdateSharedElementKey(
         SharedElementKey(
             id = id,
             parent = SharedElementKey.Parent.Grid,
         ),
     )
-
-    keyboardController?.hide()
-
-    onUpdateIsVisibleOverlay(true)
-
-    onUpdateIsDragging(true)
-
-    onDismiss()
 }

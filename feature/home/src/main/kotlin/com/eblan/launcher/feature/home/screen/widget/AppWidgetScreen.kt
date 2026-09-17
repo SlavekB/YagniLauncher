@@ -99,7 +99,7 @@ internal fun AppWidgetScreen(
     onVerticalDrag: (Float) -> Unit,
     onDragEnd: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onDragAppWidgetProviderInfo: (
+    onDragAppWidget: (
         gridItem: GridItem,
         imageBitmap: ImageBitmap,
         intOffset: IntOffset,
@@ -192,7 +192,7 @@ internal fun AppWidgetScreen(
                             screenWidth = screenWidth,
                             isVisibleOverlay = isVisibleOverlay,
                             animations = animations,
-                            onDragAppWidgetProviderInfo = onDragAppWidgetProviderInfo,
+                            onDragAppWidget = onDragAppWidget,
                         )
                     }
                 }
@@ -213,7 +213,7 @@ private fun EblanAppWidgetScreenItem(
     screenWidth: Int,
     isVisibleOverlay: Boolean,
     animations: Boolean,
-    onDragAppWidgetProviderInfo: (
+    onDragAppWidget: (
         gridItem: GridItem,
         imageBitmap: ImageBitmap,
         intOffset: IntOffset,
@@ -256,7 +256,7 @@ private fun EblanAppWidgetScreenItem(
                                 intSize = intSize,
                                 scale = scale,
                                 animations = animations,
-                                onDragAppWidgetProviderInfo = onDragAppWidgetProviderInfo,
+                                onDragAppWidget = onDragAppWidget,
                             )
                         }
                     },
@@ -346,7 +346,7 @@ private suspend fun handleOnLongPressEblanAppWidgetScreenItem(
     intSize: IntSize,
     scale: Animatable<Float, AnimationVector1D>,
     animations: Boolean,
-    onDragAppWidgetProviderInfo: (
+    onDragAppWidget: (
         gridItem: GridItem,
         imageBitmap: ImageBitmap,
         intOffset: IntOffset,
@@ -380,7 +380,7 @@ private suspend fun handleOnLongPressEblanAppWidgetScreenItem(
         scale.animateTo(SCALE)
     }
 
-    onDragAppWidgetProviderInfo(
+    onDragAppWidget(
         gridItem,
         graphicsLayer.toImageBitmap(),
         intOffset,

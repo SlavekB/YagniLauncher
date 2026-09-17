@@ -88,7 +88,6 @@ import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoPopup
 import com.eblan.launcher.domain.model.folder.FolderPopupEntry
 import com.eblan.launcher.domain.model.folder.PreviewFolderEblanApplicationInfo
 import com.eblan.launcher.domain.model.grid.GridItem
-import com.eblan.launcher.domain.model.grid.MoveGridItemResult
 import com.eblan.launcher.domain.model.launcherapps.EblanUser
 import com.eblan.launcher.domain.model.launcherapps.EblanUserPageKey
 import com.eblan.launcher.domain.model.launcherapps.EblanUserType
@@ -103,7 +102,6 @@ import com.eblan.launcher.domain.model.widget.EblanAppWidgetProviderInfo
 import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.component.HomeHandler
 import com.eblan.launcher.feature.home.model.Drag
-import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.horizontal.HorizontalApplicationScreen
 import com.eblan.launcher.feature.home.screen.application.list.ListApplicationScreen
@@ -146,6 +144,10 @@ internal fun ApplicationScreen(
     customFolderBackgroundColor: Int,
     isVisibleFolderEblanApplicationInfos: Boolean,
     folderEblanApplicationInfoPopups: List<FolderEblanApplicationInfoPopup>,
+    popupIntOffset: IntOffset?,
+    popupIntSize: IntSize?,
+    showPopupApplicationMenu: Boolean,
+    showPrivatePopupApplicationMenu: Boolean,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
     onEditApplicationInfo: (
@@ -154,25 +156,9 @@ internal fun ApplicationScreen(
     ) -> Unit,
     onGetEblanApplicationInfosByLabel: (String) -> Unit,
     onGetEblanApplicationInfosByTagId: (Long?) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onUpdateIsVisibleFolderEblanApplicationInfos: (Boolean) -> Unit,
-    onUpsertFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
-    onUpdateFolderEblanApplicationInfo: (FolderEblanApplicationInfo) -> Unit,
-    onUpdateFolderPopupBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
     onUpdateFolderPopupMenu: (Boolean) -> Unit,
     onDragFolderEblanApplicationInfo: (
         folderEblanApplicationInfo: FolderEblanApplicationInfo,
@@ -185,6 +171,29 @@ internal fun ApplicationScreen(
         intSize: IntSize,
         sharedElementKey: SharedElementKey,
     ) -> Unit,
+    onDragApplicationInfo: (GridItem) -> Unit,
+    onUpdateShowApplicationMenu: (Boolean) -> Unit,
+    onUpdateShowPrivateApplicationMenu: (Boolean) -> Unit,
+    onLongPressApplicationInfo: (
+        eblanApplicationInfo: EblanApplicationInfo,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        sharedElementKey: SharedElementKey,
+    ) -> Unit,
+    onLongPressFolderApplicationInfo: (
+        folderEblanApplicationInfo: FolderEblanApplicationInfo,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        sharedElementKey: SharedElementKey,
+    ) -> Unit,
+    onLongPressPrivateSpaceApplicationInfoItem: (
+        eblanApplicationInfo: EblanApplicationInfo,
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
+    onTapFolderApplicationInfo: (folderPopupEntry: FolderPopupEntry) -> Unit,
 ) {
     val managedProfileResult by rememberManagedProfileResult()
 
@@ -235,27 +244,28 @@ internal fun ApplicationScreen(
                     customFolderBackgroundColor = customFolderBackgroundColor,
                     isVisibleFolderEblanApplicationInfos = isVisibleFolderEblanApplicationInfos,
                     folderEblanApplicationInfoPopups = folderEblanApplicationInfoPopups,
+                    popupIntOffset = popupIntOffset,
+                    popupIntSize = popupIntSize,
+                    showPopupApplicationMenu = showPopupApplicationMenu,
+                    showPrivatePopupApplicationMenu = showPrivatePopupApplicationMenu,
                     onDismiss = onDismiss,
                     onDragEnd = onDragEnd,
                     onEditApplicationInfo = onEditApplicationInfo,
                     onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
                     onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
-                    onUpdateGridItemSource = onUpdateGridItemSource,
-                    onUpdateImageBitmap = onUpdateImageBitmap,
-                    onUpdateIsDragging = onUpdateIsDragging,
-                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                    onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onVerticalDrag = onVerticalDrag,
                     onWidgets = onWidgets,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                    onUpdateIsVisibleFolderEblanApplicationInfos = onUpdateIsVisibleFolderEblanApplicationInfos,
-                    onUpsertFolderEblanApplicationInfoPopupEntry = onUpsertFolderEblanApplicationInfoPopupEntry,
-                    onUpdateFolderEblanApplicationInfo = onUpdateFolderEblanApplicationInfo,
-                    onUpdateFolderPopupBounds = onUpdateFolderPopupBounds,
-                    onUpdateFolderPopupMenu = onUpdateFolderPopupMenu,
+                    onUpdateShowFolderPopupMenu = onUpdateFolderPopupMenu,
                     onDragFolderEblanApplicationInfo = onDragFolderEblanApplicationInfo,
                     onDragShortcutInfo = onDragShortcutInfo,
+                    onDragApplicationInfo = onDragApplicationInfo,
+                    onLongPressApplicationInfo = onLongPressApplicationInfo,
+                    onUpdateShowPopupApplicationMenu = onUpdateShowApplicationMenu,
+                    onUpdateShowPrivatePopupApplicationMenu = onUpdateShowPrivateApplicationMenu,
+                    onLongPressFolderApplicationInfo = onLongPressFolderApplicationInfo,
+                    onLongPressPrivateSpaceApplicationInfoItem = onLongPressPrivateSpaceApplicationInfoItem,
+                    onTapFolderApplicationInfo = onTapFolderApplicationInfo,
                 )
             }
 
@@ -282,16 +292,13 @@ internal fun ApplicationScreen(
                     onEditApplicationInfo = onEditApplicationInfo,
                     onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
                     onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
-                    onUpdateGridItemSource = onUpdateGridItemSource,
-                    onUpdateImageBitmap = onUpdateImageBitmap,
-                    onUpdateIsDragging = onUpdateIsDragging,
-                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                    onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onVerticalDrag = onVerticalDrag,
                     onWidgets = onWidgets,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                     onDragShortcutInfo = onDragShortcutInfo,
+                    onDragApplicationInfo = onDragApplicationInfo,
+                    onLongPressApplicationInfo = onLongPressApplicationInfo,
+                    onLongPressPrivateSpaceApplicationInfoItem = onLongPressPrivateSpaceApplicationInfoItem,
                 )
             }
 
@@ -318,16 +325,13 @@ internal fun ApplicationScreen(
                     onEditApplicationInfo = onEditApplicationInfo,
                     onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
                     onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
-                    onUpdateGridItemSource = onUpdateGridItemSource,
-                    onUpdateImageBitmap = onUpdateImageBitmap,
-                    onUpdateIsDragging = onUpdateIsDragging,
-                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                    onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onVerticalDrag = onVerticalDrag,
                     onWidgets = onWidgets,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                     onDragShortcutInfo = onDragShortcutInfo,
+                    onDragApplicationInfo = onDragApplicationInfo,
+                    onLongPressApplicationInfo = onLongPressApplicationInfo,
+                    onLongPressPrivateSpaceApplicationInfoItem = onLongPressPrivateSpaceApplicationInfoItem,
                 )
             }
         }
@@ -532,7 +536,7 @@ internal fun ApplicationScreenEffect(
     onDismiss: () -> Unit,
     onGetEblanApplicationInfosByLabel: (String) -> Unit,
     onGetEblanApplicationInfosByTagId: (Long?) -> Unit,
-    onShowPopupApplicationMenu: (Boolean) -> Unit,
+    onUpdateShowPopupApplicationMenu: (Boolean) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -542,7 +546,7 @@ internal fun ApplicationScreenEffect(
         snapshotFlow { textFieldState.text }.debounce(500L.milliseconds).onEach {
             onGetEblanApplicationInfosByLabel(it.toString())
 
-            onShowPopupApplicationMenu(false)
+            onUpdateShowPopupApplicationMenu(false)
         }.collect()
     }
 
@@ -552,7 +556,7 @@ internal fun ApplicationScreenEffect(
 
     LaunchedEffect(key1 = horizontalPagerState.isScrollInProgress) {
         if (horizontalPagerState.isScrollInProgress && showPopupApplicationMenu) {
-            onShowPopupApplicationMenu(false)
+            onUpdateShowPopupApplicationMenu(false)
         }
     }
 

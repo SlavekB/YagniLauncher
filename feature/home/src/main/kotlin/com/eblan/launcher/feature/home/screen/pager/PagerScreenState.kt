@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.round
 import com.eblan.launcher.common.AndroidImageSerializer
 import com.eblan.launcher.domain.common.FileManager
 import com.eblan.launcher.domain.common.IconKeyGenerator
+import com.eblan.launcher.domain.model.application.EblanApplicationInfo
 import com.eblan.launcher.domain.model.application.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfo
 import com.eblan.launcher.domain.model.folder.FolderPopupEntry
@@ -312,9 +313,6 @@ internal class PagerScreenState(
             !showFolderGridItemPopup &&
             eblanApplicationInfoGroup == null
 
-    var folderEblanApplicationInfo by mutableStateOf<FolderEblanApplicationInfo?>(null)
-        private set
-
     var showFolderApplicationInfoPopup by mutableStateOf(false)
         private set
 
@@ -325,6 +323,18 @@ internal class PagerScreenState(
         private set
 
     var isCloseFolderEblanApplicationInfoGridItemPopup by mutableStateOf(false)
+        private set
+
+    var showPopupApplicationMenu by mutableStateOf(false)
+        private set
+
+    var showPrivateApplicationMenu by mutableStateOf(false)
+        private set
+
+    var selectedEblanApplicationInfo by mutableStateOf<EblanApplicationInfo?>(null)
+        private set
+
+    var selectedFolderEblanApplicationInfo by mutableStateOf<FolderEblanApplicationInfo?>(null)
         private set
 
     private val touchSlop = with(density) {
@@ -445,17 +455,6 @@ internal class PagerScreenState(
         showFolderGridItemPopup = false
 
         isCloseFolderGridItemPopup = false
-    }
-
-    fun showFolderApplicationPopup(
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) {
-        popupIntOffset = intOffset
-
-        popupIntSize = intSize
-
-        showFolderApplicationInfoPopup = true
     }
 
     fun dismissFolderEblanApplicationPopup() {
@@ -1139,9 +1138,8 @@ internal class PagerScreenState(
     fun updateShowFolderApplicationInfoPopup(value: Boolean) {
         showFolderApplicationInfoPopup = value
     }
-
-    fun updateFolderEblanApplicationInfo(value: FolderEblanApplicationInfo?) {
-        folderEblanApplicationInfo = value
+    fun updateShowPrivateApplicationMenu(value: Boolean) {
+        showPrivateApplicationMenu = value
     }
 
     fun updateIsCloseFolderEblanApplicationInfoGridItemPopup(value: Boolean) {
@@ -1290,7 +1288,7 @@ internal class PagerScreenState(
         onUpdateIsVisibleOverlay(true)
     }
 
-    fun dragAppWidgetProviderInfo(
+    fun dragAppWidget(
         gridItem: GridItem,
         imageBitmap: ImageBitmap,
         intOffset: IntOffset,
@@ -1456,6 +1454,209 @@ internal class PagerScreenState(
         isVisibleFolderGridItems = !isFirstFolderGridItem
 
         onDeleteFolderGridItemPopupEntry(folderPopupEntry)
+    }
+
+    fun dragWidget(
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        newSharedElementKey: SharedElementKey,
+        onUpdateGridItemSource: (GridItemSource) -> Unit,
+        onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+        onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    ) {
+        onUpdateGridItemSource(GridItemSource.New)
+
+        onUpdateMoveGridItemResult(
+            MoveGridItemResult(
+                isSuccess = false,
+                movingGridItem = gridItem,
+                conflictingGridItem = null,
+            ),
+        )
+
+        overlayImageBitmap = imageBitmap
+
+        overlayIntOffset = intOffset
+
+        overlayIntSize = intSize
+
+        sharedElementKey = newSharedElementKey
+
+        isDragging = true
+
+        dismissWidgetScreen()
+
+        onUpdateIsVisibleOverlay(true)
+    }
+
+    fun dragShortcutConfig(
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        newSharedElementKey: SharedElementKey,
+        onUpdateGridItemSource: (GridItemSource) -> Unit,
+        onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+        onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    ) {
+        onUpdateGridItemSource(GridItemSource.New)
+
+        onUpdateMoveGridItemResult(
+            MoveGridItemResult(
+                isSuccess = false,
+                movingGridItem = gridItem,
+                conflictingGridItem = null,
+            ),
+        )
+
+        overlayImageBitmap = imageBitmap
+
+        overlayIntOffset = intOffset
+
+        overlayIntSize = intSize
+
+        sharedElementKey = newSharedElementKey
+
+        isDragging = true
+
+        dismissShortcutConfigScreen()
+
+        onUpdateIsVisibleOverlay(true)
+    }
+
+    fun longPressApplicationInfo(
+        eblanApplicationInfo: EblanApplicationInfo,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        newSharedElementKey: SharedElementKey,
+        onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    ) {
+        overlayImageBitmap = imageBitmap
+
+        overlayIntOffset = intOffset
+
+        overlayIntSize = intSize
+
+        sharedElementKey = newSharedElementKey
+
+        popupIntOffset = intOffset
+
+        popupIntSize = intSize
+
+        selectedEblanApplicationInfo = eblanApplicationInfo
+
+        showPopupApplicationMenu = true
+
+        onUpdateIsVisibleOverlay(true)
+    }
+
+    fun dragApplicationInfo(
+        gridItem: GridItem,
+        onUpdateGridItemSource: (GridItemSource) -> Unit,
+        onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    ) {
+        onUpdateGridItemSource(GridItemSource.New)
+
+        onUpdateMoveGridItemResult(
+            MoveGridItemResult(
+                isSuccess = false,
+                movingGridItem = gridItem,
+                conflictingGridItem = null,
+            ),
+        )
+
+        isDragging = true
+
+        dismissApplicationScreen()
+    }
+
+    fun updateShowPopupApplicationMenu(value: Boolean) {
+        showPopupApplicationMenu = value
+    }
+
+    fun longPressPrivateSpaceApplicationInfoItem(
+        eblanApplicationInfo: EblanApplicationInfo,
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) {
+        selectedEblanApplicationInfo = eblanApplicationInfo
+
+        overlayIntOffset = intOffset
+
+        overlayIntSize = intSize
+
+        showPrivateApplicationMenu = true
+    }
+
+    fun dragFolderApplicationInfo(
+        folderEblanApplicationInfo: FolderEblanApplicationInfo,
+        gridItem: GridItem,
+        onDragFolderEblanApplicationInfoToGrid: (
+            folderEblanApplicationInfo: FolderEblanApplicationInfo,
+            movingGridItem: GridItem,
+        ) -> Unit,
+        onUpdateGridItemSource: (GridItemSource) -> Unit,
+        onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    ) {
+        onUpdateGridItemSource(GridItemSource.New)
+
+        onUpdateMoveGridItemResult(
+            MoveGridItemResult(
+                isSuccess = false,
+                movingGridItem = gridItem,
+                conflictingGridItem = null,
+            ),
+        )
+
+        isDragging = true
+
+        showFolderApplicationInfoPopup = false
+
+        dismissApplicationScreen()
+
+        onDragFolderEblanApplicationInfoToGrid(
+            folderEblanApplicationInfo,
+            gridItem,
+        )
+    }
+
+    fun tapFolderApplicationInfo(
+        folderPopupEntry: FolderPopupEntry,
+        onUpsertFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
+    ) {
+        isVisibleFolderEblanApplicationInfos = true
+
+        onUpsertFolderEblanApplicationInfoPopupEntry(folderPopupEntry)
+    }
+
+    fun longPressFolderApplicationInfo(
+        folderEblanApplicationInfo: FolderEblanApplicationInfo,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        newSharedElementKey: SharedElementKey,
+        onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    ) {
+        overlayImageBitmap = imageBitmap
+
+        overlayIntOffset = intOffset
+
+        overlayIntSize = intSize
+
+        sharedElementKey = newSharedElementKey
+
+        popupIntOffset = intOffset
+
+        popupIntSize = intSize
+
+        selectedFolderEblanApplicationInfo = folderEblanApplicationInfo
+
+        showPopupApplicationMenu = true
+
+        onUpdateIsVisibleOverlay(true)
     }
 }
 
