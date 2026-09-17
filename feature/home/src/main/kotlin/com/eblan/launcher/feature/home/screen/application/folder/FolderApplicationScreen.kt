@@ -115,18 +115,8 @@ internal fun FolderApplicationScreen(
     onDeleteFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
     onUpsertFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
     onUpdateIsVisibleFolders: (Boolean) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveFolderEblanApplicationInfoGridItemResult: (MoveFolderEblanApplicationInfoGridItemResult) -> Unit,
     onMoveFolderEblanApplicationInfoGridItem: (
         folderEblanApplicationInfoPopup: FolderEblanApplicationInfoPopup,
         folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
@@ -146,6 +136,13 @@ internal fun FolderApplicationScreen(
         movingGridItem: GridItem,
     ) -> Unit,
     onDismissApplicationScreen: () -> Unit,
+    onLongPressFolderEblanApplicationInfoGridItem: (
+        folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        sharedElementKey: SharedElementKey,
+    ) -> Unit,
 ) {
     val folderPopupIntOffset = IntOffset(
         x = folderEblanApplicationInfoPopup.folderPopupEntry.x,
@@ -482,14 +479,9 @@ internal fun FolderApplicationScreen(
                                 iconPackInfoFilePaths = iconPackInfoFilePaths,
                                 onUpdateIsVisibleFolders = onUpdateIsVisibleFolders,
                                 onUpsertFolderEblanApplicationInfoPopupEntry = onUpsertFolderEblanApplicationInfoPopupEntry,
-                                onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateIsDragging = onUpdateIsDragging,
-                                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                onShowGridItemPopup = onShowGridItemPopup,
-                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                onUpdateMoveFolderEblanApplicationInfoGridItemResult = onUpdateMoveFolderEblanApplicationInfoGridItemResult,
                                 onUpdateIsCloseFolderEblanApplicationInfoGridItemPopup = onUpdateIsCloseFolderEblanApplicationInfoGridItemPopup,
+                                onLongPressFolderEblanApplicationInfoGridItem = onLongPressFolderEblanApplicationInfoGridItem,
                             )
                         },
                     )

@@ -123,20 +123,15 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
     iconPackInfoFilePaths: Map<String, String?>,
     onUpdateIsVisibleFolders: (Boolean) -> Unit,
     onUpsertFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveFolderEblanApplicationInfoGridItemResult: (MoveFolderEblanApplicationInfoGridItemResult) -> Unit,
     onUpdateIsCloseFolderEblanApplicationInfoGridItemPopup: (Boolean) -> Unit,
+    onLongPressFolderEblanApplicationInfoGridItem: (
+        folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        sharedElementKey: SharedElementKey,
+    ) -> Unit,
 ) {
     val isSelected =
         moveFolderEblanApplicationInfoGridItemResult != null &&
@@ -226,12 +221,7 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
                 padding = padding,
                 iconSize = iconSize,
                 iconPackInfoFilePaths = iconPackInfoFilePaths,
-                onUpdateImageBitmap = onUpdateImageBitmap,
-                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onShowGridItemPopup = onShowGridItemPopup,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateMoveFolderEblanApplicationInfoGridItemResult = onUpdateMoveFolderEblanApplicationInfoGridItemResult,
+                onLongPressFolderEblanApplicationInfoGridItem = onLongPressFolderEblanApplicationInfoGridItem,
             )
         }
 
@@ -263,12 +253,7 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
                 iconPackInfoFilePaths = iconPackInfoFilePaths,
                 onUpdateIsVisibleFolders = onUpdateIsVisibleFolders,
                 onUpsertFolderEblanApplicationInfoPopupEntry = onUpsertFolderEblanApplicationInfoPopupEntry,
-                onUpdateImageBitmap = onUpdateImageBitmap,
-                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onShowGridItemPopup = onShowGridItemPopup,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateMoveFolderEblanApplicationInfoGridItemResult = onUpdateMoveFolderEblanApplicationInfoGridItemResult,
+                onLongPressFolderEblanApplicationInfoGridItem = onLongPressFolderEblanApplicationInfoGridItem,
             )
         }
     }
@@ -295,18 +280,13 @@ private fun InteractiveEblanApplicationInfoItem(
     padding: Dp,
     iconSize: Dp,
     iconPackInfoFilePaths: Map<String, String?>,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateOverlayBounds: (
+    onLongPressFolderEblanApplicationInfoGridItem: (
+        folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveFolderEblanApplicationInfoGridItemResult: (MoveFolderEblanApplicationInfoGridItemResult) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -382,19 +362,14 @@ private fun InteractiveEblanApplicationInfoItem(
                     onLongPress = if (!isVisibleOverlay && !isInProgress) {
                         {
                             scope.launch {
+                                keyboardController?.hide()
+
                                 onLongPressFolderEblanApplicationInfoGridItem(
-                                    graphicsLayer = graphicsLayer,
-                                    intOffset = intOffset,
-                                    intSize = intSize,
-                                    sharedElementKey = sharedElementKey,
-                                    folderEblanApplicationInfoGridItem = folderEblanApplicationInfoGridItem,
-                                    keyboardController = keyboardController,
-                                    onUpdateImageBitmap = onUpdateImageBitmap,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                    onShowGridItemPopup = onShowGridItemPopup,
-                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                    onUpdateMoveFolderEblanApplicationInfoGridItemResult = onUpdateMoveFolderEblanApplicationInfoGridItemResult,
+                                    folderEblanApplicationInfoGridItem,
+                                    graphicsLayer.toImageBitmap(),
+                                    intOffset,
+                                    intSize,
+                                    sharedElementKey,
                                 )
                             }
                         }
@@ -488,18 +463,13 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
     iconPackInfoFilePaths: Map<String, String?>,
     onUpdateIsVisibleFolders: (Boolean) -> Unit,
     onUpsertFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateOverlayBounds: (
+    onLongPressFolderEblanApplicationInfoGridItem: (
+        folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveFolderEblanApplicationInfoGridItemResult: (MoveFolderEblanApplicationInfoGridItemResult) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -554,19 +524,14 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
                     onLongPress = if (!isVisibleOverlay && !isInProgress) {
                         {
                             scope.launch {
+                                keyboardController?.hide()
+
                                 onLongPressFolderEblanApplicationInfoGridItem(
-                                    graphicsLayer = graphicsLayer,
-                                    intOffset = intOffset,
-                                    intSize = intSize,
-                                    sharedElementKey = sharedElementKey,
-                                    folderEblanApplicationInfoGridItem = folderEblanApplicationInfoGridItem,
-                                    keyboardController = keyboardController,
-                                    onUpdateImageBitmap = onUpdateImageBitmap,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                    onShowGridItemPopup = onShowGridItemPopup,
-                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                    onUpdateMoveFolderEblanApplicationInfoGridItemResult = onUpdateMoveFolderEblanApplicationInfoGridItemResult,
+                                    folderEblanApplicationInfoGridItem,
+                                    graphicsLayer.toImageBitmap(),
+                                    intOffset,
+                                    intSize,
+                                    sharedElementKey,
                                 )
                             }
                         }

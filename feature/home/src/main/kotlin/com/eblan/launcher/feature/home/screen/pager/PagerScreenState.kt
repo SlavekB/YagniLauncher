@@ -59,9 +59,11 @@ import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.model.application.EblanApplicationInfo
 import com.eblan.launcher.domain.model.application.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfo
+import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoGridItem
 import com.eblan.launcher.domain.model.folder.FolderPopupEntry
 import com.eblan.launcher.domain.model.grid.Associate
 import com.eblan.launcher.domain.model.grid.GridItem
+import com.eblan.launcher.domain.model.grid.MoveFolderEblanApplicationInfoGridItemResult
 import com.eblan.launcher.domain.model.grid.MoveGridItemResult
 import com.eblan.launcher.domain.model.launcherapps.PinItemRequestType
 import com.eblan.launcher.domain.model.userdata.EblanAction
@@ -412,15 +414,6 @@ internal class PagerScreenState(
         overlayIntOffset = overlayIntOffset?.plus(dragAmount.round())
     }
 
-    fun updateOverlayBounds(
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) {
-        overlayIntOffset = intOffset
-
-        overlayIntSize = intSize
-    }
-
     fun resetOverlay() {
         overlayImageBitmap = null
 
@@ -467,17 +460,6 @@ internal class PagerScreenState(
         isCloseFolderApplicationInfoPopup = false
     }
 
-    fun showFolderEblanApplicationInfoGridItemPopup(
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) {
-        popupIntOffset = intOffset
-
-        popupIntSize = intSize
-
-        showFolderEblanApplicationInfoGridItemPopup = true
-    }
-
     fun dismissFolderEblanApplicationInfoGridItemPopup() {
         popupIntOffset = null
 
@@ -494,10 +476,6 @@ internal class PagerScreenState(
 
     fun updateIsResizing(value: Boolean) {
         isResizing = value
-    }
-
-    fun updateOverlayImageBitmap(value: ImageBitmap?) {
-        overlayImageBitmap = value
     }
 
     fun updateDrag(value: Drag) {
@@ -1138,6 +1116,7 @@ internal class PagerScreenState(
     fun updateShowFolderApplicationInfoPopup(value: Boolean) {
         showFolderApplicationInfoPopup = value
     }
+
     fun updateShowPrivateApplicationMenu(value: Boolean) {
         showPrivateApplicationMenu = value
     }
@@ -1655,6 +1634,39 @@ internal class PagerScreenState(
         selectedFolderEblanApplicationInfo = folderEblanApplicationInfo
 
         showPopupApplicationMenu = true
+
+        onUpdateIsVisibleOverlay(true)
+    }
+
+    fun longPressFolderEblanApplicationInfoGridItem(
+        folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        newSharedElementKey: SharedElementKey,
+        onUpdateMoveFolderEblanApplicationInfoGridItemResult: (MoveFolderEblanApplicationInfoGridItemResult) -> Unit,
+        onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    ) {
+        onUpdateMoveFolderEblanApplicationInfoGridItemResult(
+            MoveFolderEblanApplicationInfoGridItemResult(
+                isSuccess = true,
+                folderEblanApplicationInfoGridItem = folderEblanApplicationInfoGridItem,
+            ),
+        )
+
+        overlayImageBitmap = imageBitmap
+
+        overlayIntOffset = intOffset
+
+        overlayIntSize = intSize
+
+        sharedElementKey = newSharedElementKey
+
+        popupIntOffset = intOffset
+
+        popupIntSize = intSize
+
+        showFolderEblanApplicationInfoGridItemPopup = true
 
         onUpdateIsVisibleOverlay(true)
     }

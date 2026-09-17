@@ -33,52 +33,6 @@ import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.calculateFolderGridDragPosition
 
-internal suspend fun onLongPressFolderEblanApplicationInfoGridItem(
-    graphicsLayer: GraphicsLayer,
-    intOffset: IntOffset,
-    intSize: IntSize,
-    sharedElementKey: SharedElementKey,
-    folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
-    keyboardController: SoftwareKeyboardController?,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveFolderEblanApplicationInfoGridItemResult: (MoveFolderEblanApplicationInfoGridItemResult) -> Unit,
-) {
-    onUpdateMoveFolderEblanApplicationInfoGridItemResult(
-        MoveFolderEblanApplicationInfoGridItemResult(
-            isSuccess = true,
-            folderEblanApplicationInfoGridItem = folderEblanApplicationInfoGridItem,
-        ),
-    )
-
-    onUpdateImageBitmap(graphicsLayer.toImageBitmap())
-
-    onUpdateOverlayBounds(
-        intOffset,
-        intSize,
-    )
-
-    onUpdateSharedElementKey(sharedElementKey)
-
-    onShowGridItemPopup(
-        intOffset,
-        intSize,
-    )
-
-    onUpdateIsVisibleOverlay(true)
-
-    keyboardController?.hide()
-}
-
 internal fun handleDragFolderEblanApplicationInfoGridItem(
     density: Density,
     drag: Drag,

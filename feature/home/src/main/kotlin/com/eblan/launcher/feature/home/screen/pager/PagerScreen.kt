@@ -1474,12 +1474,8 @@ internal fun PagerScreen(
                     onDeleteFolderEblanApplicationInfoPopupEntry = onDeleteFolderEblanApplicationInfoPopupEntry,
                     onUpsertFolderEblanApplicationInfoPopupEntry = onUpsertFolderEblanApplicationInfoPopupEntry,
                     onUpdateIsVisibleFolders = pagerScreenState::updateIsVisibleFolderEblanApplicationInfos,
-                    onUpdateImageBitmap = pagerScreenState::updateOverlayImageBitmap,
-                    onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
                     onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
-                    onShowGridItemPopup = pagerScreenState::showFolderEblanApplicationInfoGridItemPopup,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                    onUpdateMoveFolderEblanApplicationInfoGridItemResult = onUpdateMoveFolderEblanApplicationInfoGridItemResult,
                     onMoveFolderEblanApplicationInfoGridItem = onMoveFolderEblanApplicationInfoGridItem,
                     onDismissFolderEblanApplicationGridItemPopup = pagerScreenState::dismissFolderEblanApplicationInfoGridItemPopup,
                     onResetGrid = onResetGrid,
@@ -1488,6 +1484,17 @@ internal fun PagerScreen(
                     onUpdateIsCloseFolderEblanApplicationInfoGridItemPopup = pagerScreenState::updateIsCloseFolderEblanApplicationInfoGridItemPopup,
                     onMoveFolderEblanApplicationInfoGridItemOutsideFolder = onMoveFolderEblanApplicationInfoGridItemOutsideFolder,
                     onDismissApplicationScreen = pagerScreenState::dismissApplicationScreen,
+                    onLongPressFolderEblanApplicationInfoGridItem = { folderEblanApplicationInfoGridItem, imageBitmap, intOffset, intSize, newSharedElementKey ->
+                        pagerScreenState.longPressFolderEblanApplicationInfoGridItem(
+                            folderEblanApplicationInfoGridItem = folderEblanApplicationInfoGridItem,
+                            imageBitmap = imageBitmap,
+                            intOffset = intOffset,
+                            intSize = intSize,
+                            newSharedElementKey = newSharedElementKey,
+                            onUpdateMoveFolderEblanApplicationInfoGridItemResult = onUpdateMoveFolderEblanApplicationInfoGridItemResult,
+                            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        )
+                    },
                 )
             }
         }
