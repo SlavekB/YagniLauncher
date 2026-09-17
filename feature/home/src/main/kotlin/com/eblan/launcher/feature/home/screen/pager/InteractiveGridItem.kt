@@ -75,7 +75,7 @@ import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
 import coil3.size.Size
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
-import com.eblan.launcher.domain.model.folder.FolderPopupEntry
+import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.model.folder.PreviewFolder
 import com.eblan.launcher.domain.model.grid.FolderGridItemPopup
 import com.eblan.launcher.domain.model.grid.GridItem
@@ -136,7 +136,7 @@ internal fun InteractiveGridItem(
     folderGridItemPopups: List<FolderGridItemPopup>,
     onOpenAppDrawer: () -> Unit,
     onShowFolderWhenDragging: (
-        folderPopupEntry: FolderPopupEntry,
+        folderEntry: FolderEntry,
         gridItem: GridItem,
     ) -> Unit,
     onResetGrid: () -> Unit,
@@ -147,7 +147,7 @@ internal fun InteractiveGridItem(
         intSize: IntSize,
         sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onTapFolderGridItem: (FolderPopupEntry) -> Unit,
+    onTapFolderGridItem: (FolderEntry) -> Unit,
     onDragGridItem: () -> Unit,
 ) {
     val isSelected =
@@ -183,7 +183,7 @@ internal fun InteractiveGridItem(
         key2 = folderGridItemPopups,
         key3 = isVisibleFolderGridItems,
     ) {
-        isVisibleFolderGridItems && folderGridItemPopups.any { it.folderPopupEntry.id == gridItem.id }
+        isVisibleFolderGridItems && folderGridItemPopups.any { it.folderEntry.id == gridItem.id }
     }
 
     val horizontalAlignment =
@@ -895,7 +895,7 @@ private fun InteractiveFolderGridItem(
     systemCustomTextColor: Int,
     onOpenAppDrawer: () -> Unit,
     onShowFolderWhenDragging: (
-        folderPopupEntry: FolderPopupEntry,
+        folderEntry: FolderEntry,
         gridItem: GridItem,
     ) -> Unit,
     onResetGrid: () -> Unit,
@@ -906,7 +906,7 @@ private fun InteractiveFolderGridItem(
         intSize: IntSize,
         sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onTapFolderGridItem: (FolderPopupEntry) -> Unit,
+    onTapFolderGridItem: (FolderEntry) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -993,7 +993,7 @@ private fun InteractiveFolderGridItem(
                     onTap = if (!isVisibleOverlay) {
                         {
                             onTapFolderGridItem(
-                                FolderPopupEntry(
+                                FolderEntry(
                                     id = gridItem.id,
                                     x = intOffset.x,
                                     y = intOffset.y,

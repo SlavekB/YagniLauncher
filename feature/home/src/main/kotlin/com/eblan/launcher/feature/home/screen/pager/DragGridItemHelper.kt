@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.grid.getWidgetGridItemSize
 import com.eblan.launcher.domain.grid.getWidgetGridItemSpan
 import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
-import com.eblan.launcher.domain.model.folder.FolderPopupEntry
+import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.model.grid.Associate
 import com.eblan.launcher.domain.model.grid.FolderGridItemPopup
 import com.eblan.launcher.domain.model.grid.GridItem
@@ -317,7 +317,7 @@ internal suspend fun handleConflictingGridItem(
     gridItem: State<GridItem>,
     folderGridItems: State<List<GridItem>?>,
     onShowFolderWhenDragging: (
-        folderPopupEntry: FolderPopupEntry,
+        folderEntry: FolderEntry,
         gridItem: GridItem,
     ) -> Unit,
 ) {
@@ -342,7 +342,7 @@ internal suspend fun handleConflictingGridItem(
     )
 
     onShowFolderWhenDragging(
-        FolderPopupEntry(
+        FolderEntry(
             id = conflictingGridItem.id,
             x = intOffset.x,
             y = intOffset.y,

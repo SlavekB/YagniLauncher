@@ -22,7 +22,7 @@ import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoGridItemData
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoPopup
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoWrapper
-import com.eblan.launcher.domain.model.folder.FolderPopupEntry
+import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.repository.FolderEblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.usecase.util.getGridDimension
@@ -39,17 +39,17 @@ class GetFolderEblanApplicationInfosByEntryUseCase @Inject constructor(
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(
-        folderPopupEntriesFlow: Flow<List<FolderPopupEntry>>,
+        folderEntriesFlow: Flow<List<FolderEntry>>,
     ): Flow<List<FolderEblanApplicationInfoPopup>> = combine(
         userDataRepository.userDataFlow,
-        folderPopupEntriesFlow,
+        folderEntriesFlow,
         folderEblanApplicationInfoRepository.folderEblanApplicationInfoWrappersFlow,
-    ) { userData, folderPopupEntries, folderEblanApplicationInfoWrappers ->
-        folderPopupEntries.mapNotNull { folderPopupEntry ->
+    ) { userData, folderEntries, folderEblanApplicationInfoWrappers ->
+        folderEntries.mapNotNull { folderPopupEntry ->
             folderEblanApplicationInfoWrappers.firstOrNull {
                 it.folderEblanApplicationInfo.id == folderPopupEntry.id
             }?.asFolderEblanApplicationInfoPopup(
-                folderPopupEntry = folderPopupEntry,
+                folderEntry = folderPopupEntry,
                 maxFolderColumns = userData.folderSettings.maxFolderColumns,
                 maxFolderRows = userData.folderSettings.maxFolderRows,
             )
@@ -57,7 +57,7 @@ class GetFolderEblanApplicationInfosByEntryUseCase @Inject constructor(
     }.flowOn(defaultDispatcher)
 
     private suspend fun FolderEblanApplicationInfoWrapper.asFolderEblanApplicationInfoPopup(
-        folderPopupEntry: FolderPopupEntry,
+        folderEntry: FolderEntry,
         maxFolderColumns: Int,
         maxFolderRows: Int,
     ): FolderEblanApplicationInfoPopup {
@@ -92,7 +92,7 @@ class GetFolderEblanApplicationInfosByEntryUseCase @Inject constructor(
         } ?: 0
 
         return FolderEblanApplicationInfoPopup(
-            folderPopupEntry = folderPopupEntry,
+            folderEntry = folderEntry,
             folderEblanApplicationInfo = folderEblanApplicationInfo,
             folderEblanApplicationInfos = gridItems,
             folderEblanApplicationInfosByPage = gridItemsByPage,

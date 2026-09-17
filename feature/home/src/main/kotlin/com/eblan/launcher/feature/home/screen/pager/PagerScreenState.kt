@@ -60,7 +60,7 @@ import com.eblan.launcher.domain.model.application.EblanApplicationInfo
 import com.eblan.launcher.domain.model.application.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfo
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoGridItem
-import com.eblan.launcher.domain.model.folder.FolderPopupEntry
+import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.model.grid.Associate
 import com.eblan.launcher.domain.model.grid.GridItem
 import com.eblan.launcher.domain.model.grid.MoveFolderEblanApplicationInfoGridItemResult
@@ -124,13 +124,13 @@ internal class PagerScreenState(
     var eblanApplicationInfoGroup by mutableStateOf<EblanApplicationInfoGroup?>(null)
         private set
 
-    var showGridItemPopup by mutableStateOf(false)
+    var showGridItemMenu by mutableStateOf(false)
         private set
 
-    var showSettingsPopup by mutableStateOf(false)
+    var showSettingsMenu by mutableStateOf(false)
         private set
 
-    var showFolderGridItemPopup by mutableStateOf(false)
+    var showFolderGridItemMenu by mutableStateOf(false)
         private set
 
     var isDragging by mutableStateOf(false)
@@ -139,13 +139,13 @@ internal class PagerScreenState(
     var isResizing by mutableStateOf(false)
         private set
 
-    var settingsPopupIntOffset by mutableStateOf<IntOffset?>(null)
+    var settingsMenuIntOffset by mutableStateOf<IntOffset?>(null)
         private set
 
-    var popupIntOffset by mutableStateOf<IntOffset?>(null)
+    var menuIntOffset by mutableStateOf<IntOffset?>(null)
         private set
 
-    var popupIntSize by mutableStateOf<IntSize?>(null)
+    var menuIntSize by mutableStateOf<IntSize?>(null)
         private set
 
     var widgetGridItem by mutableStateOf<GridItem?>(null)
@@ -288,10 +288,10 @@ internal class PagerScreenState(
 
     val appWidgetScreenSwipeY = Animatable(screenHeight.toFloat())
 
-    var isCloseGridItemPopup by mutableStateOf(false)
+    var isCloseGridItemMenu by mutableStateOf(false)
         private set
 
-    var isCloseFolderGridItemPopup by mutableStateOf(false)
+    var isCloseFolderGridItemMenu by mutableStateOf(false)
         private set
 
     var showApplicationScreen by mutableStateOf(false)
@@ -310,21 +310,21 @@ internal class PagerScreenState(
         get() = applicationScreenSwipeY.value == screenHeight.toFloat() &&
             !showWidgetScreen &&
             !showShortcutConfigScreen &&
-            !showGridItemPopup &&
-            !showSettingsPopup &&
-            !showFolderGridItemPopup &&
+            !showGridItemMenu &&
+            !showSettingsMenu &&
+            !showFolderGridItemMenu &&
             eblanApplicationInfoGroup == null
 
-    var showFolderApplicationInfoPopup by mutableStateOf(false)
+    var showFolderApplicationInfoMenu by mutableStateOf(false)
         private set
 
-    var isCloseFolderApplicationInfoPopup by mutableStateOf(false)
+    var isCloseFolderApplicationInfoMenu by mutableStateOf(false)
         private set
 
-    var showFolderEblanApplicationInfoGridItemPopup by mutableStateOf(false)
+    var showFolderEblanApplicationInfoGridItemMenu by mutableStateOf(false)
         private set
 
-    var isCloseFolderEblanApplicationInfoGridItemPopup by mutableStateOf(false)
+    var isCloseFolderEblanApplicationInfoGridItemMenu by mutableStateOf(false)
         private set
 
     var showApplicationMenu by mutableStateOf(false)
@@ -430,44 +430,44 @@ internal class PagerScreenState(
         hasDoubleTap = value
     }
 
-    fun dismissGridItemPopup() {
-        popupIntOffset = null
+    fun dismissGridItemMenu() {
+        menuIntOffset = null
 
-        popupIntSize = null
+        menuIntSize = null
 
-        showGridItemPopup = false
+        showGridItemMenu = false
 
-        isCloseGridItemPopup = false
+        isCloseGridItemMenu = false
     }
 
-    fun dismissFolderGridItemPopup() {
-        popupIntOffset = null
+    fun dismissFolderGridItemMenu() {
+        menuIntOffset = null
 
-        popupIntSize = null
+        menuIntSize = null
 
-        showFolderGridItemPopup = false
+        showFolderGridItemMenu = false
 
-        isCloseFolderGridItemPopup = false
+        isCloseFolderGridItemMenu = false
     }
 
-    fun dismissFolderEblanApplicationPopup() {
-        popupIntOffset = null
+    fun dismissFolderEblanApplicationMenu() {
+        menuIntOffset = null
 
-        popupIntSize = null
+        menuIntSize = null
 
-        showFolderApplicationInfoPopup = false
+        showFolderApplicationInfoMenu = false
 
-        isCloseFolderApplicationInfoPopup = false
+        isCloseFolderApplicationInfoMenu = false
     }
 
-    fun dismissFolderEblanApplicationInfoGridItemPopup() {
-        popupIntOffset = null
+    fun dismissFolderEblanApplicationInfoGridItemMenu() {
+        menuIntOffset = null
 
-        popupIntSize = null
+        menuIntSize = null
 
-        showFolderEblanApplicationInfoGridItemPopup = false
+        showFolderEblanApplicationInfoGridItemMenu = false
 
-        isCloseFolderEblanApplicationInfoGridItemPopup = false
+        isCloseFolderEblanApplicationInfoGridItemMenu = false
     }
 
     fun updateIsDragging(value: Boolean) {
@@ -566,16 +566,16 @@ internal class PagerScreenState(
         }
     }
 
-    fun showSettingsPopup(offset: Offset) {
-        settingsPopupIntOffset = offset.round()
+    fun showSettingsMenu(offset: Offset) {
+        settingsMenuIntOffset = offset.round()
 
-        showSettingsPopup = true
+        showSettingsMenu = true
     }
 
-    fun dismissSettingsPopup() {
-        settingsPopupIntOffset = null
+    fun dismissSettingsMenu() {
+        settingsMenuIntOffset = null
 
-        showSettingsPopup = false
+        showSettingsMenu = false
     }
 
     fun openApplicationScreen() {
@@ -1113,19 +1113,19 @@ internal class PagerScreenState(
         isVisibleFolderEblanApplicationInfos = value
     }
 
-    fun updateShowFolderApplicationInfoPopup(value: Boolean) {
-        showFolderApplicationInfoPopup = value
+    fun updateShowFolderApplicationInfoMenu(value: Boolean) {
+        showFolderApplicationInfoMenu = value
     }
 
     fun updateShowPrivateApplicationMenu(value: Boolean) {
         showPrivateApplicationMenu = value
     }
 
-    fun updateIsCloseFolderEblanApplicationInfoGridItemPopup(value: Boolean) {
-        isCloseFolderEblanApplicationInfoGridItemPopup = value
+    fun updateIsCloseFolderEblanApplicationInfoGridItemMenu(value: Boolean) {
+        isCloseFolderEblanApplicationInfoGridItemMenu = value
     }
 
-    fun dragShortcutInfoFromGridItemPopup(
+    fun dragShortcutInfoFromGridItemMenu(
         gridItem: GridItem,
         imageBitmap: ImageBitmap,
         intOffset: IntOffset,
@@ -1158,7 +1158,7 @@ internal class PagerScreenState(
         onUpdateIsVisibleOverlay(true)
     }
 
-    fun dragShortcutInfoFromApplicationScreen(
+    fun dragShortcutInfoFromApplicationMenu(
         gridItem: GridItem,
         imageBitmap: ImageBitmap,
         intOffset: IntOffset,
@@ -1193,7 +1193,7 @@ internal class PagerScreenState(
         onUpdateIsVisibleOverlay(true)
     }
 
-    fun dragShortcutInfoFromFolderGridItemPopup(
+    fun dragShortcutInfoFromFolderGridItemMenu(
         gridItem: GridItem,
         imageBitmap: ImageBitmap,
         intOffset: IntOffset,
@@ -1229,7 +1229,7 @@ internal class PagerScreenState(
         onUpdateIsVisibleOverlay(true)
     }
 
-    fun dragShortcutInfoFromFolderApplicationInfoGridItemPopup(
+    fun dragShortcutInfoFromFolderApplicationGridItemMenu(
         gridItem: GridItem,
         imageBitmap: ImageBitmap,
         intOffset: IntOffset,
@@ -1330,20 +1330,20 @@ internal class PagerScreenState(
 
         sharedElementKey = newSharedElementKey
 
-        popupIntOffset = intOffset
+        menuIntOffset = intOffset
 
-        popupIntSize = intSize
+        menuIntSize = intSize
 
-        showGridItemPopup = true
+        showGridItemMenu = true
 
         onUpdateIsVisibleOverlay(true)
     }
 
     fun showFolderWhenDragging(
-        folderPopupEntry: FolderPopupEntry,
+        folderEntry: FolderEntry,
         movingGridItem: GridItem,
         onShowFolderWhenDragging: (
-            folderPopupEntry: FolderPopupEntry,
+            folderEntry: FolderEntry,
             movingGridItem: GridItem,
         ) -> Unit,
     ) {
@@ -1355,24 +1355,24 @@ internal class PagerScreenState(
         isVisibleFolderGridItems = true
 
         onShowFolderWhenDragging(
-            folderPopupEntry,
+            folderEntry,
             movingGridItem,
         )
     }
 
     fun tapFolderGridItem(
-        folderPopupEntry: FolderPopupEntry,
-        onUpsertFolderGridItemPopupEntry: (FolderPopupEntry) -> Unit,
+        folderEntry: FolderEntry,
+        onUpsertFolderGridItemPopupEntry: (FolderEntry) -> Unit,
     ) {
         isVisibleFolderGridItems = true
 
-        onUpsertFolderGridItemPopupEntry(folderPopupEntry)
+        onUpsertFolderGridItemPopupEntry(folderEntry)
     }
 
     fun dragGridItem() {
         isDragging = true
 
-        isCloseGridItemPopup = true
+        isCloseGridItemMenu = true
     }
 
     fun longPressFolderGridItem(
@@ -1400,11 +1400,11 @@ internal class PagerScreenState(
 
         sharedElementKey = newSharedElementKey
 
-        popupIntOffset = intOffset
+        menuIntOffset = intOffset
 
-        popupIntSize = intSize
+        menuIntSize = intSize
 
-        showFolderGridItemPopup = true
+        showFolderGridItemMenu = true
 
         onUpdateIsVisibleOverlay(true)
     }
@@ -1412,7 +1412,7 @@ internal class PagerScreenState(
     fun dragFolderGridItem() {
         isDragging = true
 
-        isCloseFolderGridItemPopup = true
+        isCloseFolderGridItemMenu = true
     }
 
     fun moveFolderGridItemOutsideFolder(
@@ -1426,13 +1426,13 @@ internal class PagerScreenState(
     }
 
     fun closeFolder(
-        folderPopupEntry: FolderPopupEntry,
+        folderEntry: FolderEntry,
         isFirstFolderGridItem: Boolean,
-        onDeleteFolderGridItemPopupEntry: (FolderPopupEntry) -> Unit,
+        onDeleteFolderGridItemPopupEntry: (FolderEntry) -> Unit,
     ) {
         isVisibleFolderGridItems = !isFirstFolderGridItem
 
-        onDeleteFolderGridItemPopupEntry(folderPopupEntry)
+        onDeleteFolderGridItemPopupEntry(folderEntry)
     }
 
     fun dragWidget(
@@ -1521,9 +1521,9 @@ internal class PagerScreenState(
 
         sharedElementKey = newSharedElementKey
 
-        popupIntOffset = intOffset
+        menuIntOffset = intOffset
 
-        popupIntSize = intSize
+        menuIntSize = intSize
 
         selectedEblanApplicationInfo = eblanApplicationInfo
 
@@ -1592,7 +1592,7 @@ internal class PagerScreenState(
 
         isDragging = true
 
-        showFolderApplicationInfoPopup = false
+        showFolderApplicationInfoMenu = false
 
         dismissApplicationScreen()
 
@@ -1603,12 +1603,12 @@ internal class PagerScreenState(
     }
 
     fun tapFolderApplicationInfo(
-        folderPopupEntry: FolderPopupEntry,
-        onUpsertFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
+        folderEntry: FolderEntry,
+        onUpsertFolderEblanApplicationInfoPopupEntry: (FolderEntry) -> Unit,
     ) {
         isVisibleFolderEblanApplicationInfos = true
 
-        onUpsertFolderEblanApplicationInfoPopupEntry(folderPopupEntry)
+        onUpsertFolderEblanApplicationInfoPopupEntry(folderEntry)
     }
 
     fun longPressFolderApplicationInfo(
@@ -1627,9 +1627,9 @@ internal class PagerScreenState(
 
         sharedElementKey = newSharedElementKey
 
-        popupIntOffset = intOffset
+        menuIntOffset = intOffset
 
-        popupIntSize = intSize
+        menuIntSize = intSize
 
         selectedFolderEblanApplicationInfo = folderEblanApplicationInfo
 
@@ -1662,11 +1662,11 @@ internal class PagerScreenState(
 
         sharedElementKey = newSharedElementKey
 
-        popupIntOffset = intOffset
+        menuIntOffset = intOffset
 
-        popupIntSize = intSize
+        menuIntSize = intSize
 
-        showFolderEblanApplicationInfoGridItemPopup = true
+        showFolderEblanApplicationInfoGridItemMenu = true
 
         onUpdateIsVisibleOverlay(true)
     }

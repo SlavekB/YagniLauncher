@@ -74,7 +74,7 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoGridItem
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoGridItemData
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoPopup
-import com.eblan.launcher.domain.model.folder.FolderPopupEntry
+import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.model.folder.PreviewFolderEblanApplicationInfo
 import com.eblan.launcher.domain.model.grid.GridItemSettings
 import com.eblan.launcher.domain.model.grid.MoveFolderEblanApplicationInfoGridItemResult
@@ -122,7 +122,7 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
     showFolderEblanApplicationGridItemPopup: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
     onUpdateIsVisibleFolders: (Boolean) -> Unit,
-    onUpsertFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
+    onUpsertFolderEblanApplicationInfoPopupEntry: (FolderEntry) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsCloseFolderEblanApplicationInfoGridItemPopup: (Boolean) -> Unit,
     onLongPressFolderEblanApplicationInfoGridItem: (
@@ -171,7 +171,7 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
         key1 = folderEblanApplicationInfoGridItem,
         key2 = folderEblanApplicationInfoPopups,
     ) {
-        folderEblanApplicationInfoPopups.any { it.folderPopupEntry.id == folderEblanApplicationInfoGridItem.id }
+        folderEblanApplicationInfoPopups.any { it.folderEntry.id == folderEblanApplicationInfoGridItem.id }
     }
 
     val horizontalAlignment =
@@ -462,7 +462,7 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
     isVisibleFolder: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
     onUpdateIsVisibleFolders: (Boolean) -> Unit,
-    onUpsertFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
+    onUpsertFolderEblanApplicationInfoPopupEntry: (FolderEntry) -> Unit,
     onLongPressFolderEblanApplicationInfoGridItem: (
         folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
         imageBitmap: ImageBitmap,
@@ -508,7 +508,7 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
                             onUpdateIsVisibleFolders(true)
 
                             onUpsertFolderEblanApplicationInfoPopupEntry(
-                                FolderPopupEntry(
+                                FolderEntry(
                                     id = folderEblanApplicationInfoGridItem.id,
                                     x = intOffset.x,
                                     y = intOffset.y,

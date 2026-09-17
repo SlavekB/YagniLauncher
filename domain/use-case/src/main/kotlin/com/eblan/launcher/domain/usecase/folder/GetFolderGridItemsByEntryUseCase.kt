@@ -19,7 +19,7 @@ package com.eblan.launcher.domain.usecase.folder
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.model.folder.FolderPopupEntry
+import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.model.grid.FolderGridItemPopup
 import com.eblan.launcher.domain.model.grid.FolderGridItemWrapper
 import com.eblan.launcher.domain.model.grid.GridItemData
@@ -40,17 +40,17 @@ class GetFolderGridItemsByEntryUseCase @Inject constructor(
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(
-        folderPopupEntriesFlow: Flow<List<FolderPopupEntry>>,
+        folderEntriesFlow: Flow<List<FolderEntry>>,
     ): Flow<List<FolderGridItemPopup>> = combine(
         userDataRepository.userDataFlow,
-        folderPopupEntriesFlow,
+        folderEntriesFlow,
         folderGridItemRepository.folderGridItemWrappersFlow,
-    ) { userData, folderPopupEntries, folderGridItemWrappers ->
-        folderPopupEntries.mapNotNull { folderPopupEntry ->
+    ) { userData, folderEntries, folderGridItemWrappers ->
+        folderEntries.mapNotNull { folderPopupEntry ->
             folderGridItemWrappers.firstOrNull {
                 it.folderGridItem.id == folderPopupEntry.id
             }?.asFolderGridItemPopup(
-                folderPopupEntry = folderPopupEntry,
+                folderEntry = folderPopupEntry,
                 maxFolderColumns = userData.folderSettings.maxFolderColumns,
                 maxFolderRows = userData.folderSettings.maxFolderRows,
             )
@@ -58,7 +58,7 @@ class GetFolderGridItemsByEntryUseCase @Inject constructor(
     }.flowOn(defaultDispatcher)
 
     private suspend fun FolderGridItemWrapper.asFolderGridItemPopup(
-        folderPopupEntry: FolderPopupEntry,
+        folderEntry: FolderEntry,
         maxFolderColumns: Int,
         maxFolderRows: Int,
     ): FolderGridItemPopup {
@@ -104,7 +104,7 @@ class GetFolderGridItemsByEntryUseCase @Inject constructor(
         } ?: 0
 
         return FolderGridItemPopup(
-            folderPopupEntry = folderPopupEntry,
+            folderEntry = folderEntry,
             gridItem = folderGridItem.asGridItem(),
             gridItems = gridItems,
             gridItemsByPage = gridItemsByPage,

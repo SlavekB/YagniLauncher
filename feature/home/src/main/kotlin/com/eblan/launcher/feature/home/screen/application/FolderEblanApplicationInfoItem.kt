@@ -68,7 +68,7 @@ import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfo
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoGridItem
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoGridItemData
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoPopup
-import com.eblan.launcher.domain.model.folder.FolderPopupEntry
+import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.model.folder.PreviewFolderEblanApplicationInfo
 import com.eblan.launcher.domain.model.grid.Associate
 import com.eblan.launcher.domain.model.grid.GridItem
@@ -124,7 +124,7 @@ internal fun FolderEblanApplicationInfoItem(
         intSize: IntSize,
         sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onTapFolderApplicationInfo: (folderPopupEntry: FolderPopupEntry) -> Unit,
+    onTapFolderApplicationInfo: (folderEntry: FolderEntry) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -160,7 +160,7 @@ internal fun FolderEblanApplicationInfoItem(
         key2 = folderEblanApplicationInfoPopups,
         key3 = isVisibleFolderEblanApplicationInfos,
     ) {
-        isVisibleFolderEblanApplicationInfos && folderEblanApplicationInfoPopups.any { it.folderPopupEntry.id == folderEblanApplicationInfo.id }
+        isVisibleFolderEblanApplicationInfos && folderEblanApplicationInfoPopups.any { it.folderEntry.id == folderEblanApplicationInfo.id }
     }
 
     val textAlpha = if (isLongPress) 0f else 1f
@@ -206,7 +206,7 @@ internal fun FolderEblanApplicationInfoItem(
                     onTap = if (!isVisibleOverlay) {
                         {
                             onTapFolderApplicationInfo(
-                                FolderPopupEntry(
+                                FolderEntry(
                                     id = folderEblanApplicationInfo.id,
                                     x = intOffset.x,
                                     y = intOffset.y,

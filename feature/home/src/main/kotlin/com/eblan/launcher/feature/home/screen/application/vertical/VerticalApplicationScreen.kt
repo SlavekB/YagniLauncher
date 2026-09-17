@@ -68,7 +68,7 @@ import com.eblan.launcher.domain.model.application.EblanApplicationInfoTag
 import com.eblan.launcher.domain.model.application.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfo
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoPopup
-import com.eblan.launcher.domain.model.folder.FolderPopupEntry
+import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.model.folder.PreviewFolderEblanApplicationInfo
 import com.eblan.launcher.domain.model.grid.GridItem
 import com.eblan.launcher.domain.model.launcherapps.EblanUser
@@ -151,7 +151,7 @@ internal fun VerticalApplicationScreen(
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onTapFolderApplicationInfo: (folderPopupEntry: FolderPopupEntry) -> Unit,
+    onTapFolderApplicationInfo: (folderEntry: FolderEntry) -> Unit,
 ) {
     val layoutDirection = LocalLayoutDirection.current
 
@@ -330,7 +330,7 @@ private fun EblanApplicationInfosPage(
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onTapFolderApplicationInfo: (folderPopupEntry: FolderPopupEntry) -> Unit,
+    onTapFolderApplicationInfo: (folderEntry: FolderEntry) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -491,7 +491,7 @@ private fun EblanApplicationInfos(
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onTapFolderApplicationInfo: (folderPopupEntry: FolderPopupEntry) -> Unit,
+    onTapFolderApplicationInfo: (folderEntry: FolderEntry) -> Unit,
 ) {
     val userManager = LocalUserManager.current
 

@@ -17,7 +17,7 @@
  */
 package com.eblan.launcher.domain.model.folder
 
-data class FolderPopupEntry(
+data class FolderEntry(
     val id: String,
     val x: Int,
     val y: Int,

@@ -73,7 +73,7 @@ import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
 import coil3.size.Size
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
-import com.eblan.launcher.domain.model.folder.FolderPopupEntry
+import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.model.folder.PreviewFolder
 import com.eblan.launcher.domain.model.grid.FolderGridItemPopup
 import com.eblan.launcher.domain.model.grid.GridItem
@@ -131,7 +131,7 @@ internal fun InteractiveFolderGridItem(
     customFolderBackgroundColor: Int,
     folderGridItemPopups: List<FolderGridItemPopup>,
     onOpenAppDrawer: () -> Unit,
-    onUpsertFolderGridItemPopupEntry: (FolderPopupEntry) -> Unit,
+    onUpsertFolderGridItemPopupEntry: (FolderEntry) -> Unit,
     onLongPressFolderGridItem: (
         gridItem: GridItem,
         imageBitmap: ImageBitmap,
@@ -198,7 +198,7 @@ internal fun InteractiveFolderGridItem(
         key1 = gridItem,
         key2 = folderGridItemPopups,
     ) {
-        folderGridItemPopups.any { it.folderPopupEntry.id == gridItem.id }
+        folderGridItemPopups.any { it.folderEntry.id == gridItem.id }
     }
 
     val horizontalAlignment =
@@ -912,7 +912,7 @@ private fun InteractiveNestedFolderGridItem(
     systemCustomTextColor: Int,
     isVisibleFolder: Boolean,
     onOpenAppDrawer: () -> Unit,
-    onUpsertFolderGridItemPopupEntry: (FolderPopupEntry) -> Unit,
+    onUpsertFolderGridItemPopupEntry: (FolderEntry) -> Unit,
     onLongPressFolderGridItem: (
         gridItem: GridItem,
         imageBitmap: ImageBitmap,
@@ -983,7 +983,7 @@ private fun InteractiveNestedFolderGridItem(
                     onTap = if (!isVisibleOverlay && !isInProgress) {
                         {
                             onUpsertFolderGridItemPopupEntry(
-                                FolderPopupEntry(
+                                FolderEntry(
                                     id = gridItem.id,
                                     x = intOffset.x,
                                     y = intOffset.y,

@@ -53,7 +53,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.eblan.launcher.domain.model.folder.FolderPopupEntry
+import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.model.folder.PreviewFolder
 import com.eblan.launcher.domain.model.grid.Associate
 import com.eblan.launcher.domain.model.grid.FolderGridItemPopup
@@ -127,7 +127,7 @@ internal fun FolderScreen(
     onDismissFolderGridItemPopup: () -> Unit,
     onResetGrid: () -> Unit,
     onResetGridAfterMoveFolder: () -> Unit,
-    onUpsertFolderGridItemPopupEntry: (FolderPopupEntry) -> Unit,
+    onUpsertFolderGridItemPopupEntry: (FolderEntry) -> Unit,
     onLongPressFolderGridItem: (
         gridItem: GridItem,
         imageBitmap: ImageBitmap,
@@ -137,18 +137,18 @@ internal fun FolderScreen(
     ) -> Unit,
     onDragFolderGridItem: () -> Unit,
     onCloseFolder: (
-        folderPopupEntry: FolderPopupEntry,
+        folderEntry: FolderEntry,
         isFirstFolderGridItem: Boolean,
     ) -> Unit,
 ) {
     val folderPopupIntOffset = IntOffset(
-        x = folderGridItemPopup.folderPopupEntry.x,
-        y = folderGridItemPopup.folderPopupEntry.y,
+        x = folderGridItemPopup.folderEntry.x,
+        y = folderGridItemPopup.folderEntry.y,
     )
 
     val folderPopupIntSize = IntSize(
-        width = folderGridItemPopup.folderPopupEntry.width,
-        height = folderGridItemPopup.folderPopupEntry.height,
+        width = folderGridItemPopup.folderEntry.width,
+        height = folderGridItemPopup.folderEntry.height,
     )
 
     val density = LocalDensity.current
@@ -357,19 +357,19 @@ internal fun FolderScreen(
     }
 
     BackHandler(
-        enabled = !folderGridItemPopup.folderPopupEntry.isCloseFolder &&
+        enabled = !folderGridItemPopup.folderEntry.isCloseFolder &&
             isLastFolderGridItem &&
             !isInProgress,
     ) {
-        onUpsertFolderGridItemPopupEntry(folderGridItemPopup.folderPopupEntry.copy(isCloseFolder = true))
+        onUpsertFolderGridItemPopupEntry(folderGridItemPopup.folderEntry.copy(isCloseFolder = true))
     }
 
     HomeHandler(
-        enabled = !folderGridItemPopup.folderPopupEntry.isCloseFolder &&
+        enabled = !folderGridItemPopup.folderEntry.isCloseFolder &&
             isLastFolderGridItem &&
             !isInProgress,
     ) {
-        onUpsertFolderGridItemPopupEntry(folderGridItemPopup.folderPopupEntry.copy(isCloseFolder = true))
+        onUpsertFolderGridItemPopupEntry(folderGridItemPopup.folderEntry.copy(isCloseFolder = true))
     }
 
     Box(
@@ -382,7 +382,7 @@ internal fun FolderScreen(
                             awaitRelease()
 
                             onUpsertFolderGridItemPopupEntry(
-                                folderGridItemPopup.folderPopupEntry.copy(
+                                folderGridItemPopup.folderEntry.copy(
                                     isCloseFolder = true,
                                 ),
                             )
@@ -510,11 +510,11 @@ private suspend fun handleIsCloseFolder(
         sharedElementKey: SharedElementKey,
     ) -> Unit,
     onCloseFolder: (
-        folderPopupEntry: FolderPopupEntry,
+        folderEntry: FolderEntry,
         isFirstFolderGridItem: Boolean,
     ) -> Unit,
 ) {
-    if (!folderGridItemPopup.folderPopupEntry.isCloseFolder || !isLastFolderGridItem) return
+    if (!folderGridItemPopup.folderEntry.isCloseFolder || !isLastFolderGridItem) return
 
     onAnimateToScrollToPage(0)
 
@@ -534,7 +534,7 @@ private suspend fun handleIsCloseFolder(
     )
 
     onCloseFolder(
-        folderGridItemPopup.folderPopupEntry,
+        folderGridItemPopup.folderEntry,
         isFirstFolderGridItem,
     )
 }
