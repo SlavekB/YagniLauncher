@@ -115,7 +115,7 @@ internal fun InteractiveFolderGridItem(
     isVisibleOverlay: Boolean,
     moveGridItemResult: MoveGridItemResult?,
     progress: Float,
-    showFolderGridItemPopup: Boolean,
+    showFolderGridItemMenu: Boolean,
     previewFolderGridItems: Map<String, PreviewFolder>,
     minCellWidthPx: Int,
     minCellHeightPx: Int,
@@ -212,9 +212,9 @@ internal fun InteractiveFolderGridItem(
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
-        key3 = showFolderGridItemPopup,
+        key3 = showFolderGridItemMenu,
     ) {
-        if (drag == Drag.Dragging && hasInteraction && showFolderGridItemPopup) {
+        if (drag == Drag.Dragging && hasInteraction && showFolderGridItemMenu) {
             onDragFolderGridItem()
         }
     }

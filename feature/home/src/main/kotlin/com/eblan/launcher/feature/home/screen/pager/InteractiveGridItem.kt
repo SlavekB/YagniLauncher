@@ -120,7 +120,7 @@ internal fun InteractiveGridItem(
     moveGridItemResult: MoveGridItemResult?,
     lockMovement: Boolean,
     isDragging: Boolean,
-    showGridItemPopup: Boolean,
+    showGridItemMenu: Boolean,
     previewFolderGridItems: Map<String, PreviewFolder>,
     cellWidth: Int,
     cellHeight: Int,
@@ -197,11 +197,11 @@ internal fun InteractiveGridItem(
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
-        key3 = showGridItemPopup,
+        key3 = showGridItemMenu,
     ) {
         if (drag == Drag.Dragging &&
             hasInteraction &&
-            showGridItemPopup
+            showGridItemMenu
         ) {
             onDragGridItem()
         }
