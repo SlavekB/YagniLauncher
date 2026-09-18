@@ -59,7 +59,6 @@ import com.eblan.launcher.domain.model.grid.GridItem
 import com.eblan.launcher.domain.model.launcherapps.EblanUser
 import com.eblan.launcher.domain.model.launcherapps.EblanUserPageKey
 import com.eblan.launcher.domain.model.launcherapps.EblanUserType
-import com.eblan.launcher.domain.model.launcherapps.ManagedProfileResult
 import com.eblan.launcher.domain.model.userdata.AppDrawerSettings
 import com.eblan.launcher.domain.model.userdata.TextColor
 import com.eblan.launcher.feature.home.component.HorizontalAppDrawerGridLayout
@@ -87,7 +86,6 @@ internal fun HorizontalApplicationScreen(
     drag: Drag,
     eblanApplicationInfoTags: List<EblanApplicationInfoTag>,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
-    managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
     screenHeight: Int,
     swipeY: Float,
@@ -201,7 +199,6 @@ internal fun HorizontalApplicationScreen(
                 drag = drag,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                 index = index,
-                managedProfileResult = managedProfileResult,
                 paddingValues = paddingValues,
                 isVisibleOverlay = isVisibleOverlay,
                 swipeY = swipeY,
@@ -230,7 +227,6 @@ private fun EblanApplicationInfosPage(
     drag: Drag,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     index: Int,
-    managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
     swipeY: Float,
     isVisibleOverlay: Boolean,
@@ -280,11 +276,7 @@ private fun EblanApplicationInfosPage(
 
     val isDefaultLauncher by rememberIsDefaultLauncher()
 
-    val isQuietModeEnabled by rememberIsQuietModeEnabled(
-        userHandle = userHandle,
-        managedProfileResult = managedProfileResult,
-        eblanUser = eblanUserPageKey.eblanUser,
-    )
+    val isQuietModeEnabled by rememberIsQuietModeEnabled(userHandle = userHandle)
 
     Box(modifier = modifier.fillMaxSize()) {
         if (isQuietModeEnabled) {

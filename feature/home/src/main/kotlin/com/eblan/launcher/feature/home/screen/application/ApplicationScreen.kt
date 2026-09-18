@@ -90,7 +90,6 @@ import com.eblan.launcher.domain.model.grid.GridItem
 import com.eblan.launcher.domain.model.launcherapps.EblanUser
 import com.eblan.launcher.domain.model.launcherapps.EblanUserPageKey
 import com.eblan.launcher.domain.model.launcherapps.EblanUserType
-import com.eblan.launcher.domain.model.launcherapps.ManagedProfileResult
 import com.eblan.launcher.domain.model.userdata.AppDrawerSettings
 import com.eblan.launcher.domain.model.userdata.AppDrawerType
 import com.eblan.launcher.domain.model.userdata.BackgroundColor
@@ -169,8 +168,6 @@ internal fun ApplicationScreen(
     ) -> Unit,
     onTapFolderApplicationInfo: (folderEntry: FolderEntry) -> Unit,
 ) {
-    val managedProfileResult by rememberManagedProfileResult()
-
     BlurBehindEffect(
         blurBehind = appDrawerSettings.blurBehind,
         swipeY = swipeY,
@@ -201,7 +198,6 @@ internal fun ApplicationScreen(
                     drag = drag,
                     eblanApplicationInfoTags = eblanApplicationInfoTags,
                     getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
-                    managedProfileResult = managedProfileResult,
                     paddingValues = paddingValues,
                     screenHeight = screenHeight,
                     swipeY = swipeY,
@@ -237,7 +233,6 @@ internal fun ApplicationScreen(
                     drag = drag,
                     eblanApplicationInfoTags = eblanApplicationInfoTags,
                     getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
-                    managedProfileResult = managedProfileResult,
                     paddingValues = paddingValues,
                     screenHeight = screenHeight,
                     swipeY = swipeY,
@@ -264,7 +259,6 @@ internal fun ApplicationScreen(
                     drag = drag,
                     eblanApplicationInfoTags = eblanApplicationInfoTags,
                     getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
-                    managedProfileResult = managedProfileResult,
                     paddingValues = paddingValues,
                     screenHeight = screenHeight,
                     swipeY = swipeY,
@@ -529,26 +523,135 @@ internal fun ApplicationScreenEffect(
 }
 
 @Composable
-internal fun rememberIsQuietModeEnabled(
-    userHandle: UserHandle?,
-    managedProfileResult: ManagedProfileResult?,
-    eblanUser: EblanUser?,
-): State<Boolean> {
+internal fun rememberIsQuietModeEnabled(userHandle: UserHandle?): State<Boolean> {
+    val context = LocalContext.current
     val userManager = LocalUserManager.current
 
     return produceState(
         initialValue = false,
         key1 = userHandle,
-        key2 = managedProfileResult,
     ) {
-        if (userHandle != null) {
-            value = userManager.isQuietModeEnabled(userHandle = userHandle)
+        if (userHandle == null) return@produceState
+
+        value = userManager.isQuietModeEnabled(userHandle = userHandle)
+
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(
+                context: Context,
+                intent: Intent,
+            ) {
+                val changedUserHandle: UserHandle? =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        intent.getParcelableExtra(
+                            Intent.EXTRA_USER,
+                            UserHandle::class.java,
+                        )
+                    } else {
+                        @Suppress("DEPRECATION")
+                        intent.getParcelableExtra(Intent.EXTRA_USER)
+                    }
+
+                if (changedUserHandle == userHandle) {
+                    value = if (
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
+                        intent.hasExtra(Intent.EXTRA_QUIET_MODE)
+                    ) {
+                        intent.getBooleanExtra(
+                            Intent.EXTRA_QUIET_MODE,
+                            false,
+                        )
+                    } else {
+                        userManager.isQuietModeEnabled(userHandle = userHandle)
+                    }
+                }
+            }
         }
 
-        if (managedProfileResult != null &&
-            managedProfileResult.serialNumber == eblanUser?.serialNumber
-        ) {
-            value = managedProfileResult.isQuiteModeEnabled
+        ContextCompat.registerReceiver(
+            context,
+            receiver,
+            IntentFilter().apply {
+                addAction(Intent.ACTION_MANAGED_PROFILE_AVAILABLE)
+                addAction(Intent.ACTION_MANAGED_PROFILE_UNAVAILABLE)
+                addAction(Intent.ACTION_MANAGED_PROFILE_UNLOCKED)
+            },
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
+
+        awaitDispose {
+            context.unregisterReceiver(receiver)
+        }
+    }
+}
+
+@Composable
+internal fun rememberIsPrivateQuietModeEnabled(
+    eblanUser: EblanUser?,
+): State<Boolean> {
+    val context = LocalContext.current
+    val userManager = LocalUserManager.current
+
+    return produceState(
+        initialValue = false,
+        key1 = eblanUser?.serialNumber,
+    ) {
+        if (eblanUser == null) return@produceState
+
+        val initialUserHandle = userManager.getUserForSerialNumber(
+            serialNumber = eblanUser.serialNumber,
+        ) ?: return@produceState
+
+        value = userManager.isQuietModeEnabled(userHandle = initialUserHandle)
+
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(
+                context: Context,
+                intent: Intent,
+            ) {
+                val userHandle: UserHandle? =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        intent.getParcelableExtra(
+                            Intent.EXTRA_USER,
+                            UserHandle::class.java,
+                        )
+                    } else {
+                        @Suppress("DEPRECATION")
+                        intent.getParcelableExtra(Intent.EXTRA_USER)
+                    }
+
+                if (
+                    userHandle != null &&
+                    userManager.getSerialNumberForUser(userHandle) ==
+                    eblanUser.serialNumber
+                ) {
+                    value = if (
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
+                        intent.hasExtra(Intent.EXTRA_QUIET_MODE)
+                    ) {
+                        intent.getBooleanExtra(
+                            Intent.EXTRA_QUIET_MODE,
+                            false,
+                        )
+                    } else {
+                        userManager.isQuietModeEnabled(userHandle = userHandle)
+                    }
+                }
+            }
+        }
+
+        ContextCompat.registerReceiver(
+            context,
+            receiver,
+            IntentFilter().apply {
+                addAction(Intent.ACTION_MANAGED_PROFILE_AVAILABLE)
+                addAction(Intent.ACTION_MANAGED_PROFILE_UNAVAILABLE)
+                addAction(Intent.ACTION_MANAGED_PROFILE_UNLOCKED)
+            },
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
+
+        awaitDispose {
+            context.unregisterReceiver(receiver)
         }
     }
 }
@@ -594,67 +697,6 @@ private fun BlurBehindEffect(
             window.attributes = window.attributes.apply {
                 blurBehindRadius = radius
             }
-        }
-    }
-}
-
-@Composable
-private fun rememberManagedProfileResult(): State<ManagedProfileResult?> {
-    val context = LocalContext.current
-
-    val userManagerWrapper = LocalUserManager.current
-
-    return produceState(
-        initialValue = null,
-        key1 = context,
-        key2 = userManagerWrapper,
-    ) {
-        val receiver = object : BroadcastReceiver() {
-            override fun onReceive(
-                context: Context,
-                intent: Intent,
-            ) {
-                val userHandle =
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        intent.getParcelableExtra(
-                            Intent.EXTRA_USER,
-                            UserHandle::class.java,
-                        )
-                    } else {
-                        @Suppress("DEPRECATION")
-                        intent.getParcelableExtra(Intent.EXTRA_USER)
-                    }
-
-                if (userHandle != null) {
-                    value = ManagedProfileResult(
-                        serialNumber =
-                        userManagerWrapper.getSerialNumberForUser(
-                            userHandle = userHandle,
-                        ),
-                        isQuiteModeEnabled =
-                        userManagerWrapper.isQuietModeEnabled(
-                            userHandle = userHandle,
-                        ),
-                    )
-                }
-            }
-        }
-
-        ContextCompat.registerReceiver(
-            context,
-            receiver,
-            IntentFilter().apply {
-                addAction(Intent.ACTION_MANAGED_PROFILE_AVAILABLE)
-                addAction(Intent.ACTION_MANAGED_PROFILE_UNAVAILABLE)
-                addAction(Intent.ACTION_MANAGED_PROFILE_REMOVED)
-                addAction(Intent.ACTION_MANAGED_PROFILE_ADDED)
-                addAction(Intent.ACTION_MANAGED_PROFILE_UNLOCKED)
-            },
-            ContextCompat.RECEIVER_NOT_EXPORTED,
-        )
-
-        awaitDispose {
-            context.unregisterReceiver(receiver)
         }
     }
 }

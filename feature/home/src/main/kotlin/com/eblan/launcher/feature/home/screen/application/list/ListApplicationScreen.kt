@@ -96,7 +96,6 @@ import com.eblan.launcher.domain.model.grid.GridItem
 import com.eblan.launcher.domain.model.launcherapps.EblanUser
 import com.eblan.launcher.domain.model.launcherapps.EblanUserPageKey
 import com.eblan.launcher.domain.model.launcherapps.EblanUserType
-import com.eblan.launcher.domain.model.launcherapps.ManagedProfileResult
 import com.eblan.launcher.domain.model.userdata.AppDrawerSettings
 import com.eblan.launcher.domain.model.userdata.TextColor
 import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
@@ -112,6 +111,7 @@ import com.eblan.launcher.feature.home.screen.application.TagElevatedFilterChip
 import com.eblan.launcher.feature.home.screen.application.handleDragEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
+import com.eblan.launcher.feature.home.screen.application.rememberIsPrivateQuietModeEnabled
 import com.eblan.launcher.feature.home.screen.application.rememberIsQuietModeEnabled
 import com.eblan.launcher.feature.home.util.getTextColorFromBackgroundColor
 import com.eblan.launcher.feature.home.util.handleOnPress
@@ -131,7 +131,6 @@ internal fun ListApplicationScreen(
     drag: Drag,
     eblanApplicationInfoTags: List<EblanApplicationInfoTag>,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
-    managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
     screenHeight: Int,
     swipeY: Float,
@@ -250,7 +249,6 @@ internal fun ListApplicationScreen(
                 drag = drag,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                 index = index,
-                managedProfileResult = managedProfileResult,
                 paddingValues = paddingValues,
                 isVisibleOverlay = isVisibleOverlay,
                 swipeY = swipeY,
@@ -278,7 +276,6 @@ private fun EblanApplicationInfosPage(
     drag: Drag,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     index: Int,
-    managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
     swipeY: Float,
@@ -328,11 +325,7 @@ private fun EblanApplicationInfosPage(
 
     val isDefaultLauncher by rememberIsDefaultLauncher()
 
-    val isQuietModeEnabled by rememberIsQuietModeEnabled(
-        userHandle = userHandle,
-        managedProfileResult = managedProfileResult,
-        eblanUser = eblanUserPageKey.eblanUser,
-    )
+    val isQuietModeEnabled by rememberIsQuietModeEnabled(userHandle = userHandle)
 
     Box(modifier = modifier.fillMaxSize()) {
         if (isQuietModeEnabled) {
@@ -352,7 +345,6 @@ private fun EblanApplicationInfosPage(
                 drag = drag,
                 eblanUserPageKey = eblanUserPageKey,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
-                managedProfileResult = managedProfileResult,
                 paddingValues = paddingValues,
                 isVisibleOverlay = isVisibleOverlay,
                 swipeY = swipeY,
@@ -404,7 +396,6 @@ private fun EblanApplicationInfos(
     drag: Drag,
     eblanUserPageKey: EblanUserPageKey,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
-    managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
     swipeY: Float,
@@ -429,8 +420,6 @@ private fun EblanApplicationInfos(
         intSize: IntSize,
     ) -> Unit,
 ) {
-    val userManager = LocalUserManager.current
-
     val lazyListState = rememberLazyListState()
 
     val canScroll by remember(key1 = lazyListState) {
@@ -446,13 +435,7 @@ private fun EblanApplicationInfos(
         onDragEnd = onDragEnd,
     )
 
-    val privateIsQuiteModeEnabled by rememberIsQuietModeEnabled(
-        userHandle = getEblanApplicationInfosByLabelAndTag.privateEblanUser?.serialNumber?.let(
-            userManager::getUserForSerialNumber,
-        ),
-        managedProfileResult = managedProfileResult,
-        eblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
-    )
+    val privateIsQuiteModeEnabled by rememberIsPrivateQuietModeEnabled(eblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser)
 
     LaunchedEffect(key1 = swipeY) {
         if (swipeY.toInt() == screenHeight) {
