@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.grid.getWidgetGridItemSize
 import com.eblan.launcher.domain.grid.getWidgetGridItemSpan
 import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
-import com.eblan.launcher.domain.model.folder.FolderPopupEntry
+import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.model.grid.Associate
 import com.eblan.launcher.domain.model.grid.FolderGridItemPopup
 import com.eblan.launcher.domain.model.grid.GridItem
@@ -317,11 +317,9 @@ internal suspend fun handleConflictingGridItem(
     gridItem: State<GridItem>,
     folderGridItems: State<List<GridItem>?>,
     onShowFolderWhenDragging: (
-        folderPopupEntry: FolderPopupEntry,
-        movingGridItem: GridItem,
+        folderEntry: FolderEntry,
+        gridItem: GridItem,
     ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsVisibleFolders: (Boolean) -> Unit,
 ) {
     delay(1000L.milliseconds)
 
@@ -343,17 +341,8 @@ internal suspend fun handleConflictingGridItem(
         folderGridItems = folderGridItems.value,
     )
 
-    onUpdateSharedElementKey(
-        SharedElementKey(
-            id = movingFolderGridItem.id,
-            parent = SharedElementKey.Parent.Folder,
-        ),
-    )
-
-    onUpdateIsVisibleFolders(true)
-
     onShowFolderWhenDragging(
-        FolderPopupEntry(
+        FolderEntry(
             id = conflictingGridItem.id,
             x = intOffset.x,
             y = intOffset.y,

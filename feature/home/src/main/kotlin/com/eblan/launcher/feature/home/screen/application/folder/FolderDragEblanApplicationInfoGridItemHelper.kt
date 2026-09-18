@@ -18,66 +18,16 @@
 package com.eblan.launcher.feature.home.screen.application.folder
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.layer.GraphicsLayer
-import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoGridItem
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoPopup
-import com.eblan.launcher.domain.model.folder.FolderPopupEntry
+import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.model.grid.MoveFolderEblanApplicationInfoGridItemResult
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.calculateFolderGridDragPosition
-
-internal suspend fun onLongPressFolderEblanApplicationInfoGridItem(
-    graphicsLayer: GraphicsLayer,
-    intOffset: IntOffset,
-    intSize: IntSize,
-    sharedElementKey: SharedElementKey,
-    folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
-    keyboardController: SoftwareKeyboardController?,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveFolderEblanApplicationInfoGridItemResult: (MoveFolderEblanApplicationInfoGridItemResult) -> Unit,
-) {
-    onUpdateMoveFolderEblanApplicationInfoGridItemResult(
-        MoveFolderEblanApplicationInfoGridItemResult(
-            isSuccess = true,
-            folderEblanApplicationInfoGridItem = folderEblanApplicationInfoGridItem,
-        ),
-    )
-
-    onUpdateImageBitmap(graphicsLayer.toImageBitmap())
-
-    onUpdateOverlayBounds(
-        intOffset,
-        intSize,
-    )
-
-    onUpdateSharedElementKey(sharedElementKey)
-
-    onShowGridItemPopup(
-        intOffset,
-        intSize,
-    )
-
-    onUpdateIsVisibleOverlay(true)
-
-    keyboardController?.hide()
-}
 
 internal fun handleDragFolderEblanApplicationInfoGridItem(
     density: Density,
@@ -109,7 +59,7 @@ internal fun handleDragFolderEblanApplicationInfoGridItem(
         currentPage: Int,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpsertFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
+    onUpsertFolderEblanApplicationInfoPopupEntry: (FolderEntry) -> Unit,
 ) {
     if (drag != Drag.Dragging ||
         isScrollInProgress ||
@@ -159,9 +109,9 @@ internal fun handleDragFolderEblanApplicationInfoGridItem(
             folderGridDragPosition.height,
             currentPage,
         )
-    } else if (!folderEblanApplicationInfoPopup.folderPopupEntry.isCloseFolder) {
+    } else if (!folderEblanApplicationInfoPopup.folderEntry.isCloseFolder) {
         onUpsertFolderEblanApplicationInfoPopupEntry(
-            folderEblanApplicationInfoPopup.folderPopupEntry.copy(
+            folderEblanApplicationInfoPopup.folderEntry.copy(
                 isCloseFolder = true,
             ),
         )

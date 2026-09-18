@@ -80,30 +80,24 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.application.EblanApplicationInfo
-import com.eblan.launcher.domain.model.application.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.application.EblanApplicationInfoTag
 import com.eblan.launcher.domain.model.application.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfo
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoPopup
-import com.eblan.launcher.domain.model.folder.FolderPopupEntry
+import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.model.folder.PreviewFolderEblanApplicationInfo
 import com.eblan.launcher.domain.model.grid.GridItem
-import com.eblan.launcher.domain.model.grid.MoveGridItemResult
 import com.eblan.launcher.domain.model.launcherapps.EblanUser
 import com.eblan.launcher.domain.model.launcherapps.EblanUserPageKey
 import com.eblan.launcher.domain.model.launcherapps.EblanUserType
 import com.eblan.launcher.domain.model.launcherapps.ManagedProfileResult
-import com.eblan.launcher.domain.model.shortcutinfo.EblanShortcutInfo
-import com.eblan.launcher.domain.model.shortcutinfo.EblanShortcutInfoByGroup
 import com.eblan.launcher.domain.model.userdata.AppDrawerSettings
 import com.eblan.launcher.domain.model.userdata.AppDrawerType
 import com.eblan.launcher.domain.model.userdata.BackgroundColor
 import com.eblan.launcher.domain.model.userdata.TextColor
-import com.eblan.launcher.domain.model.widget.EblanAppWidgetProviderInfo
 import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.component.HomeHandler
 import com.eblan.launcher.feature.home.model.Drag
-import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.horizontal.HorizontalApplicationScreen
 import com.eblan.launcher.feature.home.screen.application.list.ListApplicationScreen
@@ -128,11 +122,8 @@ internal fun ApplicationScreen(
     appDrawerSettings: AppDrawerSettings,
     cornerSize: Dp,
     drag: Drag,
-    eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanApplicationInfoTags: List<EblanApplicationInfoTag>,
-    eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
-    hasShortcutHostPermission: Boolean,
     paddingValues: PaddingValues,
     screenHeight: Int,
     swipeY: Float,
@@ -148,36 +139,35 @@ internal fun ApplicationScreen(
     folderEblanApplicationInfoPopups: List<FolderEblanApplicationInfoPopup>,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
-    onEditApplicationInfo: (
-        serialNumber: Long,
-        componentName: String,
-    ) -> Unit,
     onGetEblanApplicationInfosByLabel: (String) -> Unit,
     onGetEblanApplicationInfosByTagId: (Long?) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onVerticalDrag: (Float) -> Unit,
-    onWidgets: (EblanApplicationInfoGroup) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onUpdateIsVisibleFolderEblanApplicationInfos: (Boolean) -> Unit,
-    onUpsertFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
-    onUpdateFolderEblanApplicationInfo: (FolderEblanApplicationInfo) -> Unit,
-    onUpdateFolderPopupBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateFolderPopupMenu: (Boolean) -> Unit,
     onDragFolderEblanApplicationInfo: (
         folderEblanApplicationInfo: FolderEblanApplicationInfo,
         movingGridItem: GridItem,
     ) -> Unit,
+    onDragApplicationInfo: (GridItem) -> Unit,
+    onLongPressApplicationInfo: (
+        eblanApplicationInfo: EblanApplicationInfo,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        sharedElementKey: SharedElementKey,
+    ) -> Unit,
+    onLongPressFolderApplicationInfo: (
+        folderEblanApplicationInfo: FolderEblanApplicationInfo,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        sharedElementKey: SharedElementKey,
+    ) -> Unit,
+    onLongPressPrivateSpaceApplicationInfoItem: (
+        eblanApplicationInfo: EblanApplicationInfo,
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
+    onTapFolderApplicationInfo: (folderEntry: FolderEntry) -> Unit,
 ) {
     val managedProfileResult by rememberManagedProfileResult()
 
@@ -209,11 +199,8 @@ internal fun ApplicationScreen(
                     sharedTransitionScope = sharedTransitionScope,
                     appDrawerSettings = appDrawerSettings,
                     drag = drag,
-                    eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                     eblanApplicationInfoTags = eblanApplicationInfoTags,
-                    eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                     getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
-                    hasShortcutHostPermission = hasShortcutHostPermission,
                     managedProfileResult = managedProfileResult,
                     paddingValues = paddingValues,
                     screenHeight = screenHeight,
@@ -230,24 +217,16 @@ internal fun ApplicationScreen(
                     folderEblanApplicationInfoPopups = folderEblanApplicationInfoPopups,
                     onDismiss = onDismiss,
                     onDragEnd = onDragEnd,
-                    onEditApplicationInfo = onEditApplicationInfo,
                     onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
                     onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
-                    onUpdateGridItemSource = onUpdateGridItemSource,
-                    onUpdateImageBitmap = onUpdateImageBitmap,
-                    onUpdateIsDragging = onUpdateIsDragging,
-                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                    onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onVerticalDrag = onVerticalDrag,
-                    onWidgets = onWidgets,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                    onUpdateIsVisibleFolderEblanApplicationInfos = onUpdateIsVisibleFolderEblanApplicationInfos,
-                    onUpsertFolderEblanApplicationInfoPopupEntry = onUpsertFolderEblanApplicationInfoPopupEntry,
-                    onUpdateFolderEblanApplicationInfo = onUpdateFolderEblanApplicationInfo,
-                    onUpdateFolderPopupBounds = onUpdateFolderPopupBounds,
-                    onUpdateFolderPopupMenu = onUpdateFolderPopupMenu,
                     onDragFolderEblanApplicationInfo = onDragFolderEblanApplicationInfo,
+                    onDragApplicationInfo = onDragApplicationInfo,
+                    onLongPressApplicationInfo = onLongPressApplicationInfo,
+                    onLongPressFolderApplicationInfo = onLongPressFolderApplicationInfo,
+                    onLongPressPrivateSpaceApplicationInfoItem = onLongPressPrivateSpaceApplicationInfoItem,
+                    onTapFolderApplicationInfo = onTapFolderApplicationInfo,
                 )
             }
 
@@ -256,11 +235,8 @@ internal fun ApplicationScreen(
                     sharedTransitionScope = sharedTransitionScope,
                     appDrawerSettings = appDrawerSettings,
                     drag = drag,
-                    eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                     eblanApplicationInfoTags = eblanApplicationInfoTags,
-                    eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                     getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
-                    hasShortcutHostPermission = hasShortcutHostPermission,
                     managedProfileResult = managedProfileResult,
                     paddingValues = paddingValues,
                     screenHeight = screenHeight,
@@ -271,18 +247,13 @@ internal fun ApplicationScreen(
                     animations = animations,
                     onDismiss = onDismiss,
                     onDragEnd = onDragEnd,
-                    onEditApplicationInfo = onEditApplicationInfo,
                     onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
                     onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
-                    onUpdateGridItemSource = onUpdateGridItemSource,
-                    onUpdateImageBitmap = onUpdateImageBitmap,
-                    onUpdateIsDragging = onUpdateIsDragging,
-                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                    onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onVerticalDrag = onVerticalDrag,
-                    onWidgets = onWidgets,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                    onDragApplicationInfo = onDragApplicationInfo,
+                    onLongPressApplicationInfo = onLongPressApplicationInfo,
+                    onLongPressPrivateSpaceApplicationInfoItem = onLongPressPrivateSpaceApplicationInfoItem,
                 )
             }
 
@@ -291,11 +262,8 @@ internal fun ApplicationScreen(
                     sharedTransitionScope = sharedTransitionScope,
                     appDrawerSettings = appDrawerSettings,
                     drag = drag,
-                    eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                     eblanApplicationInfoTags = eblanApplicationInfoTags,
-                    eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                     getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
-                    hasShortcutHostPermission = hasShortcutHostPermission,
                     managedProfileResult = managedProfileResult,
                     paddingValues = paddingValues,
                     screenHeight = screenHeight,
@@ -306,18 +274,13 @@ internal fun ApplicationScreen(
                     animations = animations,
                     onDismiss = onDismiss,
                     onDragEnd = onDragEnd,
-                    onEditApplicationInfo = onEditApplicationInfo,
                     onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
                     onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
-                    onUpdateGridItemSource = onUpdateGridItemSource,
-                    onUpdateImageBitmap = onUpdateImageBitmap,
-                    onUpdateIsDragging = onUpdateIsDragging,
-                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                    onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onVerticalDrag = onVerticalDrag,
-                    onWidgets = onWidgets,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                    onDragApplicationInfo = onDragApplicationInfo,
+                    onLongPressApplicationInfo = onLongPressApplicationInfo,
+                    onLongPressPrivateSpaceApplicationInfoItem = onLongPressPrivateSpaceApplicationInfoItem,
                 )
             }
         }
@@ -514,7 +477,6 @@ internal fun ApplicationScreenEffect(
     horizontalPagerState: PagerState,
     screenHeight: Int,
     selectedEblanApplicationInfoTagId: Long?,
-    showPopupApplicationMenu: Boolean,
     swipeY: Float,
     textFieldState: TextFieldState,
     showKeyboard: Boolean,
@@ -522,7 +484,6 @@ internal fun ApplicationScreenEffect(
     onDismiss: () -> Unit,
     onGetEblanApplicationInfosByLabel: (String) -> Unit,
     onGetEblanApplicationInfosByTagId: (Long?) -> Unit,
-    onShowPopupApplicationMenu: (Boolean) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -531,19 +492,11 @@ internal fun ApplicationScreenEffect(
     LaunchedEffect(key1 = textFieldState) {
         snapshotFlow { textFieldState.text }.debounce(500L.milliseconds).onEach {
             onGetEblanApplicationInfosByLabel(it.toString())
-
-            onShowPopupApplicationMenu(false)
         }.collect()
     }
 
     LaunchedEffect(key1 = selectedEblanApplicationInfoTagId) {
         onGetEblanApplicationInfosByTagId(selectedEblanApplicationInfoTagId)
-    }
-
-    LaunchedEffect(key1 = horizontalPagerState.isScrollInProgress) {
-        if (horizontalPagerState.isScrollInProgress && showPopupApplicationMenu) {
-            onShowPopupApplicationMenu(false)
-        }
     }
 
     LaunchedEffect(key1 = swipeY) {

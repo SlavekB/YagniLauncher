@@ -68,7 +68,7 @@ import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfo
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoGridItem
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoGridItemData
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoPopup
-import com.eblan.launcher.domain.model.folder.FolderPopupEntry
+import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.model.folder.PreviewFolderEblanApplicationInfo
 import com.eblan.launcher.domain.model.grid.Associate
 import com.eblan.launcher.domain.model.grid.GridItem
@@ -112,27 +112,19 @@ internal fun FolderEblanApplicationInfoItem(
     isVisibleFolderEblanApplicationInfos: Boolean,
     folderEblanApplicationInfoPopups: List<FolderEblanApplicationInfoPopup>,
     iconPackInfoFilePaths: Map<String, String?>,
-    onUpdateIsVisibleFolderEblanApplicationInfos: (Boolean) -> Unit,
-    onUpsertFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateFolderPopupMenu: (Boolean) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateFolderEblanApplicationInfo: (FolderEblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateFolderPopupBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onDismiss: () -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
     onDragFolderEblanApplicationInfo: (
         folderEblanApplicationInfo: FolderEblanApplicationInfo,
         movingGridItem: GridItem,
     ) -> Unit,
+    onLongPressFolderApplicationInfo: (
+        folderEblanApplicationInfo: FolderEblanApplicationInfo,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        sharedElementKey: SharedElementKey,
+    ) -> Unit,
+    onTapFolderApplicationInfo: (folderEntry: FolderEntry) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -168,7 +160,7 @@ internal fun FolderEblanApplicationInfoItem(
         key2 = folderEblanApplicationInfoPopups,
         key3 = isVisibleFolderEblanApplicationInfos,
     ) {
-        isVisibleFolderEblanApplicationInfos && folderEblanApplicationInfoPopups.any { it.folderPopupEntry.id == folderEblanApplicationInfo.id }
+        isVisibleFolderEblanApplicationInfos && folderEblanApplicationInfoPopups.any { it.folderEntry.id == folderEblanApplicationInfo.id }
     }
 
     val textAlpha = if (isLongPress) 0f else 1f
@@ -195,10 +187,7 @@ internal fun FolderEblanApplicationInfoItem(
                 isLongPress = it
             },
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-            onUpdateFolderPopupMenu = onUpdateFolderPopupMenu,
-            onDismiss = onDismiss,
-            onUpdateIsDragging = onUpdateIsDragging,
-            onDragFolderEblanApplicationInfoToGrid = onDragFolderEblanApplicationInfo,
+            onDragFolderEblanApplicationInfo = onDragFolderEblanApplicationInfo,
         )
     }
 
@@ -216,10 +205,8 @@ internal fun FolderEblanApplicationInfoItem(
                 detectTapGestures(
                     onTap = if (!isVisibleOverlay) {
                         {
-                            onUpdateIsVisibleFolderEblanApplicationInfos(true)
-
-                            onUpsertFolderEblanApplicationInfoPopupEntry(
-                                FolderPopupEntry(
+                            onTapFolderApplicationInfo(
+                                FolderEntry(
                                     id = folderEblanApplicationInfo.id,
                                     x = intOffset.x,
                                     y = intOffset.y,
@@ -236,20 +223,14 @@ internal fun FolderEblanApplicationInfoItem(
                         {
                             scope.launch {
                                 handleOnLongPressEblanApplicationInfoItem(
-                                    item = folderEblanApplicationInfo,
+                                    t = folderEblanApplicationInfo,
                                     graphicsLayer = graphicsLayer,
                                     intOffset = intOffset,
                                     intSize = intSize,
                                     keyboardController = keyboardController,
                                     sharedElementKey = sharedElementKey,
-                                    onUpdate = onUpdateFolderEblanApplicationInfo,
-                                    onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateIsLongPress = { isLongPress = it },
-                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                    onUpdatePopupMenu = onUpdateFolderPopupMenu,
-                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                    onUpdatePopupBounds = onUpdateFolderPopupBounds,
+                                    onLongPress = onLongPressFolderApplicationInfo,
                                 )
                             }
                         }
@@ -423,22 +404,15 @@ internal fun handleDragFolderEblanApplicationInfoItem(
     isSwiping: Boolean,
     onUpdateIsLongPress: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateFolderPopupMenu: (Boolean) -> Unit,
-    onDismiss: () -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onDragFolderEblanApplicationInfoToGrid: (
+    onDragFolderEblanApplicationInfo: (
         folderEblanApplicationInfo: FolderEblanApplicationInfo,
-        movingGridItem: GridItem,
+        gridItem: GridItem,
     ) -> Unit,
 ) {
     if (!isLongPress) return
 
     when (drag) {
         Drag.Dragging -> {
-            onUpdateFolderPopupMenu(false)
-
-            onDismiss()
-
             val eblanAction = EblanAction(
                 eblanActionType = EblanActionType.None,
                 serialNumber = 0L,
@@ -466,12 +440,10 @@ internal fun handleDragFolderEblanApplicationInfoItem(
                 swipeDown = eblanAction,
             )
 
-            onDragFolderEblanApplicationInfoToGrid(
+            onDragFolderEblanApplicationInfo(
                 folderEblanApplicationInfo,
                 gridItem,
             )
-
-            onUpdateIsDragging(true)
         }
 
         Drag.Cancel, Drag.End -> {

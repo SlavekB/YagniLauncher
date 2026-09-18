@@ -17,10 +17,10 @@
  */
 package com.eblan.launcher.domain.model.grid
 
-import com.eblan.launcher.domain.model.folder.FolderPopupEntry
+import com.eblan.launcher.domain.model.folder.FolderEntry
 
 data class FolderGridItemPopup(
-    val folderPopupEntry: FolderPopupEntry,
+    val folderEntry: FolderEntry,
     val gridItem: GridItem,
     val gridItems: List<GridItem>,
     val gridItemsByPage: Map<Int, List<GridItem>>,

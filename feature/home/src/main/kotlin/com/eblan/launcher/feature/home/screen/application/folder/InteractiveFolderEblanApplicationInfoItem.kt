@@ -74,7 +74,7 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoGridItem
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoGridItemData
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoPopup
-import com.eblan.launcher.domain.model.folder.FolderPopupEntry
+import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.model.folder.PreviewFolderEblanApplicationInfo
 import com.eblan.launcher.domain.model.grid.GridItemSettings
 import com.eblan.launcher.domain.model.grid.MoveFolderEblanApplicationInfoGridItemResult
@@ -121,22 +121,15 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
     drag: Drag,
     showFolderEblanApplicationGridItemPopup: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
-    onUpdateIsVisibleFolders: (Boolean) -> Unit,
-    onUpsertFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
+    onLongPressFolderEblanApplicationInfoGridItem: (
+        folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveFolderEblanApplicationInfoGridItemResult: (MoveFolderEblanApplicationInfoGridItemResult) -> Unit,
-    onUpdateIsCloseFolderEblanApplicationInfoGridItemPopup: (Boolean) -> Unit,
+    onDragFolderEblanApplicationInfoGridItem: () -> Unit,
+    onTapFolderEblanApplicationInfoItem: (FolderEntry) -> Unit,
 ) {
     val isSelected =
         moveFolderEblanApplicationInfoGridItemResult != null &&
@@ -176,7 +169,7 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
         key1 = folderEblanApplicationInfoGridItem,
         key2 = folderEblanApplicationInfoPopups,
     ) {
-        folderEblanApplicationInfoPopups.any { it.folderPopupEntry.id == folderEblanApplicationInfoGridItem.id }
+        folderEblanApplicationInfoPopups.any { it.folderEntry.id == folderEblanApplicationInfoGridItem.id }
     }
 
     val horizontalAlignment =
@@ -198,9 +191,7 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
         key3 = showFolderEblanApplicationGridItemPopup,
     ) {
         if (drag == Drag.Dragging && hasInteraction && showFolderEblanApplicationGridItemPopup) {
-            onUpdateIsDragging(true)
-
-            onUpdateIsCloseFolderEblanApplicationInfoGridItemPopup(true)
+            onDragFolderEblanApplicationInfoGridItem()
         }
     }
 
@@ -226,12 +217,7 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
                 padding = padding,
                 iconSize = iconSize,
                 iconPackInfoFilePaths = iconPackInfoFilePaths,
-                onUpdateImageBitmap = onUpdateImageBitmap,
-                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onShowGridItemPopup = onShowGridItemPopup,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateMoveFolderEblanApplicationInfoGridItemResult = onUpdateMoveFolderEblanApplicationInfoGridItemResult,
+                onLongPressFolderEblanApplicationInfoGridItem = onLongPressFolderEblanApplicationInfoGridItem,
             )
         }
 
@@ -261,14 +247,8 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
                 iconSize = iconSize,
                 isVisibleFolder = isVisibleFolder,
                 iconPackInfoFilePaths = iconPackInfoFilePaths,
-                onUpdateIsVisibleFolders = onUpdateIsVisibleFolders,
-                onUpsertFolderEblanApplicationInfoPopupEntry = onUpsertFolderEblanApplicationInfoPopupEntry,
-                onUpdateImageBitmap = onUpdateImageBitmap,
-                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onShowGridItemPopup = onShowGridItemPopup,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateMoveFolderEblanApplicationInfoGridItemResult = onUpdateMoveFolderEblanApplicationInfoGridItemResult,
+                onLongPressFolderEblanApplicationInfoGridItem = onLongPressFolderEblanApplicationInfoGridItem,
+                onTapFolderEblanApplicationInfoItem = onTapFolderEblanApplicationInfoItem,
             )
         }
     }
@@ -295,18 +275,13 @@ private fun InteractiveEblanApplicationInfoItem(
     padding: Dp,
     iconSize: Dp,
     iconPackInfoFilePaths: Map<String, String?>,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateOverlayBounds: (
+    onLongPressFolderEblanApplicationInfoGridItem: (
+        folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveFolderEblanApplicationInfoGridItemResult: (MoveFolderEblanApplicationInfoGridItemResult) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -382,19 +357,14 @@ private fun InteractiveEblanApplicationInfoItem(
                     onLongPress = if (!isVisibleOverlay && !isInProgress) {
                         {
                             scope.launch {
+                                keyboardController?.hide()
+
                                 onLongPressFolderEblanApplicationInfoGridItem(
-                                    graphicsLayer = graphicsLayer,
-                                    intOffset = intOffset,
-                                    intSize = intSize,
-                                    sharedElementKey = sharedElementKey,
-                                    folderEblanApplicationInfoGridItem = folderEblanApplicationInfoGridItem,
-                                    keyboardController = keyboardController,
-                                    onUpdateImageBitmap = onUpdateImageBitmap,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                    onShowGridItemPopup = onShowGridItemPopup,
-                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                    onUpdateMoveFolderEblanApplicationInfoGridItemResult = onUpdateMoveFolderEblanApplicationInfoGridItemResult,
+                                    folderEblanApplicationInfoGridItem,
+                                    graphicsLayer.toImageBitmap(),
+                                    intOffset,
+                                    intSize,
+                                    sharedElementKey,
                                 )
                             }
                         }
@@ -486,20 +456,14 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
     iconSize: Dp,
     isVisibleFolder: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
-    onUpdateIsVisibleFolders: (Boolean) -> Unit,
-    onUpsertFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateOverlayBounds: (
+    onLongPressFolderEblanApplicationInfoGridItem: (
+        folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveFolderEblanApplicationInfoGridItemResult: (MoveFolderEblanApplicationInfoGridItemResult) -> Unit,
+    onTapFolderEblanApplicationInfoItem: (FolderEntry) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -535,10 +499,8 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
                 detectTapGestures(
                     onTap = if (!isVisibleOverlay && !isInProgress) {
                         {
-                            onUpdateIsVisibleFolders(true)
-
-                            onUpsertFolderEblanApplicationInfoPopupEntry(
-                                FolderPopupEntry(
+                            onTapFolderEblanApplicationInfoItem(
+                                FolderEntry(
                                     id = folderEblanApplicationInfoGridItem.id,
                                     x = intOffset.x,
                                     y = intOffset.y,
@@ -554,19 +516,14 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
                     onLongPress = if (!isVisibleOverlay && !isInProgress) {
                         {
                             scope.launch {
+                                keyboardController?.hide()
+
                                 onLongPressFolderEblanApplicationInfoGridItem(
-                                    graphicsLayer = graphicsLayer,
-                                    intOffset = intOffset,
-                                    intSize = intSize,
-                                    sharedElementKey = sharedElementKey,
-                                    folderEblanApplicationInfoGridItem = folderEblanApplicationInfoGridItem,
-                                    keyboardController = keyboardController,
-                                    onUpdateImageBitmap = onUpdateImageBitmap,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                    onShowGridItemPopup = onShowGridItemPopup,
-                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                    onUpdateMoveFolderEblanApplicationInfoGridItemResult = onUpdateMoveFolderEblanApplicationInfoGridItemResult,
+                                    folderEblanApplicationInfoGridItem,
+                                    graphicsLayer.toImageBitmap(),
+                                    intOffset,
+                                    intSize,
+                                    sharedElementKey,
                                 )
                             }
                         }

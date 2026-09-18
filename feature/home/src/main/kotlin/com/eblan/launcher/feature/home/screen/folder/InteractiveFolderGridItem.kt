@@ -73,7 +73,7 @@ import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
 import coil3.size.Size
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
-import com.eblan.launcher.domain.model.folder.FolderPopupEntry
+import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.model.folder.PreviewFolder
 import com.eblan.launcher.domain.model.grid.FolderGridItemPopup
 import com.eblan.launcher.domain.model.grid.GridItem
@@ -131,21 +131,15 @@ internal fun InteractiveFolderGridItem(
     customFolderBackgroundColor: Int,
     folderGridItemPopups: List<FolderGridItemPopup>,
     onOpenAppDrawer: () -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
+    onUpsertFolderGridItemPopupEntry: (FolderEntry) -> Unit,
+    onLongPressFolderGridItem: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onUpsertFolderGridItemPopupEntry: (FolderPopupEntry) -> Unit,
+    onDragFolderGridItem: () -> Unit,
 ) {
     val density = LocalDensity.current
 
@@ -204,7 +198,7 @@ internal fun InteractiveFolderGridItem(
         key1 = gridItem,
         key2 = folderGridItemPopups,
     ) {
-        folderGridItemPopups.any { it.folderPopupEntry.id == gridItem.id }
+        folderGridItemPopups.any { it.folderEntry.id == gridItem.id }
     }
 
     val horizontalAlignment =
@@ -221,9 +215,7 @@ internal fun InteractiveFolderGridItem(
         key3 = showFolderGridItemPopup,
     ) {
         if (drag == Drag.Dragging && hasInteraction && showFolderGridItemPopup) {
-            onUpdateIsDragging(true)
-
-            onUpdateIsCloseFolderGridItemPopup(true)
+            onDragFolderGridItem()
         }
     }
 
@@ -251,12 +243,7 @@ internal fun InteractiveFolderGridItem(
                 verticalArrangement = verticalArrangement,
                 maxLines = maxLines,
                 onOpenAppDrawer = onOpenAppDrawer,
-                onShowGridItemPopup = onShowGridItemPopup,
-                onUpdateImageBitmap = onUpdateImageBitmap,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                onLongPressFolderGridItem = onLongPressFolderGridItem,
             )
         }
 
@@ -282,12 +269,7 @@ internal fun InteractiveFolderGridItem(
                 verticalArrangement = verticalArrangement,
                 maxLines = maxLines,
                 onOpenAppDrawer = onOpenAppDrawer,
-                onShowGridItemPopup = onShowGridItemPopup,
-                onUpdateImageBitmap = onUpdateImageBitmap,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                onLongPressFolderGridItem = onLongPressFolderGridItem,
             )
         }
 
@@ -311,12 +293,7 @@ internal fun InteractiveFolderGridItem(
                 verticalArrangement = verticalArrangement,
                 maxLines = maxLines,
                 onOpenAppDrawer = onOpenAppDrawer,
-                onShowGridItemPopup = onShowGridItemPopup,
-                onUpdateImageBitmap = onUpdateImageBitmap,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                onLongPressFolderGridItem = onLongPressFolderGridItem,
             )
         }
 
@@ -325,14 +302,12 @@ internal fun InteractiveFolderGridItem(
                 modifier = modifier,
                 sharedTransitionScope = sharedTransitionScope,
                 data = data,
-                drag = drag,
                 gridItem = gridItem,
                 gridItemSettings = currentGridItemSettings,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
-                showFolderGridItemPopup = showFolderGridItemPopup,
                 previewFolderGridItems = previewFolderGridItems,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 padding = padding,
@@ -350,16 +325,9 @@ internal fun InteractiveFolderGridItem(
                 systemTextColor = systemTextColor,
                 systemCustomTextColor = systemCustomTextColor,
                 isVisibleFolder = isVisibleFolder,
-                onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
-                onShowGridItemPopup = onShowGridItemPopup,
                 onUpsertFolderGridItemPopupEntry = onUpsertFolderGridItemPopupEntry,
-                onUpdateImageBitmap = onUpdateImageBitmap,
-                onUpdateIsDragging = onUpdateIsDragging,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                onLongPressFolderGridItem = onLongPressFolderGridItem,
             )
         }
 
@@ -391,18 +359,13 @@ private fun InteractiveApplicationInfoGridItem(
     verticalArrangement: Arrangement.Vertical,
     maxLines: Int,
     onOpenAppDrawer: () -> Unit,
-    onShowGridItemPopup: (
+    onLongPressFolderGridItem: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -460,17 +423,11 @@ private fun InteractiveApplicationInfoGridItem(
                         {
                             scope.launch {
                                 onLongPressFolderGridItem(
-                                    graphicsLayer = graphicsLayer,
-                                    intOffset = intOffset,
-                                    intSize = intSize,
-                                    sharedElementKey = sharedElementKey,
-                                    gridItem = gridItem,
-                                    onUpdateImageBitmap = onUpdateImageBitmap,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                    onShowGridItemPopup = onShowGridItemPopup,
-                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                    gridItem,
+                                    graphicsLayer.toImageBitmap(),
+                                    intOffset,
+                                    intSize,
+                                    sharedElementKey,
                                 )
                             }
                         }
@@ -588,18 +545,13 @@ private fun InteractiveShortcutInfoGridItem(
     verticalArrangement: Arrangement.Vertical,
     maxLines: Int,
     onOpenAppDrawer: () -> Unit,
-    onShowGridItemPopup: (
+    onLongPressFolderGridItem: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val androidLauncherAppsWrapper = LocalLauncherApps.current
 
@@ -658,17 +610,11 @@ private fun InteractiveShortcutInfoGridItem(
                         {
                             scope.launch {
                                 onLongPressFolderGridItem(
-                                    graphicsLayer = graphicsLayer,
-                                    intOffset = intOffset,
-                                    intSize = intSize,
-                                    sharedElementKey = sharedElementKey,
-                                    gridItem = gridItem,
-                                    onUpdateImageBitmap = onUpdateImageBitmap,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                    onShowGridItemPopup = onShowGridItemPopup,
-                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                    gridItem,
+                                    graphicsLayer.toImageBitmap(),
+                                    intOffset,
+                                    intSize,
+                                    sharedElementKey,
                                 )
                             }
                         }
@@ -787,18 +733,13 @@ private fun InteractiveShortcutConfigGridItem(
     verticalArrangement: Arrangement.Vertical,
     maxLines: Int,
     onOpenAppDrawer: () -> Unit,
-    onShowGridItemPopup: (
+    onLongPressFolderGridItem: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -861,17 +802,11 @@ private fun InteractiveShortcutConfigGridItem(
                         {
                             scope.launch {
                                 onLongPressFolderGridItem(
-                                    graphicsLayer = graphicsLayer,
-                                    intOffset = intOffset,
-                                    intSize = intSize,
-                                    sharedElementKey = sharedElementKey,
-                                    gridItem = gridItem,
-                                    onUpdateImageBitmap = onUpdateImageBitmap,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                    onShowGridItemPopup = onShowGridItemPopup,
-                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                    gridItem,
+                                    graphicsLayer.toImageBitmap(),
+                                    intOffset,
+                                    intSize,
+                                    sharedElementKey,
                                 )
                             }
                         }
@@ -953,14 +888,12 @@ private fun InteractiveNestedFolderGridItem(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
     data: GridItemData.Folder,
-    drag: Drag,
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
     isScrollInProgress: Boolean,
     isSelected: Boolean,
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
-    showFolderGridItemPopup: Boolean,
     previewFolderGridItems: Map<String, PreviewFolder>,
     hasShortcutHostPermission: Boolean,
     padding: Dp,
@@ -978,22 +911,15 @@ private fun InteractiveNestedFolderGridItem(
     systemTextColor: TextColor,
     systemCustomTextColor: Int,
     isVisibleFolder: Boolean,
-    onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
-    onShowGridItemPopup: (
+    onUpsertFolderGridItemPopupEntry: (FolderEntry) -> Unit,
+    onLongPressFolderGridItem: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpsertFolderGridItemPopupEntry: (FolderPopupEntry) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -1013,18 +939,6 @@ private fun InteractiveNestedFolderGridItem(
     val iconAlpha = if (hasInteraction || isVisibleFolder) 0f else 1f
 
     val scale = remember { Animatable(1f) }
-
-    LaunchedEffect(
-        key1 = drag,
-        key2 = hasInteraction,
-        key3 = showFolderGridItemPopup,
-    ) {
-        if (drag == Drag.Dragging && hasInteraction && showFolderGridItemPopup) {
-            onUpdateIsDragging(true)
-
-            onUpdateIsCloseFolderGridItemPopup(true)
-        }
-    }
 
     Column(
         modifier = modifier
@@ -1055,17 +969,11 @@ private fun InteractiveNestedFolderGridItem(
                         {
                             scope.launch {
                                 onLongPressFolderGridItem(
-                                    graphicsLayer = graphicsLayer,
-                                    intOffset = intOffset,
-                                    intSize = intSize,
-                                    sharedElementKey = sharedElementKey,
-                                    gridItem = gridItem,
-                                    onUpdateImageBitmap = onUpdateImageBitmap,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                    onShowGridItemPopup = onShowGridItemPopup,
-                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                    gridItem,
+                                    graphicsLayer.toImageBitmap(),
+                                    intOffset,
+                                    intSize,
+                                    sharedElementKey,
                                 )
                             }
                         }
@@ -1075,7 +983,7 @@ private fun InteractiveNestedFolderGridItem(
                     onTap = if (!isVisibleOverlay && !isInProgress) {
                         {
                             onUpsertFolderGridItemPopupEntry(
-                                FolderPopupEntry(
+                                FolderEntry(
                                     id = gridItem.id,
                                     x = intOffset.x,
                                     y = intOffset.y,

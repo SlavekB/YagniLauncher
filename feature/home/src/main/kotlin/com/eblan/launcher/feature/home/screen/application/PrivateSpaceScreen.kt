@@ -105,12 +105,11 @@ internal fun LazyGridScope.privateSpace(
     systemTextColor: TextColor,
     iconPackInfoFilePaths: Map<String, String?>,
     animations: Boolean,
-    onUpdateOverlayBounds: (
+    onLongPressPrivateSpaceApplicationInfoItem: (
+        eblanApplicationInfo: EblanApplicationInfo,
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onUpdatePopupMenu: (Boolean) -> Unit,
-    onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
 ) {
     if (privateEblanUser == null || privateEblanUser.isPrivateSpaceEntryPointHidden) return
 
@@ -137,9 +136,7 @@ internal fun LazyGridScope.privateSpace(
                 systemCustomTextColor = systemCustomTextColor,
                 iconPackInfoFilePaths = iconPackInfoFilePaths,
                 animations = animations,
-                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                onUpdatePopupMenu = onUpdatePopupMenu,
-                onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                onLongPressPrivateSpaceApplicationInfoItem = onLongPressPrivateSpaceApplicationInfoItem,
             )
         }
     }
@@ -247,12 +244,11 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
     systemTextColor: TextColor,
     iconPackInfoFilePaths: Map<String, String?>,
     animations: Boolean,
-    onUpdateOverlayBounds: (
+    onLongPressPrivateSpaceApplicationInfoItem: (
+        eblanApplicationInfo: EblanApplicationInfo,
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onUpdatePopupMenu: (Boolean) -> Unit,
-    onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -349,13 +345,11 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                         {
                             scope.launch {
                                 handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
-                                    onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                                     eblanApplicationInfo = eblanApplicationInfo,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     intOffset = intOffset,
                                     intSize = intSize,
-                                    onUpdatePopupMenu = onUpdatePopupMenu,
                                     keyboardController = keyboardController,
+                                    onLongPressPrivateSpaceApplicationInfoItem = onLongPressPrivateSpaceApplicationInfoItem,
                                 )
                             }
                         }
@@ -417,25 +411,21 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
 }
 
 internal fun handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
-    onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     eblanApplicationInfo: EblanApplicationInfo,
-    onUpdateOverlayBounds: (
+    intOffset: IntOffset,
+    intSize: IntSize,
+    keyboardController: SoftwareKeyboardController?,
+    onLongPressPrivateSpaceApplicationInfoItem: (
+        eblanApplicationInfo: EblanApplicationInfo,
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    intOffset: IntOffset,
-    intSize: IntSize,
-    onUpdatePopupMenu: (Boolean) -> Unit,
-    keyboardController: SoftwareKeyboardController?,
 ) {
-    onUpdateEblanApplicationInfo(eblanApplicationInfo)
-
-    onUpdateOverlayBounds(
+    onLongPressPrivateSpaceApplicationInfoItem(
+        eblanApplicationInfo,
         intOffset,
         intSize,
     )
-
-    onUpdatePopupMenu(true)
 
     keyboardController?.hide()
 }

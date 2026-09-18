@@ -71,7 +71,6 @@ import com.eblan.launcher.domain.model.application.EblanApplicationInfo
 import com.eblan.launcher.domain.model.grid.Associate
 import com.eblan.launcher.domain.model.grid.GridItem
 import com.eblan.launcher.domain.model.grid.GridItemData
-import com.eblan.launcher.domain.model.grid.MoveGridItemResult
 import com.eblan.launcher.domain.model.userdata.AppDrawerSettings
 import com.eblan.launcher.domain.model.userdata.AppDrawerType
 import com.eblan.launcher.domain.model.userdata.EblanAction
@@ -80,7 +79,6 @@ import com.eblan.launcher.domain.model.userdata.TextColor
 import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
 import com.eblan.launcher.feature.home.component.gridItemSharedElement
 import com.eblan.launcher.feature.home.model.Drag
-import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getTextColorFromBackgroundColor
@@ -113,22 +111,14 @@ internal fun EblanApplicationInfoItem(
     systemCustomTextColor: Int,
     iconPackInfoFilePaths: Map<String, String?>,
     animations: Boolean,
-    onDismiss: () -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdatePopupMenu: (Boolean) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onUpdatePopupBounds: (
+    onDragApplicationInfo: (GridItem) -> Unit,
+    onLongPressApplicationInfo: (
+        eblanApplicationInfo: EblanApplicationInfo,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
 ) {
     val graphicsLayer = rememberGraphicsLayer()
@@ -202,15 +192,11 @@ internal fun EblanApplicationInfoItem(
             eblanApplicationInfo = eblanApplicationInfo,
             isLongPress = isLongPress,
             isSwiping = isSwiping,
-            onDismiss = onDismiss,
-            onUpdateGridItemSource = onUpdateGridItemSource,
-            onUpdateIsDragging = onUpdateIsDragging,
             onUpdateIsLongPress = {
                 isLongPress = it
             },
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-            onUpdatePopupMenu = onUpdatePopupMenu,
-            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+            onDragApplicationInfo = onDragApplicationInfo,
         )
     }
 
@@ -254,20 +240,14 @@ internal fun EblanApplicationInfoItem(
                         {
                             scope.launch {
                                 handleOnLongPressEblanApplicationInfoItem(
-                                    item = eblanApplicationInfo,
+                                    t = eblanApplicationInfo,
                                     graphicsLayer = graphicsLayer,
                                     intOffset = intOffset,
                                     intSize = intSize,
                                     keyboardController = keyboardController,
                                     sharedElementKey = sharedElementKey,
-                                    onUpdate = onUpdateEblanApplicationInfo,
-                                    onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateIsLongPress = { isLongPress = it },
-                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                    onUpdatePopupMenu = onUpdatePopupMenu,
-                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                    onUpdatePopupBounds = onUpdatePopupBounds,
+                                    onLongPress = onLongPressApplicationInfo,
                                 )
                             }
                         }
@@ -376,22 +356,14 @@ internal fun handleDragEblanApplicationInfoItem(
     eblanApplicationInfo: EblanApplicationInfo,
     isLongPress: Boolean,
     isSwiping: Boolean,
-    onDismiss: () -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsLongPress: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdatePopupMenu: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onDragApplicationInfo: (GridItem) -> Unit,
 ) {
     if (!isLongPress) return
 
     when (drag) {
         Drag.Dragging -> {
-            onUpdatePopupMenu(false)
-
-            onDismiss()
-
             val data = GridItemData.ApplicationInfo(
                 serialNumber = eblanApplicationInfo.serialNumber,
                 componentName = eblanApplicationInfo.componentName,
@@ -426,17 +398,7 @@ internal fun handleDragEblanApplicationInfoItem(
                 swipeDown = eblanAction,
             )
 
-            onUpdateGridItemSource(GridItemSource.New)
-
-            onUpdateMoveGridItemResult(
-                MoveGridItemResult(
-                    isSuccess = false,
-                    movingGridItem = gridItem,
-                    conflictingGridItem = null,
-                ),
-            )
-
-            onUpdateIsDragging(true)
+            onDragApplicationInfo(gridItem)
         }
 
         Drag.Cancel, Drag.End -> {
@@ -453,48 +415,30 @@ internal fun handleDragEblanApplicationInfoItem(
 
 @OptIn(ExperimentalUuidApi::class)
 internal suspend fun <T> handleOnLongPressEblanApplicationInfoItem(
-    item: T,
+    t: T,
     graphicsLayer: GraphicsLayer,
     intOffset: IntOffset,
     intSize: IntSize,
     keyboardController: SoftwareKeyboardController?,
     sharedElementKey: SharedElementKey,
-    onUpdate: (T) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsLongPress: (Boolean) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
+    onLongPress: (
+        t: T,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
-    ) -> Unit,
-    onUpdatePopupMenu: (Boolean) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdatePopupBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
 ) {
-    onUpdateImageBitmap(graphicsLayer.toImageBitmap())
-
-    onUpdateOverlayBounds(
-        intOffset,
-        intSize,
-    )
-
-    onUpdatePopupBounds(
-        intOffset,
-        intSize,
-    )
-
-    onUpdateSharedElementKey(sharedElementKey)
-
-    onUpdate(item)
-
-    onUpdatePopupMenu(true)
-
     onUpdateIsLongPress(true)
 
-    onUpdateIsVisibleOverlay(true)
-
     keyboardController?.hide()
+
+    onLongPress(
+        t,
+        graphicsLayer.toImageBitmap(),
+        intOffset,
+        intSize,
+        sharedElementKey,
+    )
 }

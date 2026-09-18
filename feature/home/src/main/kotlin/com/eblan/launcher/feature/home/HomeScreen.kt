@@ -46,7 +46,7 @@ import com.eblan.launcher.domain.model.application.GetEblanApplicationInfosByLab
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfo
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoGridItem
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoPopup
-import com.eblan.launcher.domain.model.folder.FolderPopupEntry
+import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.model.folder.PreviewFolder
 import com.eblan.launcher.domain.model.folder.PreviewFolderEblanApplicationInfo
 import com.eblan.launcher.domain.model.grid.Associate
@@ -174,8 +174,8 @@ internal fun HomeRoute(
         onSettings = onSettings,
         onStartSyncData = viewModel::startSyncData,
         onStopSyncData = viewModel::stopSyncData,
-        onUpsertFolderGridItemPopupEntry = viewModel::upsertFolderGridItemPopupEntry,
-        onDeleteFolderPopupEntry = viewModel::deleteFolderGridItemPopupEntry,
+        onUpsertFolderGridItemPopupEntry = viewModel::upsertFolderGridItemEntry,
+        onDeleteFolderPopupEntry = viewModel::deleteFolderGridItemEntry,
         onShowFolderWhenDragging = viewModel::showFolderWhenDragging,
         onUpdateScreen = viewModel::updateScreen,
         onUpdateShortcutConfigIntoShortcutInfoGridItem = viewModel::updateShortcutConfigIntoShortcutInfoGridItem,
@@ -187,9 +187,9 @@ internal fun HomeRoute(
         onPackageAdded = viewModel::packageAdded,
         onPackageChanged = viewModel::packageChanged,
         onShortcutsChanged = viewModel::shortcutsChanged,
-        onResetFolderGridItemPopupEntries = viewModel::resetFolderGridItemPopupEntries,
-        onUpsertFolderEblanApplicationInfoPopupEntry = viewModel::upsertFolderEblanApplicationInfoPopupEntry,
-        onDeleteFolderEblanApplicationInfoPopupEntry = viewModel::deleteFolderEblanApplicationInfoPopupEntry,
+        onResetFolderGridItemPopupEntries = viewModel::resetFolderGridItemEntries,
+        onUpsertFolderEblanApplicationInfoPopupEntry = viewModel::upsertFolderEblanApplicationInfoEntry,
+        onDeleteFolderEblanApplicationInfoPopupEntry = viewModel::deleteFolderEblanApplicationInfoEntry,
         onEditFolderApplicationInfo = onEditFolderApplicationInfo,
         onMoveNewFolderGridItem = viewModel::moveNewFolderGridItem,
         onUpdateMoveFolderEblanApplicationInfoGridItemResult = viewModel::updateMoveFolderEblanApplicationInfoGridItemResult,
@@ -197,7 +197,7 @@ internal fun HomeRoute(
         onResetGridAfterMoveFolderEblanApplicationInfo = viewModel::resetGridAfterMoveFolderEblanApplicationInfo,
         onMoveFolderEblanApplicationInfoGridItemOutsideFolder = viewModel::moveFolderEblanApplicationInfoGridItemOutsideFolder,
         onDragFolderEblanApplicationInfo = viewModel::dragFolderEblanApplicationInfoToGrid,
-        onResetFolderEblanApplicationInfoPopupEntries = viewModel::resetFolderEblanApplicationInfoPopupEntries,
+        onResetFolderEblanApplicationInfoPopupEntries = viewModel::resetFolderEblanApplicationInfoEntries,
         onDeleteFolderEblanApplicationInfoGridItems = viewModel::deleteFolderEblanApplicationInfoGridItems,
     )
 }
@@ -282,10 +282,10 @@ internal fun HomeScreen(
     onSettings: () -> Unit,
     onStartSyncData: () -> Unit,
     onStopSyncData: () -> Unit,
-    onUpsertFolderGridItemPopupEntry: (FolderPopupEntry) -> Unit,
-    onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
+    onUpsertFolderGridItemPopupEntry: (FolderEntry) -> Unit,
+    onDeleteFolderPopupEntry: (FolderEntry) -> Unit,
     onShowFolderWhenDragging: (
-        folderPopupEntry: FolderPopupEntry,
+        folderEntry: FolderEntry,
         movingGridItem: GridItem,
     ) -> Unit,
     onUpdateScreen: (Screen) -> Unit,
@@ -314,8 +314,8 @@ internal fun HomeScreen(
         packageName: String,
     ) -> Unit,
     onResetFolderGridItemPopupEntries: () -> Unit,
-    onUpsertFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
-    onDeleteFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
+    onUpsertFolderEblanApplicationInfoPopupEntry: (FolderEntry) -> Unit,
+    onDeleteFolderEblanApplicationInfoPopupEntry: (FolderEntry) -> Unit,
     onEditFolderApplicationInfo: (String) -> Unit,
     onMoveNewFolderGridItem: (
         folderGridItems: List<GridItem>,
@@ -526,10 +526,10 @@ private fun Success(
     onSettings: () -> Unit,
     onStartSyncData: () -> Unit,
     onStopSyncData: () -> Unit,
-    onUpsertFolderGridItemPopupEntry: (FolderPopupEntry) -> Unit,
-    onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
+    onUpsertFolderGridItemPopupEntry: (FolderEntry) -> Unit,
+    onDeleteFolderPopupEntry: (FolderEntry) -> Unit,
     onShowFolderWhenDragging: (
-        folderPopupEntry: FolderPopupEntry,
+        folderEntry: FolderEntry,
         movingGridItem: GridItem,
     ) -> Unit,
     onUpdateScreen: (Screen) -> Unit,
@@ -558,8 +558,8 @@ private fun Success(
         packageName: String,
     ) -> Unit,
     onResetFolderGridItemPopupEntries: () -> Unit,
-    onUpsertFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
-    onDeleteFolderEblanApplicationInfoPopupEntry: (FolderPopupEntry) -> Unit,
+    onUpsertFolderEblanApplicationInfoPopupEntry: (FolderEntry) -> Unit,
+    onDeleteFolderEblanApplicationInfoPopupEntry: (FolderEntry) -> Unit,
     onEditFolderApplicationInfo: (String) -> Unit,
     onMoveNewFolderGridItem: (
         folderGridItems: List<GridItem>,

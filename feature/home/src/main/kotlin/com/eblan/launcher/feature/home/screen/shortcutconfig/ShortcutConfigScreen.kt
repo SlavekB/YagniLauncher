@@ -90,7 +90,6 @@ import com.eblan.launcher.domain.model.grid.Associate
 import com.eblan.launcher.domain.model.grid.GridItem
 import com.eblan.launcher.domain.model.grid.GridItemData
 import com.eblan.launcher.domain.model.grid.GridItemSettings
-import com.eblan.launcher.domain.model.grid.MoveGridItemResult
 import com.eblan.launcher.domain.model.launcherapps.EblanUser
 import com.eblan.launcher.domain.model.shortcutconfig.EblanShortcutConfig
 import com.eblan.launcher.domain.model.userdata.EblanAction
@@ -99,7 +98,6 @@ import com.eblan.launcher.feature.home.component.ScreenEffect
 import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
 import com.eblan.launcher.feature.home.component.rememberNestedScrollConnectionEffect
 import com.eblan.launcher.feature.home.model.Drag
-import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.SCALE
 import kotlinx.coroutines.FlowPreview
@@ -124,18 +122,16 @@ internal fun ShortcutConfigScreen(
     drag: Drag,
     onDismiss: () -> Unit,
     onGetEblanShortcutConfigsByLabel: (String) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onDragEnd: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onDragShortcutConfig: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        sharedElementKey: SharedElementKey,
+    ) -> Unit,
 ) {
     val layoutDirection = LocalLayoutDirection.current
 
@@ -226,15 +222,8 @@ internal fun ShortcutConfigScreen(
                         isVisibleOverlay = isVisibleOverlay,
                         animations = animations,
                         onDragEnd = onDragEnd,
-                        onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onVerticalDrag = onVerticalDrag,
-                        onUpdateImageBitmap = onUpdateImageBitmap,
-                        onUpdateGridItemSource = onUpdateGridItemSource,
-                        onUpdateSharedElementKey = onUpdateSharedElementKey,
-                        onDismiss = onDismiss,
-                        onUpdateIsDragging = onUpdateIsDragging,
-                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                        onDragShortcutConfig = onDragShortcutConfig,
                     )
                 }
             } else {
@@ -247,15 +236,8 @@ internal fun ShortcutConfigScreen(
                     isVisibleOverlay = isVisibleOverlay,
                     animations = animations,
                     onDragEnd = onDragEnd,
-                    onUpdateOverlayBounds = onUpdateOverlayBounds,
                     onVerticalDrag = onVerticalDrag,
-                    onUpdateImageBitmap = onUpdateImageBitmap,
-                    onUpdateGridItemSource = onUpdateGridItemSource,
-                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                    onDismiss = onDismiss,
-                    onUpdateIsDragging = onUpdateIsDragging,
-                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                    onDragShortcutConfig = onDragShortcutConfig,
                 )
             }
         }
@@ -303,18 +285,14 @@ private fun EblanShortcutConfigsPage(
     isVisibleOverlay: Boolean,
     animations: Boolean,
     onDragEnd: () -> Unit,
-    onUpdateOverlayBounds: (
+    onVerticalDrag: (Float) -> Unit,
+    onDragShortcutConfig: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onVerticalDrag: (Float) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onDismiss: () -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -353,14 +331,7 @@ private fun EblanShortcutConfigsPage(
                         gridItemSettings = gridItemSettings,
                         isVisibleOverlay = isVisibleOverlay,
                         animations = animations,
-                        onUpdateOverlayBounds = onUpdateOverlayBounds,
-                        onUpdateImageBitmap = onUpdateImageBitmap,
-                        onUpdateGridItemSource = onUpdateGridItemSource,
-                        onUpdateSharedElementKey = onUpdateSharedElementKey,
-                        onDismiss = onDismiss,
-                        onUpdateIsDragging = onUpdateIsDragging,
-                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                        onDragShortcutConfig = onDragShortcutConfig,
                     )
                 }
             }
@@ -377,17 +348,13 @@ private fun EblanApplicationInfoItem(
     gridItemSettings: GridItemSettings,
     isVisibleOverlay: Boolean,
     animations: Boolean,
-    onUpdateOverlayBounds: (
+    onDragShortcutConfig: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onDismiss: () -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -438,14 +405,7 @@ private fun EblanApplicationInfoItem(
                         gridItemSettings = gridItemSettings,
                         isVisibleOverlay = isVisibleOverlay,
                         animations = animations,
-                        onUpdateOverlayBounds = onUpdateOverlayBounds,
-                        onUpdateImageBitmap = onUpdateImageBitmap,
-                        onUpdateGridItemSource = onUpdateGridItemSource,
-                        onUpdateSharedElementKey = onUpdateSharedElementKey,
-                        onDismiss = onDismiss,
-                        onUpdateIsDragging = onUpdateIsDragging,
-                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                        onDragShortcutConfig = onDragShortcutConfig,
                     )
                 }
             }
@@ -461,17 +421,13 @@ private fun EblanShortcutConfigItem(
     gridItemSettings: GridItemSettings,
     isVisibleOverlay: Boolean,
     animations: Boolean,
-    onUpdateOverlayBounds: (
+    onDragShortcutConfig: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onDismiss: () -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -506,14 +462,7 @@ private fun EblanShortcutConfigItem(
                                 keyboardController = keyboardController,
                                 scale = scale,
                                 animations = animations,
-                                onDismiss = onDismiss,
-                                onUpdateGridItemSource = onUpdateGridItemSource,
-                                onUpdateImageBitmap = onUpdateImageBitmap,
-                                onUpdateIsDragging = onUpdateIsDragging,
-                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                onUpdateSharedElementKey = onUpdateSharedElementKey,
+                                onDragShortcutConfig = onDragShortcutConfig,
                             )
                         }
                     },
@@ -566,17 +515,13 @@ private suspend fun handleOnLongPress(
     keyboardController: SoftwareKeyboardController?,
     scale: Animatable<Float, AnimationVector1D>,
     animations: Boolean,
-    onDismiss: () -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onUpdateOverlayBounds: (
+    onDragShortcutConfig: (
+        gridItem: GridItem,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
     val id = Uuid.random().toHexString()
 
@@ -590,37 +535,18 @@ private suspend fun handleOnLongPress(
         scale.animateTo(SCALE)
     }
 
-    onUpdateGridItemSource(GridItemSource.New)
+    keyboardController?.hide()
 
-    onUpdateMoveGridItemResult(
-        MoveGridItemResult(
-            isSuccess = false,
-            movingGridItem = gridItem,
-            conflictingGridItem = null,
-        ),
-    )
-
-    onUpdateImageBitmap(graphicsLayer.toImageBitmap())
-
-    onUpdateOverlayBounds(
+    onDragShortcutConfig(
+        gridItem,
+        graphicsLayer.toImageBitmap(),
         intOffset,
         intSize,
-    )
-
-    onUpdateSharedElementKey(
         SharedElementKey(
             id = id,
             parent = SharedElementKey.Parent.Grid,
         ),
     )
-
-    keyboardController?.hide()
-
-    onUpdateIsVisibleOverlay(true)
-
-    onUpdateIsDragging(true)
-
-    onDismiss()
 }
 
 private fun getShortcutConfigGridItem(

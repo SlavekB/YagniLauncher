@@ -90,30 +90,23 @@ import coil3.request.addLastModifiedToFileCacheKey
 import coil3.request.crossfade
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.application.EblanApplicationInfo
-import com.eblan.launcher.domain.model.application.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.application.EblanApplicationInfoTag
 import com.eblan.launcher.domain.model.application.GetEblanApplicationInfosByLabelAndTag
-import com.eblan.launcher.domain.model.grid.MoveGridItemResult
+import com.eblan.launcher.domain.model.grid.GridItem
 import com.eblan.launcher.domain.model.launcherapps.EblanUser
 import com.eblan.launcher.domain.model.launcherapps.EblanUserPageKey
 import com.eblan.launcher.domain.model.launcherapps.EblanUserType
 import com.eblan.launcher.domain.model.launcherapps.ManagedProfileResult
-import com.eblan.launcher.domain.model.shortcutinfo.EblanShortcutInfo
-import com.eblan.launcher.domain.model.shortcutinfo.EblanShortcutInfoByGroup
 import com.eblan.launcher.domain.model.userdata.AppDrawerSettings
 import com.eblan.launcher.domain.model.userdata.TextColor
-import com.eblan.launcher.domain.model.widget.EblanAppWidgetProviderInfo
 import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
 import com.eblan.launcher.feature.home.component.gridItemSharedElement
 import com.eblan.launcher.feature.home.component.rememberNestedScrollConnectionEffect
 import com.eblan.launcher.feature.home.model.Drag
-import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
-import com.eblan.launcher.feature.home.screen.application.ApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.ApplicationScreenEffect
 import com.eblan.launcher.feature.home.screen.application.ApplicationSearchBar
 import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoTabRow
-import com.eblan.launcher.feature.home.screen.application.PrivateApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.QuiteModeScreen
 import com.eblan.launcher.feature.home.screen.application.TagElevatedFilterChip
 import com.eblan.launcher.feature.home.screen.application.handleDragEblanApplicationInfoItem
@@ -136,11 +129,8 @@ internal fun ListApplicationScreen(
     sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
-    eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanApplicationInfoTags: List<EblanApplicationInfoTag>,
-    eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
-    hasShortcutHostPermission: Boolean,
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
     screenHeight: Int,
@@ -151,34 +141,25 @@ internal fun ListApplicationScreen(
     animations: Boolean,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
-    onEditApplicationInfo: (
-        serialNumber: Long,
-        componentName: String,
-    ) -> Unit,
     onGetEblanApplicationInfosByLabel: (String) -> Unit,
     onGetEblanApplicationInfosByTagId: (Long?) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
+    onVerticalDrag: (Float) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onDragApplicationInfo: (GridItem) -> Unit,
+    onLongPressApplicationInfo: (
+        eblanApplicationInfo: EblanApplicationInfo,
+        imageBitmap: ImageBitmap,
+        intOffset: IntOffset,
+        intSize: IntSize,
+        sharedElementKey: SharedElementKey,
+    ) -> Unit,
+    onLongPressPrivateSpaceApplicationInfoItem: (
+        eblanApplicationInfo: EblanApplicationInfo,
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onVerticalDrag: (Float) -> Unit,
-    onWidgets: (EblanApplicationInfoGroup) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val layoutDirection = LocalLayoutDirection.current
-
-    var showPopupApplicationMenu by remember { mutableStateOf(false) }
-
-    var showPrivatePopupApplicationMenu by remember { mutableStateOf(false) }
-
-    var popupIntOffset by remember { mutableStateOf(IntOffset.Zero) }
-
-    var popupIntSize by remember { mutableStateOf(IntSize.Zero) }
 
     val horizontalPagerState = rememberPagerState(
         pageCount = {
@@ -192,8 +173,6 @@ internal fun ListApplicationScreen(
 
     var selectedEblanApplicationInfoTagId by remember { mutableStateOf<Long?>(null) }
 
-    var selectedEblanApplicationInfo by remember { mutableStateOf<EblanApplicationInfo?>(null) }
-
     val eblanUserPageKeys =
         remember(key1 = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos) {
             getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.distinctBy { it.eblanUser.serialNumber }
@@ -205,7 +184,6 @@ internal fun ListApplicationScreen(
         horizontalPagerState = horizontalPagerState,
         screenHeight = screenHeight,
         selectedEblanApplicationInfoTagId = selectedEblanApplicationInfoTagId,
-        showPopupApplicationMenu = showPopupApplicationMenu,
         swipeY = swipeY,
         textFieldState = textFieldState,
         showKeyboard = appDrawerSettings.showKeyboard,
@@ -213,9 +191,6 @@ internal fun ListApplicationScreen(
         onDismiss = onDismiss,
         onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
         onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
-        onShowPopupApplicationMenu = {
-            showPopupApplicationMenu = it
-        },
     )
 
     Column(
@@ -278,86 +253,19 @@ internal fun ListApplicationScreen(
                 managedProfileResult = managedProfileResult,
                 paddingValues = paddingValues,
                 isVisibleOverlay = isVisibleOverlay,
-                showPopupApplicationMenu = showPopupApplicationMenu,
                 swipeY = swipeY,
                 screenHeight = screenHeight,
                 systemTextColor = systemTextColor,
                 systemCustomTextColor = systemCustomTextColor,
                 animations = animations,
-                onDismiss = onDismiss,
                 onDragEnd = onDragEnd,
-                onUpdateGridItemSource = onUpdateGridItemSource,
-                onUpdateImageBitmap = onUpdateImageBitmap,
-                onUpdateIsDragging = onUpdateIsDragging,
-                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                onUpdatePopupMenu = {
-                    showPopupApplicationMenu = it
-                },
-                onUpdatePrivatePopupMenu = {
-                    showPrivatePopupApplicationMenu = it
-                },
-                onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onVerticalDrag = onVerticalDrag,
-                onUpdateEblanApplicationInfo = {
-                    selectedEblanApplicationInfo = it
-                },
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                onUpdatePopupBounds = { intOffset, intSize ->
-                    popupIntOffset = intOffset
-
-                    popupIntSize = intSize
-                },
+                onDragApplicationInfo = onDragApplicationInfo,
+                onLongPressApplicationInfo = onLongPressApplicationInfo,
+                onLongPressPrivateSpaceApplicationInfoItem = onLongPressPrivateSpaceApplicationInfoItem,
             )
         }
-    }
-
-    if (showPopupApplicationMenu && selectedEblanApplicationInfo != null) {
-        ApplicationInfoPopup(
-            eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfosGroup,
-            eblanShortcutInfosGroup = eblanShortcutInfosGroup,
-            eblanApplicationInfo = selectedEblanApplicationInfo,
-            gridItemSettings = appDrawerSettings.gridItemSettings,
-            hasShortcutHostPermission = hasShortcutHostPermission,
-            popupIntOffset = popupIntOffset,
-            popupIntSize = popupIntSize,
-            isVisibleOverlay = isVisibleOverlay,
-            paddingValues = paddingValues,
-            animations = animations,
-            onDismissRequest = {
-                showPopupApplicationMenu = false
-            },
-            onUpdateIsDragging = {
-                showPopupApplicationMenu = false
-
-                onDismiss()
-
-                onUpdateIsDragging(it)
-            },
-            onEditApplicationInfo = onEditApplicationInfo,
-            onUpdateGridItemSource = onUpdateGridItemSource,
-            onUpdateImageBitmap = onUpdateImageBitmap,
-            onUpdateOverlayBounds = onUpdateOverlayBounds,
-            onUpdateSharedElementKey = onUpdateSharedElementKey,
-            onWidgets = onWidgets,
-            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-        )
-    }
-
-    if (showPrivatePopupApplicationMenu && selectedEblanApplicationInfo != null) {
-        PrivateApplicationInfoPopup(
-            eblanShortcutInfosGroup = eblanShortcutInfosGroup,
-            eblanApplicationInfo = selectedEblanApplicationInfo,
-            hasShortcutHostPermission = hasShortcutHostPermission,
-            popupIntOffset = popupIntOffset,
-            popupIntSize = popupIntSize,
-            paddingValues = paddingValues,
-            onDismissRequest = {
-                showPrivatePopupApplicationMenu = false
-            },
-            onEditApplicationInfo = onEditApplicationInfo,
-        )
     }
 }
 
@@ -372,30 +280,25 @@ private fun EblanApplicationInfosPage(
     index: Int,
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
-    showPopupApplicationMenu: Boolean,
     isVisibleOverlay: Boolean,
     swipeY: Float,
     screenHeight: Int,
     systemCustomTextColor: Int,
     systemTextColor: TextColor,
     animations: Boolean,
-    onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
+    onVerticalDrag: (Float) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onDragApplicationInfo: (GridItem) -> Unit,
+    onLongPressApplicationInfo: (
+        eblanApplicationInfo: EblanApplicationInfo,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpdatePopupMenu: (Boolean) -> Unit,
-    onUpdatePrivatePopupMenu: (Boolean) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onVerticalDrag: (Float) -> Unit,
-    onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onUpdatePopupBounds: (
+    onLongPressPrivateSpaceApplicationInfoItem: (
+        eblanApplicationInfo: EblanApplicationInfo,
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
@@ -451,27 +354,18 @@ private fun EblanApplicationInfosPage(
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                 managedProfileResult = managedProfileResult,
                 paddingValues = paddingValues,
-                showPopupApplicationMenu = showPopupApplicationMenu,
                 isVisibleOverlay = isVisibleOverlay,
                 swipeY = swipeY,
                 screenHeight = screenHeight,
                 systemTextColor = systemTextColor,
                 systemCustomTextColor = systemCustomTextColor,
                 animations = animations,
-                onDismiss = onDismiss,
                 onDragEnd = onDragEnd,
-                onUpdateGridItemSource = onUpdateGridItemSource,
-                onUpdateImageBitmap = onUpdateImageBitmap,
-                onUpdateIsDragging = onUpdateIsDragging,
-                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                onUpdatePopupMenu = onUpdatePopupMenu,
-                onUpdatePrivatePopupMenu = onUpdatePrivatePopupMenu,
-                onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onVerticalDrag = onVerticalDrag,
-                onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                onUpdatePopupBounds = onUpdatePopupBounds,
+                onDragApplicationInfo = onDragApplicationInfo,
+                onLongPressApplicationInfo = onLongPressApplicationInfo,
+                onLongPressPrivateSpaceApplicationInfoItem = onLongPressPrivateSpaceApplicationInfoItem,
             )
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isDefaultLauncher && eblanUserPageKey.eblanUser.serialNumber > 0 && userHandle != null) {
@@ -513,29 +407,24 @@ private fun EblanApplicationInfos(
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
-    showPopupApplicationMenu: Boolean,
     swipeY: Float,
     screenHeight: Int,
     systemCustomTextColor: Int,
     systemTextColor: TextColor,
     animations: Boolean,
-    onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
+    onVerticalDrag: (Float) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onDragApplicationInfo: (GridItem) -> Unit,
+    onLongPressApplicationInfo: (
+        eblanApplicationInfo: EblanApplicationInfo,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onUpdatePopupMenu: (Boolean) -> Unit,
-    onUpdatePrivatePopupMenu: (Boolean) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onVerticalDrag: (Float) -> Unit,
-    onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onUpdatePopupBounds: (
+    onLongPressPrivateSpaceApplicationInfoItem: (
+        eblanApplicationInfo: EblanApplicationInfo,
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
@@ -564,12 +453,6 @@ private fun EblanApplicationInfos(
         managedProfileResult = managedProfileResult,
         eblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
     )
-
-    LaunchedEffect(key1 = lazyListState.isScrollInProgress) {
-        if (lazyListState.isScrollInProgress && showPopupApplicationMenu) {
-            onUpdatePopupMenu(false)
-        }
-    }
 
     LaunchedEffect(key1 = swipeY) {
         if (swipeY.toInt() == screenHeight) {
@@ -611,17 +494,9 @@ private fun EblanApplicationInfos(
                             systemCustomTextColor = systemCustomTextColor,
                             iconPackInfoFilePaths = getEblanApplicationInfosByLabelAndTag.iconPackInfoFilePaths,
                             animations = animations,
-                            onDismiss = onDismiss,
-                            onUpdateGridItemSource = onUpdateGridItemSource,
-                            onUpdateImageBitmap = onUpdateImageBitmap,
-                            onUpdateIsDragging = onUpdateIsDragging,
-                            onUpdateOverlayBounds = onUpdateOverlayBounds,
-                            onUpdatePopupMenu = onUpdatePopupMenu,
-                            onUpdateSharedElementKey = onUpdateSharedElementKey,
-                            onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                            onUpdatePopupBounds = onUpdatePopupBounds,
+                            onDragApplicationInfo = onDragApplicationInfo,
+                            onLongPressApplicationInfo = onLongPressApplicationInfo,
                         )
                     }
 
@@ -638,9 +513,7 @@ private fun EblanApplicationInfos(
                         systemCustomTextColor = systemCustomTextColor,
                         iconPackInfoFilePaths = getEblanApplicationInfosByLabelAndTag.iconPackInfoFilePaths,
                         animations = animations,
-                        onUpdateOverlayBounds = onUpdateOverlayBounds,
-                        onUpdatePopupMenu = onUpdatePrivatePopupMenu,
-                        onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                        onLongPressPrivateSpaceApplicationInfoItem = onLongPressPrivateSpaceApplicationInfoItem,
                     )
                 }
 
@@ -664,17 +537,9 @@ private fun EblanApplicationInfos(
                             systemCustomTextColor = systemCustomTextColor,
                             iconPackInfoFilePaths = getEblanApplicationInfosByLabelAndTag.iconPackInfoFilePaths,
                             animations = animations,
-                            onDismiss = onDismiss,
-                            onUpdateGridItemSource = onUpdateGridItemSource,
-                            onUpdateImageBitmap = onUpdateImageBitmap,
-                            onUpdateIsDragging = onUpdateIsDragging,
-                            onUpdateOverlayBounds = onUpdateOverlayBounds,
-                            onUpdatePopupMenu = onUpdatePopupMenu,
-                            onUpdateSharedElementKey = onUpdateSharedElementKey,
-                            onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                            onUpdatePopupBounds = onUpdatePopupBounds,
+                            onDragApplicationInfo = onDragApplicationInfo,
+                            onLongPressApplicationInfo = onLongPressApplicationInfo,
                         )
                     }
                 }
@@ -714,22 +579,14 @@ private fun EblanApplicationInfoItem(
     systemTextColor: TextColor,
     iconPackInfoFilePaths: Map<String, String?>,
     animations: Boolean,
-    onDismiss: () -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdatePopupMenu: (Boolean) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onUpdatePopupBounds: (
+    onDragApplicationInfo: (GridItem) -> Unit,
+    onLongPressApplicationInfo: (
+        eblanApplicationInfo: EblanApplicationInfo,
+        imageBitmap: ImageBitmap,
         intOffset: IntOffset,
         intSize: IntSize,
+        sharedElementKey: SharedElementKey,
     ) -> Unit,
 ) {
     val graphicsLayer = rememberGraphicsLayer()
@@ -797,15 +654,11 @@ private fun EblanApplicationInfoItem(
             eblanApplicationInfo = eblanApplicationInfo,
             isLongPress = isLongPress,
             isSwiping = isSwiping,
-            onDismiss = onDismiss,
-            onUpdateGridItemSource = onUpdateGridItemSource,
-            onUpdateIsDragging = onUpdateIsDragging,
             onUpdateIsLongPress = {
                 isLongPress = it
             },
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-            onUpdatePopupMenu = onUpdatePopupMenu,
-            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+            onDragApplicationInfo = onDragApplicationInfo,
         )
     }
 
@@ -843,20 +696,14 @@ private fun EblanApplicationInfoItem(
                         {
                             scope.launch {
                                 handleOnLongPressEblanApplicationInfoItem(
-                                    sharedElementKey = sharedElementKey,
-                                    item = eblanApplicationInfo,
+                                    t = eblanApplicationInfo,
                                     graphicsLayer = graphicsLayer,
                                     intOffset = intOffset,
                                     intSize = intSize,
                                     keyboardController = keyboardController,
-                                    onUpdate = onUpdateEblanApplicationInfo,
-                                    onUpdateImageBitmap = onUpdateImageBitmap,
+                                    sharedElementKey = sharedElementKey,
                                     onUpdateIsLongPress = { isLongPress = it },
-                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                    onUpdatePopupMenu = onUpdatePopupMenu,
-                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                    onUpdatePopupBounds = onUpdatePopupBounds,
+                                    onLongPress = onLongPressApplicationInfo,
                                 )
                             }
                         }
