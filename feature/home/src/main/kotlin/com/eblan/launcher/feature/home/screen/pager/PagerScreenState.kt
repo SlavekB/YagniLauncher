@@ -1708,7 +1708,7 @@ internal class PagerScreenState(
         folderEntry: FolderEntry,
         onUpsertFolderEntry: (FolderEntry) -> Unit,
     ) {
-        isVisibleFolderGridItems = true
+        isVisibleFolderEblanApplicationInfos = true
 
         onUpsertFolderEntry(folderEntry)
     }
