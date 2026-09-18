@@ -113,7 +113,6 @@ internal fun FolderScreen(
     ) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onMoveFolderGridItem: (
         folderGridItemPopup: FolderGridItemPopup,
@@ -286,7 +285,6 @@ internal fun FolderScreen(
             isLastFolderGridItem = isLastFolderGridItem,
             isInProgress = isInProgress,
             onMoveFolderGridItem = onMoveFolderGridItem,
-            onUpdateSharedElementKey = onUpdateSharedElementKey,
             onUpsertFolderGridItemPopupEntry = onUpsertFolderGridItemPopupEntry,
         )
     }

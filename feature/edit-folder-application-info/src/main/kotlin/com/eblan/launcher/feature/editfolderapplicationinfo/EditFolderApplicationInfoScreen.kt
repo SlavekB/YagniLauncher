@@ -80,8 +80,6 @@ internal fun EditFolderApplicationInfoRoute(
 
     val previewFolderEblanApplicationInfos by viewModel.previewFolderEblanApplicationInfos.collectAsStateWithLifecycle()
 
-    val topLevelFolderEblanApplicationInfos by viewModel.topLevelFolderEblanApplicationInfos.collectAsStateWithLifecycle()
-
     EditFolderApplicationInfoScreen(
         modifier = modifier,
         editFolderApplicationInfoUiState = editFolderApplicationInfoUiState,
@@ -89,7 +87,6 @@ internal fun EditFolderApplicationInfoRoute(
         packageManagerIconPackInfos = packageManagerIconPackInfos,
         folderEblanApplicationInfos = folderEblanApplicationInfos,
         previewFolderEblanApplicationInfos = previewFolderEblanApplicationInfos,
-        topLevelFolderEblanApplicationInfos = topLevelFolderEblanApplicationInfos,
         onNavigateUp = onNavigateUp,
         onUpdateIconPackInfoPackageName = viewModel::updateIconPackInfoPackageName,
         onResetFolderEblanApplicationInfoCustomIcon = viewModel::resetFolderEblanApplicationInfoCustomIcon,
@@ -110,7 +107,6 @@ internal fun EditFolderApplicationInfoScreen(
     packageManagerIconPackInfos: List<PackageManagerIconPackInfo>,
     folderEblanApplicationInfos: List<FolderEblanApplicationInfo>,
     previewFolderEblanApplicationInfos: Map<String, PreviewFolderEblanApplicationInfo>,
-    topLevelFolderEblanApplicationInfos: List<FolderEblanApplicationInfo>,
     onNavigateUp: () -> Unit,
     onUpdateIconPackInfoPackageName: (String) -> Unit,
     onResetFolderEblanApplicationInfoCustomIcon: (FolderEblanApplicationInfo) -> Unit,

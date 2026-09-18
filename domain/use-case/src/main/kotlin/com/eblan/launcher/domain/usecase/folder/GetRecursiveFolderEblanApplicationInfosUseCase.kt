@@ -45,8 +45,6 @@ class GetRecursiveFolderEblanApplicationInfosUseCase @Inject constructor(
     suspend operator fun invoke(
         id: String,
         folderId: String,
-        label: String,
-        icon: String?,
     ): List<GridItem> = withContext(defaultDispatcher) {
         val userData = userDataRepository.userDataFlow.first()
 

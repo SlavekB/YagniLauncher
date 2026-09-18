@@ -58,7 +58,6 @@ internal fun handleDragFolderGridItem(
         gridHeight: Int,
         currentPage: Int,
     ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpsertFolderGridItemPopupEntry: (FolderEntry) -> Unit,
 ) {
     if (drag != Drag.Dragging ||
@@ -90,18 +89,9 @@ internal fun handleDragFolderGridItem(
     if (folderGridDragPosition.x in 0 until folderGridDragPosition.width &&
         folderGridDragPosition.y in 0 until folderGridDragPosition.height
     ) {
-        val movingGridItem = moveGridItemResult.movingGridItem
-
-        onUpdateSharedElementKey(
-            SharedElementKey(
-                id = movingGridItem.id,
-                parent = SharedElementKey.Parent.Folder,
-            ),
-        )
-
         onMoveFolderGridItem(
             folderGridItemPopup,
-            movingGridItem,
+            moveGridItemResult.movingGridItem,
             folderGridDragPosition.x,
             folderGridDragPosition.y,
             folderGridDragPosition.width,

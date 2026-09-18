@@ -113,7 +113,6 @@ internal fun FolderApplicationScreen(
     showFolderEblanApplicationGridItemPopup: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
     onUpsertFolderEblanApplicationInfoPopupEntry: (FolderEntry) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onMoveFolderEblanApplicationInfoGridItem: (
         folderEblanApplicationInfoPopup: FolderEblanApplicationInfoPopup,
@@ -294,7 +293,6 @@ internal fun FolderApplicationScreen(
             isLastFolderEblanApplicationInfoGridItem = isLastFolderEblanApplicationInfo,
             isInProgress = isInProgress,
             onMoveFolderEblanApplicationInfoGridItem = onMoveFolderEblanApplicationInfoGridItem,
-            onUpdateSharedElementKey = onUpdateSharedElementKey,
             onUpsertFolderEblanApplicationInfoPopupEntry = onUpsertFolderEblanApplicationInfoPopupEntry,
         )
     }

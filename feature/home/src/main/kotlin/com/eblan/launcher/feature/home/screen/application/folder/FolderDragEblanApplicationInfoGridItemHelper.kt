@@ -26,7 +26,6 @@ import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoPopup
 import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.model.grid.MoveFolderEblanApplicationInfoGridItemResult
 import com.eblan.launcher.feature.home.model.Drag
-import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.calculateFolderGridDragPosition
 
 internal fun handleDragFolderEblanApplicationInfoGridItem(
@@ -58,7 +57,6 @@ internal fun handleDragFolderEblanApplicationInfoGridItem(
         gridHeight: Int,
         currentPage: Int,
     ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpsertFolderEblanApplicationInfoPopupEntry: (FolderEntry) -> Unit,
 ) {
     if (drag != Drag.Dragging ||
@@ -90,19 +88,9 @@ internal fun handleDragFolderEblanApplicationInfoGridItem(
     if (folderGridDragPosition.x in 0 until folderGridDragPosition.width &&
         folderGridDragPosition.y in 0 until folderGridDragPosition.height
     ) {
-        val movingFolderGridItem =
-            moveFolderEblanApplicationInfoGridItemResult.folderEblanApplicationInfoGridItem
-
-        onUpdateSharedElementKey(
-            SharedElementKey(
-                id = movingFolderGridItem.id,
-                parent = SharedElementKey.Parent.Folder,
-            ),
-        )
-
         onMoveFolderEblanApplicationInfoGridItem(
             folderEblanApplicationInfoPopup,
-            movingFolderGridItem,
+            moveFolderEblanApplicationInfoGridItemResult.folderEblanApplicationInfoGridItem,
             folderGridDragPosition.x,
             folderGridDragPosition.y,
             folderGridDragPosition.width,

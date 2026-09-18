@@ -19,8 +19,6 @@ package com.eblan.launcher.feature.home.screen.pager
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.State
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
@@ -65,53 +63,6 @@ internal suspend fun handlePageDirection(
         PageDirection.Left -> onAnimateScrollToPage(currentPage - 1)
         PageDirection.Right -> onAnimateScrollToPage(currentPage + 1)
     }
-}
-
-internal suspend fun onLongPress(
-    graphicsLayer: GraphicsLayer,
-    intOffset: IntOffset,
-    intSize: IntSize,
-    sharedElementKey: SharedElementKey,
-    gridItem: GridItem,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-) {
-    onUpdateGridItemSource(GridItemSource.Existing)
-
-    onUpdateMoveGridItemResult(
-        MoveGridItemResult(
-            isSuccess = true,
-            movingGridItem = gridItem,
-            conflictingGridItem = null,
-        ),
-    )
-
-    onUpdateImageBitmap(graphicsLayer.toImageBitmap())
-
-    onUpdateOverlayBounds(
-        intOffset,
-        intSize,
-    )
-
-    onUpdateSharedElementKey(sharedElementKey)
-
-    onShowGridItemPopup(
-        intOffset,
-        intSize,
-    )
-
-    onUpdateIsVisibleOverlay(true)
 }
 
 internal fun handleAnimateScrollToPage(

@@ -17,8 +17,6 @@
  */
 package com.eblan.launcher.domain.repository
 
-import com.eblan.launcher.domain.model.application.EblanApplicationInfo
-import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfo
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoGridItem
 import com.eblan.launcher.domain.model.folder.FolderGridItems
 import kotlinx.coroutines.flow.Flow

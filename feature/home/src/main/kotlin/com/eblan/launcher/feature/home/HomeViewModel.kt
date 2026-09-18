@@ -860,7 +860,7 @@ internal class HomeViewModel @Inject constructor(
                 )
             }
 
-            when (val data = folderEblanApplicationInfoGridItem.data) {
+            when (folderEblanApplicationInfoGridItem.data) {
                 is FolderEblanApplicationInfoGridItemData.ApplicationInfo -> {
                     _gridItemSource.update {
                         GridItemSource.New
@@ -873,8 +873,6 @@ internal class HomeViewModel @Inject constructor(
                             folderGridItems = getRecursiveFolderEblanApplicationInfosUseCase(
                                 id = movingGridItem.id,
                                 folderId = folderEblanApplicationInfoGridItem.id,
-                                label = data.label,
-                                icon = data.icon,
                             ),
                         )
                     }
@@ -903,8 +901,6 @@ internal class HomeViewModel @Inject constructor(
                     folderGridItems = getRecursiveFolderEblanApplicationInfosUseCase(
                         id = movingGridItem.id,
                         folderId = folderEblanApplicationInfo.id,
-                        label = folderEblanApplicationInfo.label,
-                        icon = folderEblanApplicationInfo.icon,
                     ),
                 )
             }

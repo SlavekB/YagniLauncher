@@ -18,13 +18,9 @@
 package com.eblan.launcher.feature.home.component
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import com.eblan.launcher.feature.home.model.Drag
