@@ -1082,13 +1082,13 @@ internal fun PagerScreen(
                     )
                 },
                 onUpdateIsResizing = pagerScreenState::updateIsResizing,
-                onDragShortcutInfo = { gridItem, imageBitmap, intOffset, intSize, newSharedElementKey ->
+                onDragShortcutInfo = { gridItem, imageBitmap, intOffset, intSize, sharedElementKey ->
                     pagerScreenState.dragShortcutInfoFromGridItemMenu(
                         gridItem = gridItem,
                         imageBitmap = imageBitmap,
                         intOffset = intOffset,
                         intSize = intSize,
-                        newSharedElementKey = newSharedElementKey,
+                        newSharedElementKey = sharedElementKey,
                         onUpdateGridItemSource = onUpdateGridItemSource,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
@@ -1204,13 +1204,13 @@ internal fun PagerScreen(
                     )
                 },
                 onResetFolderGridItemPopupEntries = onResetFolderGridItemPopupEntries,
-                onDragShortcutInfo = { gridItem, imageBitmap, intOffset, intSize, newSharedElementKey ->
+                onDragShortcutInfo = { gridItem, imageBitmap, intOffset, intSize, sharedElementKey ->
                     pagerScreenState.dragShortcutInfoFromFolderGridItemMenu(
                         gridItem = gridItem,
                         imageBitmap = imageBitmap,
                         intOffset = intOffset,
                         intSize = intSize,
-                        newSharedElementKey = newSharedElementKey,
+                        newSharedElementKey = sharedElementKey,
                         onUpdateGridItemSource = onUpdateGridItemSource,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
@@ -1326,13 +1326,13 @@ internal fun PagerScreen(
                         onResetFolderEblanApplicationInfoPopupEntries = onResetFolderEblanApplicationInfoPopupEntries,
                     )
                 },
-                onDragShortcutInfo = { gridItem, imageBitmap, intOffset, intSize, newSharedElementKey ->
+                onDragShortcutInfo = { gridItem, imageBitmap, intOffset, intSize, sharedElementKey ->
                     pagerScreenState.dragShortcutInfoFromApplicationMenu(
                         gridItem = gridItem,
                         imageBitmap = imageBitmap,
                         intOffset = intOffset,
                         intSize = intSize,
-                        newSharedElementKey = newSharedElementKey,
+                        newSharedElementKey = sharedElementKey,
                         onUpdateGridItemSource = onUpdateGridItemSource,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
@@ -1378,13 +1378,13 @@ internal fun PagerScreen(
                 onGetEblanAppWidgetProviderInfosByLabel = onGetEblanAppWidgetProviderInfosByLabel,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onVerticalDrag = pagerScreenState::verticalDragWidgetScreen,
-                onDragWidget = { gridItem, imageBitmap, intOffset, intSize, newSharedElementKey ->
+                onDragWidget = { gridItem, imageBitmap, intOffset, intSize, sharedElementKey ->
                     pagerScreenState.dragWidget(
                         gridItem = gridItem,
                         imageBitmap = imageBitmap,
                         intOffset = intOffset,
                         intSize = intSize,
-                        newSharedElementKey = newSharedElementKey,
+                        newSharedElementKey = sharedElementKey,
                         onUpdateGridItemSource = onUpdateGridItemSource,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
@@ -1410,13 +1410,13 @@ internal fun PagerScreen(
                 onVerticalDrag = pagerScreenState::verticalDragShortcutConfigScreen,
                 onDragEnd = pagerScreenState::handleOnDragEndShortcutConfigScreen,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onDragShortcutConfig = { gridItem, imageBitmap, intOffset, intSize, newSharedElementKey ->
+                onDragShortcutConfig = { gridItem, imageBitmap, intOffset, intSize, sharedElementKey ->
                     pagerScreenState.dragShortcutConfig(
                         gridItem = gridItem,
                         imageBitmap = imageBitmap,
                         intOffset = intOffset,
                         intSize = intSize,
-                        newSharedElementKey = newSharedElementKey,
+                        newSharedElementKey = sharedElementKey,
                         onUpdateGridItemSource = onUpdateGridItemSource,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
@@ -1443,13 +1443,13 @@ internal fun PagerScreen(
                 onVerticalDrag = pagerScreenState::verticalDragAppWidgetScreen,
                 onDragEnd = pagerScreenState::handleOnDragEndAppWidgetScreen,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onDragAppWidget = { gridItem, imageBitmap, intOffset, intSize, newSharedElementKey ->
+                onDragAppWidget = { gridItem, imageBitmap, intOffset, intSize, sharedElementKey ->
                     pagerScreenState.dragAppWidget(
                         gridItem = gridItem,
                         imageBitmap = imageBitmap,
                         intOffset = intOffset,
                         intSize = intSize,
-                        newSharedElementKey = newSharedElementKey,
+                        newSharedElementKey = sharedElementKey,
                         onUpdateGridItemSource = onUpdateGridItemSource,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
@@ -1516,13 +1516,13 @@ internal fun PagerScreen(
                             onMoveFolderEblanApplicationInfoGridItemOutsideFolder = onMoveFolderEblanApplicationInfoGridItemOutsideFolder,
                         )
                     },
-                    onLongPressFolderEblanApplicationInfoGridItem = { folderEblanApplicationInfoGridItem, imageBitmap, intOffset, intSize, newSharedElementKey ->
+                    onLongPressFolderEblanApplicationInfoGridItem = { folderEblanApplicationInfoGridItem, imageBitmap, intOffset, intSize, sharedElementKey ->
                         pagerScreenState.longPressFolderEblanApplicationInfoGridItem(
                             folderEblanApplicationInfoGridItem = folderEblanApplicationInfoGridItem,
                             imageBitmap = imageBitmap,
                             intOffset = intOffset,
                             intSize = intSize,
-                            newSharedElementKey = newSharedElementKey,
+                            newSharedElementKey = sharedElementKey,
                             onUpdateMoveFolderEblanApplicationInfoGridItemResult = onUpdateMoveFolderEblanApplicationInfoGridItemResult,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         )
@@ -1583,13 +1583,13 @@ internal fun PagerScreen(
                 },
                 onResetFolderEblanApplicationInfoPopupEntries = onResetFolderEblanApplicationInfoPopupEntries,
                 onDeleteFolderEblanApplicationInfoGridItems = onDeleteFolderEblanApplicationInfoGridItems,
-                onDragShortcutInfo = { gridItem, imageBitmap, intOffset, intSize, newSharedElementKey ->
+                onDragShortcutInfo = { gridItem, imageBitmap, intOffset, intSize, sharedElementKey ->
                     pagerScreenState.dragShortcutInfoFromFolderApplicationGridItemMenu(
                         gridItem = gridItem,
                         imageBitmap = imageBitmap,
                         intOffset = intOffset,
                         intSize = intSize,
-                        newSharedElementKey = newSharedElementKey,
+                        newSharedElementKey = sharedElementKey,
                         onUpdateGridItemSource = onUpdateGridItemSource,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
