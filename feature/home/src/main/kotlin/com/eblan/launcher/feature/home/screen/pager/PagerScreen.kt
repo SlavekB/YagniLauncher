@@ -1353,7 +1353,8 @@ internal fun PagerScreen(
                 popupIntOffset = pagerScreenState.menuIntOffset,
                 popupIntSize = pagerScreenState.menuIntSize,
                 paddingValues = paddingValues,
-                onUpdateShowPrivateEblanApplicationInfoMenu = pagerScreenState::updateShowPrivateEblanApplicationInfoMenu,
+                isClosePrivateEblanApplicationInfoMenu = pagerScreenState.isClosePrivateEblanApplicationInfoMenu,
+                onDismissRequest = pagerScreenState::dismissPrivateEblanApplicationInfoMenu,
                 onEditApplicationInfo = onEditApplicationInfo,
             )
         }
@@ -1499,7 +1500,7 @@ internal fun PagerScreen(
                     isDragging = pagerScreenState.isDragging,
                     lockMovement = experimentalSettings.lockMovement,
                     dragIntOffset = pagerScreenState.dragIntOffset,
-                    showFolderEblanApplicationGridItemPopup = pagerScreenState.showFolderEblanApplicationInfoGridItemMenu,
+                    showFolderEblanApplicationInfoGridItemMenu = pagerScreenState.showFolderEblanApplicationInfoGridItemMenu,
                     iconPackInfoFilePaths = getEblanApplicationInfosByLabelAndTag.iconPackInfoFilePaths,
                     onUpsertFolderEblanApplicationInfoPopupEntry = onUpsertFolderEblanApplicationInfoPopupEntry,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,

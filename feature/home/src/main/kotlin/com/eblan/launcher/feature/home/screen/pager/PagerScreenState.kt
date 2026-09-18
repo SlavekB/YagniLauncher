@@ -348,6 +348,9 @@ internal class PagerScreenState(
     var selectedFolderEblanApplicationInfoGridItem by mutableStateOf<FolderEblanApplicationInfoGridItem?>(null)
         private set
 
+    var isClosePrivateEblanApplicationInfoMenu by mutableStateOf(false)
+        private set
+
     private val touchSlop = with(density) {
         50.dp.toPx()
     }
@@ -497,6 +500,18 @@ internal class PagerScreenState(
         showEblanApplicationInfoMenu = false
 
         isCloseEblanApplicationInfoMenu = false
+    }
+
+    fun dismissPrivateEblanApplicationInfoMenu() {
+        menuIntOffset = null
+
+        menuIntSize = null
+
+        selectedEblanApplicationInfo = null
+
+        showPrivateEblanApplicationInfoMenu = false
+
+        isClosePrivateEblanApplicationInfoMenu = false
     }
 
     fun updateIsDragging(value: Boolean) {
@@ -1138,10 +1153,6 @@ internal class PagerScreenState(
         dockPageDirection = value
     }
 
-    fun updateShowPrivateEblanApplicationInfoMenu(value: Boolean) {
-        showPrivateEblanApplicationInfoMenu = value
-    }
-
     fun dragShortcutInfoFromGridItemMenu(
         gridItem: GridItem,
         imageBitmap: ImageBitmap,
@@ -1588,11 +1599,11 @@ internal class PagerScreenState(
         intOffset: IntOffset,
         intSize: IntSize,
     ) {
+        menuIntOffset = intOffset
+
+        menuIntSize = intSize
+
         selectedEblanApplicationInfo = eblanApplicationInfo
-
-        overlayIntOffset = intOffset
-
-        overlayIntSize = intSize
 
         showPrivateEblanApplicationInfoMenu = true
     }

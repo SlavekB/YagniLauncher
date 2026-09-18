@@ -119,7 +119,7 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
     moveFolderEblanApplicationInfoGridItemResult: MoveFolderEblanApplicationInfoGridItemResult?,
     folderEblanApplicationInfoPopups: List<FolderEblanApplicationInfoPopup>,
     drag: Drag,
-    showFolderEblanApplicationGridItemPopup: Boolean,
+    showFolderEblanApplicationInfoGridItemMenu: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
     onLongPressFolderEblanApplicationInfoGridItem: (
         folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
@@ -188,9 +188,9 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
-        key3 = showFolderEblanApplicationGridItemPopup,
+        key3 = showFolderEblanApplicationInfoGridItemMenu,
     ) {
-        if (drag == Drag.Dragging && hasInteraction && showFolderEblanApplicationGridItemPopup) {
+        if (drag == Drag.Dragging && hasInteraction && showFolderEblanApplicationInfoGridItemMenu) {
             onDragFolderEblanApplicationInfoGridItem()
         }
     }

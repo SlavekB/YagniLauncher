@@ -258,7 +258,8 @@ internal fun PrivateApplicationInfoPopup(
     popupIntOffset: IntOffset?,
     popupIntSize: IntSize?,
     paddingValues: PaddingValues,
-    onUpdateShowPrivateEblanApplicationInfoMenu: (Boolean) -> Unit,
+    isClosePrivateEblanApplicationInfoMenu: Boolean,
+    onDismissRequest: () -> Unit,
     onEditApplicationInfo: (
         serialNumber: Long,
         componentName: String,
@@ -297,7 +298,13 @@ internal fun PrivateApplicationInfoPopup(
         key2 = transitionState.isIdle,
     ) {
         if (!transitionState.targetState && transitionState.isIdle) {
-            onUpdateShowPrivateEblanApplicationInfoMenu(false)
+            onDismissRequest()
+        }
+    }
+
+    LaunchedEffect(key1 = isClosePrivateEblanApplicationInfoMenu) {
+        if (isClosePrivateEblanApplicationInfoMenu) {
+            transitionState.targetState = false
         }
     }
 
