@@ -18,11 +18,8 @@
 package com.eblan.launcher.feature.home.screen.folder
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import com.eblan.launcher.domain.model.folder.FolderEntry
 import com.eblan.launcher.domain.model.grid.FolderGridItemPopup
@@ -31,57 +28,6 @@ import com.eblan.launcher.domain.model.grid.MoveGridItemResult
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.calculateFolderGridDragPosition
-
-internal suspend fun onLongPressFolderGridItem(
-    graphicsLayer: GraphicsLayer,
-    intOffset: IntOffset,
-    intSize: IntSize,
-    sharedElementKey: SharedElementKey,
-    gridItem: GridItem,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onLongPressFolderGridItem: (
-        gridItem: GridItem,
-        imageBitmap: ImageBitmap,
-        intOffset: IntOffset,
-        intSize: IntSize,
-        sharedElementKey: SharedElementKey,
-    ) -> Unit,
-) {
-    onUpdateMoveGridItemResult(
-        MoveGridItemResult(
-            isSuccess = true,
-            movingGridItem = gridItem,
-            conflictingGridItem = null,
-        ),
-    )
-
-    onUpdateImageBitmap(graphicsLayer.toImageBitmap())
-
-    onUpdateOverlayBounds(
-        intOffset,
-        intSize,
-    )
-
-    onUpdateSharedElementKey(sharedElementKey)
-
-    onShowGridItemPopup(
-        intOffset,
-        intSize,
-    )
-
-    onUpdateIsVisibleOverlay(true)
-}
 
 internal fun handleDragFolderGridItem(
     density: Density,
