@@ -71,6 +71,7 @@ internal fun FolderApplicationInfoPopup(
     popupIntOffset: IntOffset?,
     popupIntSize: IntSize?,
     paddingValues: PaddingValues,
+    isCloseFolderEblanApplicationInfoMenu: Boolean,
     onDismissRequest: () -> Unit,
     onEditFolderApplicationInfo: (String) -> Unit,
     onDeleteFolderEblanApplicationInfoGridItems: (
@@ -112,6 +113,12 @@ internal fun FolderApplicationInfoPopup(
     ) {
         if (!transitionState.targetState && transitionState.isIdle) {
             onDismissRequest()
+        }
+    }
+
+    LaunchedEffect(key1 = isCloseFolderEblanApplicationInfoMenu) {
+        if (isCloseFolderEblanApplicationInfoMenu) {
+            transitionState.targetState = false
         }
     }
 
@@ -186,7 +193,7 @@ internal fun FolderApplicationInfoGridItemPopup(
     hasShortcutHostPermission: Boolean,
     isVisibleOverlay: Boolean,
     animations: Boolean,
-    isCloseFolderEblanApplicationInfoGridItemPopup: Boolean,
+    isCloseFolderEblanApplicationInfoGridItemMenu: Boolean,
     onDismissRequest: () -> Unit,
     onEditFolderApplicationInfo: (String) -> Unit,
     onEditApplicationInfo: (
@@ -244,8 +251,8 @@ internal fun FolderApplicationInfoGridItemPopup(
         }
     }
 
-    LaunchedEffect(key1 = isCloseFolderEblanApplicationInfoGridItemPopup) {
-        if (isCloseFolderEblanApplicationInfoGridItemPopup) {
+    LaunchedEffect(key1 = isCloseFolderEblanApplicationInfoGridItemMenu) {
+        if (isCloseFolderEblanApplicationInfoGridItemMenu) {
             transitionState.targetState = false
         }
     }

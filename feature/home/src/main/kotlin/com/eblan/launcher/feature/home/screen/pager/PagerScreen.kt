@@ -1316,7 +1316,8 @@ internal fun PagerScreen(
                 isVisibleOverlay = isVisibleOverlay,
                 paddingValues = paddingValues,
                 animations = experimentalSettings.gridItemAnimation,
-                onUpdateShowEblanApplicationInfoMenu = pagerScreenState::updateShowEblanApplicationInfoMenu,
+                isCloseEblanApplicationInfoMenu = pagerScreenState.isCloseEblanApplicationInfoMenu,
+                onDismissRequest = pagerScreenState::dismissEblanApplicationInfoMenu,
                 onEditApplicationInfo = onEditApplicationInfo,
                 onWidgets = {
                     pagerScreenState.openAppWidgetScreen(
@@ -1550,6 +1551,7 @@ internal fun PagerScreen(
                 popupIntOffset = pagerScreenState.menuIntOffset,
                 popupIntSize = pagerScreenState.menuIntSize,
                 paddingValues = paddingValues,
+                isCloseFolderEblanApplicationInfoMenu = pagerScreenState.isCloseFolderEblanApplicationInfoMenu,
                 onDismissRequest = pagerScreenState::dismissFolderEblanApplicationMenu,
                 onEditFolderApplicationInfo = onEditFolderApplicationInfo,
                 onDeleteFolderEblanApplicationInfoGridItems = onDeleteFolderEblanApplicationInfoGridItems,
@@ -1568,7 +1570,7 @@ internal fun PagerScreen(
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 isVisibleOverlay = isVisibleOverlay,
                 animations = experimentalSettings.gridItemAnimation,
-                isCloseFolderEblanApplicationInfoGridItemPopup = pagerScreenState.isCloseFolderEblanApplicationInfoGridItemMenu,
+                isCloseFolderEblanApplicationInfoGridItemMenu = pagerScreenState.isCloseFolderEblanApplicationInfoGridItemMenu,
                 onDismissRequest = pagerScreenState::dismissFolderEblanApplicationInfoGridItemMenu,
                 onEditFolderApplicationInfo = onEditFolderApplicationInfo,
                 onEditApplicationInfo = onEditApplicationInfo,

@@ -339,6 +339,9 @@ internal class PagerScreenState(
     var selectedFolderEblanApplicationInfo by mutableStateOf<FolderEblanApplicationInfo?>(null)
         private set
 
+    var isCloseEblanApplicationInfoMenu by mutableStateOf(false)
+        private set
+
     private val touchSlop = with(density) {
         50.dp.toPx()
     }
@@ -468,6 +471,16 @@ internal class PagerScreenState(
         showFolderEblanApplicationInfoGridItemMenu = false
 
         isCloseFolderEblanApplicationInfoGridItemMenu = false
+    }
+
+    fun dismissEblanApplicationInfoMenu() {
+        menuIntOffset = null
+
+        menuIntSize = null
+
+        showEblanApplicationInfoMenu = false
+
+        isCloseEblanApplicationInfoMenu = false
     }
 
     fun updateIsDragging(value: Boolean) {
@@ -1537,13 +1550,9 @@ internal class PagerScreenState(
 
         isDragging = true
 
-        showEblanApplicationInfoMenu = false
+        isCloseEblanApplicationInfoMenu = true
 
         dismissApplicationScreen()
-    }
-
-    fun updateShowEblanApplicationInfoMenu(value: Boolean) {
-        showEblanApplicationInfoMenu = value
     }
 
     fun longPressPrivateSpaceEblanApplicationInfoItem(

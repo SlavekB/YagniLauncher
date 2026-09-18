@@ -80,7 +80,8 @@ internal fun ApplicationInfoPopup(
     isVisibleOverlay: Boolean,
     paddingValues: PaddingValues,
     animations: Boolean,
-    onUpdateShowEblanApplicationInfoMenu: (Boolean) -> Unit,
+    isCloseEblanApplicationInfoMenu: Boolean,
+    onDismissRequest: () -> Unit,
     onEditApplicationInfo: (
         serialNumber: Long,
         componentName: String,
@@ -127,7 +128,13 @@ internal fun ApplicationInfoPopup(
         key2 = transitionState.isIdle,
     ) {
         if (!transitionState.targetState && transitionState.isIdle) {
-            onUpdateShowEblanApplicationInfoMenu(false)
+            onDismissRequest()
+        }
+    }
+
+    LaunchedEffect(key1 = isCloseEblanApplicationInfoMenu) {
+        if (isCloseEblanApplicationInfoMenu) {
+            transitionState.targetState = false
         }
     }
 
