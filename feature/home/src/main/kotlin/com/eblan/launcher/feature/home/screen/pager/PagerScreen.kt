@@ -1154,7 +1154,7 @@ internal fun PagerScreen(
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                     onUpsertFolderGridItemPopupEntry = onUpsertFolderGridItemPopupEntry,
                     onMoveFolderGridItem = onMoveFolderGridItem,
-                    onDismissFolderGridItemPopup = pagerScreenState::dismissFolderGridItemMenu,
+                    onDismissFolderGridItemMenu = pagerScreenState::dismissFolderGridItemMenu,
                     onResetGrid = onResetGrid,
                     onResetGridAfterMoveFolder = onResetGridAfterMoveFolder,
                     onLongPressFolderGridItem = { gridItem, imageBitmap, intOffset, intSize, sharedElementKey ->

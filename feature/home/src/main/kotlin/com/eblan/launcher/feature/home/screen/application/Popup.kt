@@ -244,9 +244,6 @@ internal fun ApplicationInfoPopup(
                     transitionState.targetState = false
                 },
                 onDragShortcutInfo = onDragShortcutInfo,
-                onDismiss = {
-                    transitionState.targetState = false
-                },
             )
         }
     }
@@ -420,7 +417,6 @@ internal fun ApplicationInfoMenu(
         intSize: IntSize,
         sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onDismiss: () -> Unit,
 ) {
     Surface(
         modifier = modifier.padding(5.dp),
@@ -439,7 +435,6 @@ internal fun ApplicationInfoMenu(
                         animations = animations,
                         onTapShortcutInfo = onTapShortcutInfo,
                         onDragShortcutInfo = onDragShortcutInfo,
-                        onDismiss = onDismiss,
                     )
 
                     Spacer(modifier = Modifier.height(5.dp))

@@ -82,7 +82,6 @@ internal fun ShortcutInfoScreen(
         intSize: IntSize,
         sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onDismiss: () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -101,7 +100,6 @@ internal fun ShortcutInfoScreen(
                 animations = animations,
                 onTapShortcutInfo = onTapShortcutInfo,
                 onDragShortcutInfo = onDragShortcutInfo,
-                onDismiss = onDismiss,
             )
         }
     }
@@ -151,7 +149,6 @@ private fun ShortcutInfoMenuItem(
         intSize: IntSize,
         sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onDismiss: () -> Unit,
 ) {
     val graphicsLayer = rememberGraphicsLayer()
 
@@ -216,7 +213,6 @@ private fun ShortcutInfoMenuItem(
                                         scale = scale,
                                         animations = animations,
                                         onDragShortcutInfo = onDragShortcutInfo,
-                                        onDismiss = onDismiss,
                                     )
                                 }
                             },
@@ -273,7 +269,6 @@ private suspend fun handleOnLongPress(
         intSize: IntSize,
         sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onDismiss: () -> Unit,
 ) {
     val id = Uuid.random().toHexString()
 
@@ -298,8 +293,6 @@ private suspend fun handleOnLongPress(
             parent = SharedElementKey.Parent.Grid,
         ),
     )
-
-    onDismiss()
 }
 
 private fun getShortcutInfoGridItem(

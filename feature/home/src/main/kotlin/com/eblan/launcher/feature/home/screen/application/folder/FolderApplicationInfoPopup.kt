@@ -423,7 +423,6 @@ private fun FolderApplicationInfoGridItemPopupContent(
                     onDismiss()
                 },
                 onDragShortcutInfo = onDragShortcutInfo,
-                onDismiss = onDismiss,
             )
         }
 

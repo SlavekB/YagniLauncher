@@ -318,7 +318,6 @@ private fun FolderGridItemPopupContent(
                             onDismiss()
                         },
                         onDragShortcutInfo = onDragShortcutInfo,
-                        onDismiss = onDismiss,
                     )
                 }
 
@@ -374,7 +373,6 @@ private fun ApplicationInfoFolderGridItemPopupContent(
         intSize: IntSize,
         sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onDismiss: () -> Unit,
 ) {
     Surface(
         modifier = modifier.width(IntrinsicSize.Max),
@@ -395,7 +393,6 @@ private fun ApplicationInfoFolderGridItemPopupContent(
                         animations = animations,
                         onTapShortcutInfo = onTapShortcutInfo,
                         onDragShortcutInfo = onDragShortcutInfo,
-                        onDismiss = onDismiss,
                     )
 
                     Spacer(modifier = Modifier.height(5.dp))

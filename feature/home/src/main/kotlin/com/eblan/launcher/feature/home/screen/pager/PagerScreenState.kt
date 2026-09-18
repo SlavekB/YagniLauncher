@@ -1156,6 +1156,8 @@ internal class PagerScreenState(
 
         isDragging = true
 
+        isCloseGridItemMenu = true
+
         onUpdateIsVisibleOverlay(true)
     }
 
@@ -1188,6 +1190,8 @@ internal class PagerScreenState(
         sharedElementKey = newSharedElementKey
 
         isDragging = true
+
+        isCloseEblanApplicationInfoMenu = true
 
         dismissApplicationScreen()
 
@@ -1225,6 +1229,8 @@ internal class PagerScreenState(
 
         isDragging = true
 
+        isCloseFolderGridItemMenu = true
+
         onResetFolderGridItemPopupEntries()
 
         onUpdateIsVisibleOverlay(true)
@@ -1260,6 +1266,8 @@ internal class PagerScreenState(
         sharedElementKey = newSharedElementKey
 
         isDragging = true
+
+        isCloseFolderEblanApplicationInfoGridItemMenu = true
 
         onResetFolderEblanApplicationInfoPopupEntries()
 

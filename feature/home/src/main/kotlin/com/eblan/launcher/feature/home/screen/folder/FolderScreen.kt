@@ -124,7 +124,7 @@ internal fun FolderScreen(
         gridHeight: Int,
         currentPage: Int,
     ) -> Unit,
-    onDismissFolderGridItemPopup: () -> Unit,
+    onDismissFolderGridItemMenu: () -> Unit,
     onResetGrid: () -> Unit,
     onResetGridAfterMoveFolder: () -> Unit,
     onUpsertFolderGridItemPopupEntry: (FolderEntry) -> Unit,
@@ -322,7 +322,7 @@ internal fun FolderScreen(
 
     LaunchedEffect(key1 = folderGridHorizontalPagerState.isScrollInProgress) {
         if (folderGridHorizontalPagerState.isScrollInProgress) {
-            onDismissFolderGridItemPopup()
+            onDismissFolderGridItemMenu()
         }
     }
 

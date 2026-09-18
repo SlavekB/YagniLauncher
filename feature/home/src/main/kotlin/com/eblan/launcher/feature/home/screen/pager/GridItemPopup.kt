@@ -321,7 +321,6 @@ private fun GridItemPopupContent(
                             onDismiss()
                         },
                         onDragShortcutInfo = onDragShortcutInfo,
-                        onDismiss = onDismiss,
                     )
                 }
 
@@ -398,7 +397,6 @@ private fun ApplicationInfoGridItemMenu(
         intSize: IntSize,
         sharedElementKey: SharedElementKey,
     ) -> Unit,
-    onDismiss: () -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -416,7 +414,6 @@ private fun ApplicationInfoGridItemMenu(
                 animations = animations,
                 onTapShortcutInfo = onTapShortcutInfo,
                 onDragShortcutInfo = onDragShortcutInfo,
-                onDismiss = onDismiss,
             )
 
             Spacer(modifier = Modifier.height(5.dp))
