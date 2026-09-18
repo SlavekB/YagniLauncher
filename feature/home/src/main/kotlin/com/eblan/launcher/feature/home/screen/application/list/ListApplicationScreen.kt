@@ -161,8 +161,6 @@ internal fun ListApplicationScreen(
 ) {
     val layoutDirection = LocalLayoutDirection.current
 
-    var showPopupApplicationMenu by remember { mutableStateOf(false) }
-
     val horizontalPagerState = rememberPagerState(
         pageCount = {
             getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.size
@@ -186,7 +184,6 @@ internal fun ListApplicationScreen(
         horizontalPagerState = horizontalPagerState,
         screenHeight = screenHeight,
         selectedEblanApplicationInfoTagId = selectedEblanApplicationInfoTagId,
-        showPopupApplicationMenu = showPopupApplicationMenu,
         swipeY = swipeY,
         textFieldState = textFieldState,
         showKeyboard = appDrawerSettings.showKeyboard,
@@ -194,9 +191,6 @@ internal fun ListApplicationScreen(
         onDismiss = onDismiss,
         onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
         onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
-        onUpdateShowPopupApplicationMenu = {
-            showPopupApplicationMenu = it
-        },
     )
 
     Column(
@@ -259,16 +253,12 @@ internal fun ListApplicationScreen(
                 managedProfileResult = managedProfileResult,
                 paddingValues = paddingValues,
                 isVisibleOverlay = isVisibleOverlay,
-                showPopupApplicationMenu = showPopupApplicationMenu,
                 swipeY = swipeY,
                 screenHeight = screenHeight,
                 systemTextColor = systemTextColor,
                 systemCustomTextColor = systemCustomTextColor,
                 animations = animations,
                 onDragEnd = onDragEnd,
-                onUpdatePopupMenu = {
-                    showPopupApplicationMenu = it
-                },
                 onVerticalDrag = onVerticalDrag,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onDragApplicationInfo = onDragApplicationInfo,
@@ -290,7 +280,6 @@ private fun EblanApplicationInfosPage(
     index: Int,
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
-    showPopupApplicationMenu: Boolean,
     isVisibleOverlay: Boolean,
     swipeY: Float,
     screenHeight: Int,
@@ -298,7 +287,6 @@ private fun EblanApplicationInfosPage(
     systemTextColor: TextColor,
     animations: Boolean,
     onDragEnd: () -> Unit,
-    onUpdatePopupMenu: (Boolean) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onDragApplicationInfo: (GridItem) -> Unit,
@@ -366,7 +354,6 @@ private fun EblanApplicationInfosPage(
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                 managedProfileResult = managedProfileResult,
                 paddingValues = paddingValues,
-                showPopupApplicationMenu = showPopupApplicationMenu,
                 isVisibleOverlay = isVisibleOverlay,
                 swipeY = swipeY,
                 screenHeight = screenHeight,
@@ -374,7 +361,6 @@ private fun EblanApplicationInfosPage(
                 systemCustomTextColor = systemCustomTextColor,
                 animations = animations,
                 onDragEnd = onDragEnd,
-                onUpdatePopupMenu = onUpdatePopupMenu,
                 onVerticalDrag = onVerticalDrag,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onDragApplicationInfo = onDragApplicationInfo,
@@ -421,14 +407,12 @@ private fun EblanApplicationInfos(
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
-    showPopupApplicationMenu: Boolean,
     swipeY: Float,
     screenHeight: Int,
     systemCustomTextColor: Int,
     systemTextColor: TextColor,
     animations: Boolean,
     onDragEnd: () -> Unit,
-    onUpdatePopupMenu: (Boolean) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onDragApplicationInfo: (GridItem) -> Unit,
@@ -469,12 +453,6 @@ private fun EblanApplicationInfos(
         managedProfileResult = managedProfileResult,
         eblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
     )
-
-    LaunchedEffect(key1 = lazyListState.isScrollInProgress) {
-        if (lazyListState.isScrollInProgress && showPopupApplicationMenu) {
-            onUpdatePopupMenu(false)
-        }
-    }
 
     LaunchedEffect(key1 = swipeY) {
         if (swipeY.toInt() == screenHeight) {

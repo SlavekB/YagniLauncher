@@ -118,20 +118,17 @@ internal fun VerticalApplicationScreen(
     customFolderBackgroundColor: Int,
     isVisibleFolderEblanApplicationInfos: Boolean,
     folderEblanApplicationInfoPopups: List<FolderEblanApplicationInfoPopup>,
-    showPopupApplicationMenu: Boolean,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
     onGetEblanApplicationInfosByLabel: (String) -> Unit,
     onGetEblanApplicationInfosByTagId: (Long?) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateShowFolderPopupMenu: (Boolean) -> Unit,
     onDragFolderEblanApplicationInfo: (
         folderEblanApplicationInfo: FolderEblanApplicationInfo,
         movingGridItem: GridItem,
     ) -> Unit,
     onDragApplicationInfo: (GridItem) -> Unit,
-    onUpdateShowPopupApplicationMenu: (Boolean) -> Unit,
     onLongPressApplicationInfo: (
         eblanApplicationInfo: EblanApplicationInfo,
         imageBitmap: ImageBitmap,
@@ -178,7 +175,6 @@ internal fun VerticalApplicationScreen(
         horizontalPagerState = horizontalPagerState,
         screenHeight = screenHeight,
         selectedEblanApplicationInfoTagId = selectedEblanApplicationInfoTagId,
-        showPopupApplicationMenu = showPopupApplicationMenu,
         swipeY = swipeY,
         textFieldState = textFieldState,
         showKeyboard = appDrawerSettings.showKeyboard,
@@ -186,7 +182,6 @@ internal fun VerticalApplicationScreen(
         onDismiss = onDismiss,
         onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
         onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
-        onUpdateShowPopupApplicationMenu = onUpdateShowPopupApplicationMenu,
     )
 
     Column(
@@ -249,7 +244,6 @@ internal fun VerticalApplicationScreen(
                 managedProfileResult = managedProfileResult,
                 paddingValues = paddingValues,
                 isVisibleOverlay = isVisibleOverlay,
-                showPopupApplicationMenu = showPopupApplicationMenu,
                 swipeY = swipeY,
                 screenHeight = screenHeight,
                 systemTextColor = systemTextColor,
@@ -262,10 +256,8 @@ internal fun VerticalApplicationScreen(
                 isVisibleFolderEblanApplicationInfos = isVisibleFolderEblanApplicationInfos,
                 folderEblanApplicationInfoPopups = folderEblanApplicationInfoPopups,
                 onDragEnd = onDragEnd,
-                onUpdateShowPopupApplicationMenu = onUpdateShowPopupApplicationMenu,
                 onVerticalDrag = onVerticalDrag,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateShowFolderPopupMenu = onUpdateShowFolderPopupMenu,
                 onDragFolderEblanApplicationInfo = onDragFolderEblanApplicationInfo,
                 onDragApplicationInfo = onDragApplicationInfo,
                 onLongPressApplicationInfo = onLongPressApplicationInfo,
@@ -288,7 +280,6 @@ private fun EblanApplicationInfosPage(
     index: Int,
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
-    showPopupApplicationMenu: Boolean,
     isVisibleOverlay: Boolean,
     swipeY: Float,
     screenHeight: Int,
@@ -302,10 +293,8 @@ private fun EblanApplicationInfosPage(
     isVisibleFolderEblanApplicationInfos: Boolean,
     folderEblanApplicationInfoPopups: List<FolderEblanApplicationInfoPopup>,
     onDragEnd: () -> Unit,
-    onUpdateShowPopupApplicationMenu: (Boolean) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateShowFolderPopupMenu: (Boolean) -> Unit,
     onDragFolderEblanApplicationInfo: (
         folderEblanApplicationInfo: FolderEblanApplicationInfo,
         movingGridItem: GridItem,
@@ -383,7 +372,6 @@ private fun EblanApplicationInfosPage(
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                 managedProfileResult = managedProfileResult,
                 paddingValues = paddingValues,
-                showPopupApplicationMenu = showPopupApplicationMenu,
                 isVisibleOverlay = isVisibleOverlay,
                 swipeY = swipeY,
                 screenHeight = screenHeight,
@@ -397,10 +385,8 @@ private fun EblanApplicationInfosPage(
                 isVisibleFolderEblanApplicationInfos = isVisibleFolderEblanApplicationInfos,
                 folderEblanApplicationInfoPopups = folderEblanApplicationInfoPopups,
                 onDragEnd = onDragEnd,
-                onUpdateShowPopupApplicationMenu = onUpdateShowPopupApplicationMenu,
                 onVerticalDrag = onVerticalDrag,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateShowFolderPopupMenu = onUpdateShowFolderPopupMenu,
                 onDragFolderEblanApplicationInfo = onDragFolderEblanApplicationInfo,
                 onDragApplicationInfo = onDragApplicationInfo,
                 onLongPressApplicationInfo = onLongPressApplicationInfo,
@@ -450,7 +436,6 @@ private fun EblanApplicationInfos(
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
-    showPopupApplicationMenu: Boolean,
     swipeY: Float,
     screenHeight: Int,
     systemTextColor: TextColor,
@@ -463,10 +448,8 @@ private fun EblanApplicationInfos(
     isVisibleFolderEblanApplicationInfos: Boolean,
     folderEblanApplicationInfoPopups: List<FolderEblanApplicationInfoPopup>,
     onDragEnd: () -> Unit,
-    onUpdateShowPopupApplicationMenu: (Boolean) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateShowFolderPopupMenu: (Boolean) -> Unit,
     onDragFolderEblanApplicationInfo: (
         folderEblanApplicationInfo: FolderEblanApplicationInfo,
         movingGridItem: GridItem,
@@ -517,14 +500,6 @@ private fun EblanApplicationInfos(
         managedProfileResult = managedProfileResult,
         eblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
     )
-
-    LaunchedEffect(key1 = lazyGridState.isScrollInProgress) {
-        if (lazyGridState.isScrollInProgress && showPopupApplicationMenu) {
-            onUpdateShowPopupApplicationMenu(false)
-
-            onUpdateShowFolderPopupMenu(false)
-        }
-    }
 
     LaunchedEffect(key1 = swipeY) {
         if (swipeY.toInt() == screenHeight) {

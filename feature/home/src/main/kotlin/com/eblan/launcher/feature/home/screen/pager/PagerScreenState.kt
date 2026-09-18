@@ -315,10 +315,10 @@ internal class PagerScreenState(
             !showFolderGridItemMenu &&
             eblanApplicationInfoGroup == null
 
-    var showFolderApplicationInfoMenu by mutableStateOf(false)
+    var showFolderEblanApplicationInfoMenu by mutableStateOf(false)
         private set
 
-    var isCloseFolderApplicationInfoMenu by mutableStateOf(false)
+    var isCloseFolderEblanApplicationInfoMenu by mutableStateOf(false)
         private set
 
     var showFolderEblanApplicationInfoGridItemMenu by mutableStateOf(false)
@@ -327,10 +327,10 @@ internal class PagerScreenState(
     var isCloseFolderEblanApplicationInfoGridItemMenu by mutableStateOf(false)
         private set
 
-    var showApplicationMenu by mutableStateOf(false)
+    var showEblanApplicationInfoMenu by mutableStateOf(false)
         private set
 
-    var showPrivateApplicationMenu by mutableStateOf(false)
+    var showPrivateEblanApplicationInfoMenu by mutableStateOf(false)
         private set
 
     var selectedEblanApplicationInfo by mutableStateOf<EblanApplicationInfo?>(null)
@@ -455,9 +455,9 @@ internal class PagerScreenState(
 
         menuIntSize = null
 
-        showFolderApplicationInfoMenu = false
+        showFolderEblanApplicationInfoMenu = false
 
-        isCloseFolderApplicationInfoMenu = false
+        isCloseFolderEblanApplicationInfoMenu = false
     }
 
     fun dismissFolderEblanApplicationInfoGridItemMenu() {
@@ -1113,12 +1113,12 @@ internal class PagerScreenState(
         isVisibleFolderEblanApplicationInfos = value
     }
 
-    fun updateShowFolderApplicationInfoMenu(value: Boolean) {
-        showFolderApplicationInfoMenu = value
+    fun updateShowFolderEblanApplicationInfoMenu(value: Boolean) {
+        showFolderEblanApplicationInfoMenu = value
     }
 
     fun updateShowPrivateApplicationMenu(value: Boolean) {
-        showPrivateApplicationMenu = value
+        showPrivateEblanApplicationInfoMenu = value
     }
 
     fun updateIsCloseFolderEblanApplicationInfoGridItemMenu(value: Boolean) {
@@ -1527,7 +1527,7 @@ internal class PagerScreenState(
 
         selectedEblanApplicationInfo = eblanApplicationInfo
 
-        showApplicationMenu = true
+        showEblanApplicationInfoMenu = true
 
         onUpdateIsVisibleOverlay(true)
     }
@@ -1552,8 +1552,8 @@ internal class PagerScreenState(
         dismissApplicationScreen()
     }
 
-    fun updateShowApplicationMenu(value: Boolean) {
-        showApplicationMenu = value
+    fun updateShowEblanApplicationInfoMenu(value: Boolean) {
+        showEblanApplicationInfoMenu = value
     }
 
     fun longPressPrivateSpaceApplicationInfoItem(
@@ -1567,7 +1567,7 @@ internal class PagerScreenState(
 
         overlayIntSize = intSize
 
-        showPrivateApplicationMenu = true
+        showPrivateEblanApplicationInfoMenu = true
     }
 
     fun dragFolderApplicationInfo(
@@ -1592,7 +1592,7 @@ internal class PagerScreenState(
 
         isDragging = true
 
-        showFolderApplicationInfoMenu = false
+        showFolderEblanApplicationInfoMenu = false
 
         dismissApplicationScreen()
 
@@ -1633,7 +1633,7 @@ internal class PagerScreenState(
 
         selectedFolderEblanApplicationInfo = folderEblanApplicationInfo
 
-        showApplicationMenu = true
+        showEblanApplicationInfoMenu = true
 
         onUpdateIsVisibleOverlay(true)
     }

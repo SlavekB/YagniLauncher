@@ -1242,14 +1242,12 @@ internal fun PagerScreen(
                 customFolderBackgroundColor = folderSettings.customFolderBackgroundColor,
                 isVisibleFolderEblanApplicationInfos = isVisibleFolderEblanApplicationInfos,
                 folderEblanApplicationInfoPopups = folderEblanApplicationInfoPopups,
-                showPopupApplicationMenu = pagerScreenState.showApplicationMenu,
                 onDismiss = pagerScreenState::dismissApplicationScreen,
                 onDragEnd = pagerScreenState::handleOnDragEndApplicationScreen,
                 onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
                 onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
                 onVerticalDrag = pagerScreenState::verticalDragApplicationScreen,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateFolderPopupMenu = pagerScreenState::updateShowFolderApplicationInfoMenu,
                 onDragFolderEblanApplicationInfo = { folderEblanApplicationInfo, movingGridItem ->
                     pagerScreenState.dragFolderApplicationInfo(
                         folderEblanApplicationInfo = folderEblanApplicationInfo,
@@ -1266,7 +1264,6 @@ internal fun PagerScreen(
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                     )
                 },
-                onUpdateShowApplicationMenu = pagerScreenState::updateShowApplicationMenu,
                 onLongPressApplicationInfo = { eblanApplicationInfo, imageBitmap, intOffset, intSize, sharedElementKey ->
                     pagerScreenState.longPressApplicationInfo(
                         eblanApplicationInfo = eblanApplicationInfo,
@@ -1303,7 +1300,7 @@ internal fun PagerScreen(
             )
         }
 
-        if (pagerScreenState.showApplicationMenu &&
+        if (pagerScreenState.showEblanApplicationInfoMenu &&
             pagerScreenState.selectedEblanApplicationInfo != null &&
             pagerScreenState.menuIntOffset != null &&
             pagerScreenState.menuIntSize != null
@@ -1319,7 +1316,7 @@ internal fun PagerScreen(
                 isVisibleOverlay = isVisibleOverlay,
                 paddingValues = paddingValues,
                 animations = experimentalSettings.gridItemAnimation,
-                onUpdateShowApplicationMenu = pagerScreenState::updateShowApplicationMenu,
+                onUpdateShowApplicationMenu = pagerScreenState::updateShowEblanApplicationInfoMenu,
                 onEditApplicationInfo = onEditApplicationInfo,
                 onWidgets = {
                     pagerScreenState.openAppWidgetScreen(
@@ -1343,7 +1340,7 @@ internal fun PagerScreen(
             )
         }
 
-        if (pagerScreenState.showPrivateApplicationMenu &&
+        if (pagerScreenState.showPrivateEblanApplicationInfoMenu &&
             pagerScreenState.selectedEblanApplicationInfo != null &&
             pagerScreenState.menuIntOffset != null &&
             pagerScreenState.menuIntSize != null
@@ -1531,7 +1528,7 @@ internal fun PagerScreen(
             }
         }
 
-        if (pagerScreenState.showFolderApplicationInfoMenu && pagerScreenState.selectedFolderEblanApplicationInfo != null) {
+        if (pagerScreenState.showFolderEblanApplicationInfoMenu && pagerScreenState.selectedFolderEblanApplicationInfo != null) {
             FolderApplicationInfoPopup(
                 folderEblanApplicationInfo = pagerScreenState.selectedFolderEblanApplicationInfo,
                 popupIntOffset = pagerScreenState.menuIntOffset,

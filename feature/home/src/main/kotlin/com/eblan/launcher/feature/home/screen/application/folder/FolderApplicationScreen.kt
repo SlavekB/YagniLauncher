@@ -480,7 +480,7 @@ internal fun FolderApplicationScreen(
                                 onUpdateIsVisibleFolders = onUpdateIsVisibleFolders,
                                 onUpsertFolderEblanApplicationInfoPopupEntry = onUpsertFolderEblanApplicationInfoPopupEntry,
                                 onUpdateIsDragging = onUpdateIsDragging,
-                                onUpdateIsCloseFolderEblanApplicationInfoGridItemPopup = onUpdateIsCloseFolderEblanApplicationInfoGridItemPopup,
+                                onUpdateIsCloseFolderEblanApplicationGridItemMenu = onUpdateIsCloseFolderEblanApplicationInfoGridItemPopup,
                                 onLongPressFolderEblanApplicationInfoGridItem = onLongPressFolderEblanApplicationInfoGridItem,
                             )
                         },

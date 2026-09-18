@@ -137,20 +137,17 @@ internal fun ApplicationScreen(
     customFolderBackgroundColor: Int,
     isVisibleFolderEblanApplicationInfos: Boolean,
     folderEblanApplicationInfoPopups: List<FolderEblanApplicationInfoPopup>,
-    showPopupApplicationMenu: Boolean,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
     onGetEblanApplicationInfosByLabel: (String) -> Unit,
     onGetEblanApplicationInfosByTagId: (Long?) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateFolderPopupMenu: (Boolean) -> Unit,
     onDragFolderEblanApplicationInfo: (
         folderEblanApplicationInfo: FolderEblanApplicationInfo,
         movingGridItem: GridItem,
     ) -> Unit,
     onDragApplicationInfo: (GridItem) -> Unit,
-    onUpdateShowApplicationMenu: (Boolean) -> Unit,
     onLongPressApplicationInfo: (
         eblanApplicationInfo: EblanApplicationInfo,
         imageBitmap: ImageBitmap,
@@ -218,18 +215,15 @@ internal fun ApplicationScreen(
                     customFolderBackgroundColor = customFolderBackgroundColor,
                     isVisibleFolderEblanApplicationInfos = isVisibleFolderEblanApplicationInfos,
                     folderEblanApplicationInfoPopups = folderEblanApplicationInfoPopups,
-                    showPopupApplicationMenu = showPopupApplicationMenu,
                     onDismiss = onDismiss,
                     onDragEnd = onDragEnd,
                     onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
                     onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
                     onVerticalDrag = onVerticalDrag,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                    onUpdateShowFolderPopupMenu = onUpdateFolderPopupMenu,
                     onDragFolderEblanApplicationInfo = onDragFolderEblanApplicationInfo,
                     onDragApplicationInfo = onDragApplicationInfo,
                     onLongPressApplicationInfo = onLongPressApplicationInfo,
-                    onUpdateShowPopupApplicationMenu = onUpdateShowApplicationMenu,
                     onLongPressFolderApplicationInfo = onLongPressFolderApplicationInfo,
                     onLongPressPrivateSpaceApplicationInfoItem = onLongPressPrivateSpaceApplicationInfoItem,
                     onTapFolderApplicationInfo = onTapFolderApplicationInfo,
@@ -483,7 +477,6 @@ internal fun ApplicationScreenEffect(
     horizontalPagerState: PagerState,
     screenHeight: Int,
     selectedEblanApplicationInfoTagId: Long?,
-    showPopupApplicationMenu: Boolean,
     swipeY: Float,
     textFieldState: TextFieldState,
     showKeyboard: Boolean,
@@ -491,7 +484,6 @@ internal fun ApplicationScreenEffect(
     onDismiss: () -> Unit,
     onGetEblanApplicationInfosByLabel: (String) -> Unit,
     onGetEblanApplicationInfosByTagId: (Long?) -> Unit,
-    onUpdateShowPopupApplicationMenu: (Boolean) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -500,19 +492,11 @@ internal fun ApplicationScreenEffect(
     LaunchedEffect(key1 = textFieldState) {
         snapshotFlow { textFieldState.text }.debounce(500L.milliseconds).onEach {
             onGetEblanApplicationInfosByLabel(it.toString())
-
-            onUpdateShowPopupApplicationMenu(false)
         }.collect()
     }
 
     LaunchedEffect(key1 = selectedEblanApplicationInfoTagId) {
         onGetEblanApplicationInfosByTagId(selectedEblanApplicationInfoTagId)
-    }
-
-    LaunchedEffect(key1 = horizontalPagerState.isScrollInProgress) {
-        if (horizontalPagerState.isScrollInProgress && showPopupApplicationMenu) {
-            onUpdateShowPopupApplicationMenu(false)
-        }
     }
 
     LaunchedEffect(key1 = swipeY) {

@@ -124,7 +124,7 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
     onUpdateIsVisibleFolders: (Boolean) -> Unit,
     onUpsertFolderEblanApplicationInfoPopupEntry: (FolderEntry) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateIsCloseFolderEblanApplicationInfoGridItemPopup: (Boolean) -> Unit,
+    onUpdateIsCloseFolderEblanApplicationGridItemMenu: (Boolean) -> Unit,
     onLongPressFolderEblanApplicationInfoGridItem: (
         folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
         imageBitmap: ImageBitmap,
@@ -195,7 +195,7 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
         if (drag == Drag.Dragging && hasInteraction && showFolderEblanApplicationGridItemPopup) {
             onUpdateIsDragging(true)
 
-            onUpdateIsCloseFolderEblanApplicationInfoGridItemPopup(true)
+            onUpdateIsCloseFolderEblanApplicationGridItemMenu(true)
         }
     }
 

@@ -115,8 +115,6 @@ internal fun HorizontalApplicationScreen(
         intSize: IntSize,
     ) -> Unit,
 ) {
-    var showPopupApplicationMenu by remember { mutableStateOf(false) }
-
     val horizontalPagerState = rememberPagerState(
         pageCount = {
             getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.size
@@ -140,7 +138,6 @@ internal fun HorizontalApplicationScreen(
         horizontalPagerState = horizontalPagerState,
         screenHeight = screenHeight,
         selectedEblanApplicationInfoTagId = selectedEblanApplicationInfoTagId,
-        showPopupApplicationMenu = showPopupApplicationMenu,
         swipeY = swipeY,
         textFieldState = textFieldState,
         showKeyboard = appDrawerSettings.showKeyboard,
@@ -148,9 +145,6 @@ internal fun HorizontalApplicationScreen(
         onDismiss = onDismiss,
         onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
         onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
-        onUpdateShowPopupApplicationMenu = {
-            showPopupApplicationMenu = it
-        },
     )
 
     Column(
