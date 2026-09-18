@@ -80,7 +80,7 @@ internal fun ApplicationInfoPopup(
     isVisibleOverlay: Boolean,
     paddingValues: PaddingValues,
     animations: Boolean,
-    onUpdateShowApplicationMenu: (Boolean) -> Unit,
+    onUpdateShowEblanApplicationInfoMenu: (Boolean) -> Unit,
     onEditApplicationInfo: (
         serialNumber: Long,
         componentName: String,
@@ -127,7 +127,7 @@ internal fun ApplicationInfoPopup(
         key2 = transitionState.isIdle,
     ) {
         if (!transitionState.targetState && transitionState.isIdle) {
-            onUpdateShowApplicationMenu(false)
+            onUpdateShowEblanApplicationInfoMenu(false)
         }
     }
 
@@ -254,7 +254,7 @@ internal fun PrivateApplicationInfoPopup(
     popupIntOffset: IntOffset?,
     popupIntSize: IntSize?,
     paddingValues: PaddingValues,
-    onUpdateShowPrivateApplicationMenu: (Boolean) -> Unit,
+    onUpdateShowPrivateEblanApplicationInfoMenu: (Boolean) -> Unit,
     onEditApplicationInfo: (
         serialNumber: Long,
         componentName: String,
@@ -293,7 +293,7 @@ internal fun PrivateApplicationInfoPopup(
         key2 = transitionState.isIdle,
     ) {
         if (!transitionState.targetState && transitionState.isIdle) {
-            onUpdateShowPrivateApplicationMenu(false)
+            onUpdateShowPrivateEblanApplicationInfoMenu(false)
         }
     }
 

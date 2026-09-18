@@ -1109,20 +1109,8 @@ internal class PagerScreenState(
         dockPageDirection = value
     }
 
-    fun updateIsVisibleFolderEblanApplicationInfos(value: Boolean) {
-        isVisibleFolderEblanApplicationInfos = value
-    }
-
-    fun updateShowFolderEblanApplicationInfoMenu(value: Boolean) {
-        showFolderEblanApplicationInfoMenu = value
-    }
-
-    fun updateShowPrivateApplicationMenu(value: Boolean) {
+    fun updateShowPrivateEblanApplicationInfoMenu(value: Boolean) {
         showPrivateEblanApplicationInfoMenu = value
-    }
-
-    fun updateIsCloseFolderEblanApplicationInfoGridItemMenu(value: Boolean) {
-        isCloseFolderEblanApplicationInfoGridItemMenu = value
     }
 
     fun dragShortcutInfoFromGridItemMenu(
@@ -1425,7 +1413,7 @@ internal class PagerScreenState(
         onMoveFolderGridItemOutsideFolder(gridItem)
     }
 
-    fun closeFolder(
+    fun closeFolderGridItem(
         folderEntry: FolderEntry,
         isFirstFolderGridItem: Boolean,
         onDeleteFolderGridItemPopupEntry: (FolderEntry) -> Unit,
@@ -1505,7 +1493,7 @@ internal class PagerScreenState(
         onUpdateIsVisibleOverlay(true)
     }
 
-    fun longPressApplicationInfo(
+    fun longPressEblanApplicationInfo(
         eblanApplicationInfo: EblanApplicationInfo,
         imageBitmap: ImageBitmap,
         intOffset: IntOffset,
@@ -1532,7 +1520,7 @@ internal class PagerScreenState(
         onUpdateIsVisibleOverlay(true)
     }
 
-    fun dragApplicationInfo(
+    fun dragEblanApplicationInfo(
         gridItem: GridItem,
         onUpdateGridItemSource: (GridItemSource) -> Unit,
         onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
@@ -1549,6 +1537,8 @@ internal class PagerScreenState(
 
         isDragging = true
 
+        showEblanApplicationInfoMenu = false
+
         dismissApplicationScreen()
     }
 
@@ -1556,7 +1546,7 @@ internal class PagerScreenState(
         showEblanApplicationInfoMenu = value
     }
 
-    fun longPressPrivateSpaceApplicationInfoItem(
+    fun longPressPrivateSpaceEblanApplicationInfoItem(
         eblanApplicationInfo: EblanApplicationInfo,
         intOffset: IntOffset,
         intSize: IntSize,
@@ -1570,7 +1560,7 @@ internal class PagerScreenState(
         showPrivateEblanApplicationInfoMenu = true
     }
 
-    fun dragFolderApplicationInfo(
+    fun dragFolderEblanApplicationInfo(
         folderEblanApplicationInfo: FolderEblanApplicationInfo,
         gridItem: GridItem,
         onDragFolderEblanApplicationInfoToGrid: (
@@ -1592,7 +1582,7 @@ internal class PagerScreenState(
 
         isDragging = true
 
-        showFolderEblanApplicationInfoMenu = false
+        isCloseFolderEblanApplicationInfoMenu = true
 
         dismissApplicationScreen()
 
@@ -1602,7 +1592,7 @@ internal class PagerScreenState(
         )
     }
 
-    fun tapFolderApplicationInfo(
+    fun tapFolderEblanApplicationInfo(
         folderEntry: FolderEntry,
         onUpsertFolderEblanApplicationInfoPopupEntry: (FolderEntry) -> Unit,
     ) {
@@ -1611,7 +1601,7 @@ internal class PagerScreenState(
         onUpsertFolderEblanApplicationInfoPopupEntry(folderEntry)
     }
 
-    fun longPressFolderApplicationInfo(
+    fun longPressFolderEblanApplicationInfo(
         folderEblanApplicationInfo: FolderEblanApplicationInfo,
         imageBitmap: ImageBitmap,
         intOffset: IntOffset,
@@ -1633,7 +1623,7 @@ internal class PagerScreenState(
 
         selectedFolderEblanApplicationInfo = folderEblanApplicationInfo
 
-        showEblanApplicationInfoMenu = true
+        showFolderEblanApplicationInfoMenu = true
 
         onUpdateIsVisibleOverlay(true)
     }
@@ -1669,6 +1659,49 @@ internal class PagerScreenState(
         showFolderEblanApplicationInfoGridItemMenu = true
 
         onUpdateIsVisibleOverlay(true)
+    }
+
+    fun dragFolderEblanApplicationInfoGridItem() {
+        isDragging = true
+
+        isCloseFolderEblanApplicationInfoGridItemMenu = true
+    }
+
+    fun moveFolderEblanApplicationInfoGridItemOutsideFolder(
+        folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
+        movingGridItem: GridItem,
+        onMoveFolderEblanApplicationInfoGridItemOutsideFolder: (
+            folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
+            movingGridItem: GridItem,
+        ) -> Unit,
+    ) {
+        isDragging = true
+
+        dismissApplicationScreen()
+
+        onMoveFolderEblanApplicationInfoGridItemOutsideFolder(
+            folderEblanApplicationInfoGridItem,
+            movingGridItem,
+        )
+    }
+
+    fun closeFolderEblanApplicationInfo(
+        folderEntry: FolderEntry,
+        isFirstFolderEblanApplicationInfo: Boolean,
+        onDeleteFolderPopupEntry: (FolderEntry) -> Unit,
+    ) {
+        isVisibleFolderEblanApplicationInfos = !isFirstFolderEblanApplicationInfo
+
+        onDeleteFolderPopupEntry(folderEntry)
+    }
+
+    fun tapFolderEblanApplicationInfoGridItem(
+        folderEntry: FolderEntry,
+        onUpsertFolderEntry: (FolderEntry) -> Unit,
+    ) {
+        isVisibleFolderGridItems = true
+
+        onUpsertFolderEntry(folderEntry)
     }
 }
 

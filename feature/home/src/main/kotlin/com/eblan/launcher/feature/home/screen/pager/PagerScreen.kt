@@ -1170,7 +1170,7 @@ internal fun PagerScreen(
                     },
                     onDragFolderGridItem = pagerScreenState::dragFolderGridItem,
                     onCloseFolder = { folderPopupEntry, isFirstFolderGridItem ->
-                        pagerScreenState.closeFolder(
+                        pagerScreenState.closeFolderGridItem(
                             folderEntry = folderPopupEntry,
                             isFirstFolderGridItem = isFirstFolderGridItem,
                             onDeleteFolderGridItemPopupEntry = onDeleteFolderGridItemPopupEntry,
@@ -1249,7 +1249,7 @@ internal fun PagerScreen(
                 onVerticalDrag = pagerScreenState::verticalDragApplicationScreen,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onDragFolderEblanApplicationInfo = { folderEblanApplicationInfo, movingGridItem ->
-                    pagerScreenState.dragFolderApplicationInfo(
+                    pagerScreenState.dragFolderEblanApplicationInfo(
                         folderEblanApplicationInfo = folderEblanApplicationInfo,
                         gridItem = movingGridItem,
                         onDragFolderEblanApplicationInfoToGrid = onDragFolderEblanApplicationInfo,
@@ -1258,14 +1258,14 @@ internal fun PagerScreen(
                     )
                 },
                 onDragApplicationInfo = {
-                    pagerScreenState.dragApplicationInfo(
+                    pagerScreenState.dragEblanApplicationInfo(
                         gridItem = it,
                         onUpdateGridItemSource = onUpdateGridItemSource,
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                     )
                 },
                 onLongPressApplicationInfo = { eblanApplicationInfo, imageBitmap, intOffset, intSize, sharedElementKey ->
-                    pagerScreenState.longPressApplicationInfo(
+                    pagerScreenState.longPressEblanApplicationInfo(
                         eblanApplicationInfo = eblanApplicationInfo,
                         imageBitmap = imageBitmap,
                         intOffset = intOffset,
@@ -1275,7 +1275,7 @@ internal fun PagerScreen(
                     )
                 },
                 onLongPressFolderApplicationInfo = { folderEblanApplicationInfo: FolderEblanApplicationInfo, imageBitmap: ImageBitmap, intOffset: IntOffset, intSize: IntSize, sharedElementKey: SharedElementKey ->
-                    pagerScreenState.longPressFolderApplicationInfo(
+                    pagerScreenState.longPressFolderEblanApplicationInfo(
                         folderEblanApplicationInfo = folderEblanApplicationInfo,
                         imageBitmap = imageBitmap,
                         intOffset = intOffset,
@@ -1285,14 +1285,14 @@ internal fun PagerScreen(
                     )
                 },
                 onLongPressPrivateSpaceApplicationInfoItem = { eblanApplicationInfo, intOffset, intSize ->
-                    pagerScreenState.longPressPrivateSpaceApplicationInfoItem(
+                    pagerScreenState.longPressPrivateSpaceEblanApplicationInfoItem(
                         eblanApplicationInfo = eblanApplicationInfo,
                         intOffset = intOffset,
                         intSize = intSize,
                     )
                 },
                 onTapFolderApplicationInfo = {
-                    pagerScreenState.tapFolderApplicationInfo(
+                    pagerScreenState.tapFolderEblanApplicationInfo(
                         folderEntry = it,
                         onUpsertFolderEblanApplicationInfoPopupEntry = onUpsertFolderEblanApplicationInfoPopupEntry,
                     )
@@ -1316,7 +1316,7 @@ internal fun PagerScreen(
                 isVisibleOverlay = isVisibleOverlay,
                 paddingValues = paddingValues,
                 animations = experimentalSettings.gridItemAnimation,
-                onUpdateShowApplicationMenu = pagerScreenState::updateShowEblanApplicationInfoMenu,
+                onUpdateShowEblanApplicationInfoMenu = pagerScreenState::updateShowEblanApplicationInfoMenu,
                 onEditApplicationInfo = onEditApplicationInfo,
                 onWidgets = {
                     pagerScreenState.openAppWidgetScreen(
@@ -1352,7 +1352,7 @@ internal fun PagerScreen(
                 popupIntOffset = pagerScreenState.menuIntOffset,
                 popupIntSize = pagerScreenState.menuIntSize,
                 paddingValues = paddingValues,
-                onUpdateShowPrivateApplicationMenu = pagerScreenState::updateShowPrivateApplicationMenu,
+                onUpdateShowPrivateEblanApplicationInfoMenu = pagerScreenState::updateShowPrivateEblanApplicationInfoMenu,
                 onEditApplicationInfo = onEditApplicationInfo,
             )
         }
@@ -1500,9 +1500,7 @@ internal fun PagerScreen(
                     dragIntOffset = pagerScreenState.dragIntOffset,
                     showFolderEblanApplicationGridItemPopup = pagerScreenState.showFolderEblanApplicationInfoGridItemMenu,
                     iconPackInfoFilePaths = getEblanApplicationInfosByLabelAndTag.iconPackInfoFilePaths,
-                    onDeleteFolderEblanApplicationInfoPopupEntry = onDeleteFolderEblanApplicationInfoPopupEntry,
                     onUpsertFolderEblanApplicationInfoPopupEntry = onUpsertFolderEblanApplicationInfoPopupEntry,
-                    onUpdateIsVisibleFolders = pagerScreenState::updateIsVisibleFolderEblanApplicationInfos,
                     onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                     onMoveFolderEblanApplicationInfoGridItem = onMoveFolderEblanApplicationInfoGridItem,
@@ -1510,9 +1508,13 @@ internal fun PagerScreen(
                     onResetGrid = onResetGrid,
                     onResetGridAfterMoveFolderEblanApplicationInfo = onDragEndAfterMoveFolderEblanApplicationInfo,
                     onUpdateIsDragging = pagerScreenState::updateIsDragging,
-                    onUpdateIsCloseFolderEblanApplicationInfoGridItemPopup = pagerScreenState::updateIsCloseFolderEblanApplicationInfoGridItemMenu,
-                    onMoveFolderEblanApplicationInfoGridItemOutsideFolder = onMoveFolderEblanApplicationInfoGridItemOutsideFolder,
-                    onDismissApplicationScreen = pagerScreenState::dismissApplicationScreen,
+                    onMoveFolderEblanApplicationInfoGridItemOutsideFolder = { folderEblanApplicationInfoGridItem, movingGridItem ->
+                        pagerScreenState.moveFolderEblanApplicationInfoGridItemOutsideFolder(
+                            folderEblanApplicationInfoGridItem = folderEblanApplicationInfoGridItem,
+                            movingGridItem = movingGridItem,
+                            onMoveFolderEblanApplicationInfoGridItemOutsideFolder = onMoveFolderEblanApplicationInfoGridItemOutsideFolder,
+                        )
+                    },
                     onLongPressFolderEblanApplicationInfoGridItem = { folderEblanApplicationInfoGridItem, imageBitmap, intOffset, intSize, newSharedElementKey ->
                         pagerScreenState.longPressFolderEblanApplicationInfoGridItem(
                             folderEblanApplicationInfoGridItem = folderEblanApplicationInfoGridItem,
@@ -1522,6 +1524,20 @@ internal fun PagerScreen(
                             newSharedElementKey = newSharedElementKey,
                             onUpdateMoveFolderEblanApplicationInfoGridItemResult = onUpdateMoveFolderEblanApplicationInfoGridItemResult,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        )
+                    },
+                    onDragFolderEblanApplicationInfoGridItem = pagerScreenState::dragFolderEblanApplicationInfoGridItem,
+                    onCloseFolder = { folderEntry, isFirstFolderGridItem ->
+                        pagerScreenState.closeFolderEblanApplicationInfo(
+                            folderEntry = folderEntry,
+                            isFirstFolderEblanApplicationInfo = isFirstFolderGridItem,
+                            onDeleteFolderPopupEntry = onDeleteFolderEblanApplicationInfoPopupEntry,
+                        )
+                    },
+                    onTapFolderEblanApplicationInfoItem = {
+                        pagerScreenState.tapFolderEblanApplicationInfoGridItem(
+                            folderEntry = it,
+                            onUpsertFolderEntry = onUpsertFolderEblanApplicationInfoPopupEntry,
                         )
                     },
                 )

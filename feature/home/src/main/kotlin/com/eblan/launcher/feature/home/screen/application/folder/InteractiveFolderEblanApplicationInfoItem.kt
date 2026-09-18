@@ -121,10 +121,6 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
     drag: Drag,
     showFolderEblanApplicationGridItemPopup: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
-    onUpdateIsVisibleFolders: (Boolean) -> Unit,
-    onUpsertFolderEblanApplicationInfoPopupEntry: (FolderEntry) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateIsCloseFolderEblanApplicationGridItemMenu: (Boolean) -> Unit,
     onLongPressFolderEblanApplicationInfoGridItem: (
         folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
         imageBitmap: ImageBitmap,
@@ -132,6 +128,8 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
         intSize: IntSize,
         sharedElementKey: SharedElementKey,
     ) -> Unit,
+    onDragFolderEblanApplicationInfoGridItem: () -> Unit,
+    onTapFolderEblanApplicationInfoItem: (FolderEntry) -> Unit,
 ) {
     val isSelected =
         moveFolderEblanApplicationInfoGridItemResult != null &&
@@ -193,9 +191,7 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
         key3 = showFolderEblanApplicationGridItemPopup,
     ) {
         if (drag == Drag.Dragging && hasInteraction && showFolderEblanApplicationGridItemPopup) {
-            onUpdateIsDragging(true)
-
-            onUpdateIsCloseFolderEblanApplicationGridItemMenu(true)
+            onDragFolderEblanApplicationInfoGridItem()
         }
     }
 
@@ -251,9 +247,8 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
                 iconSize = iconSize,
                 isVisibleFolder = isVisibleFolder,
                 iconPackInfoFilePaths = iconPackInfoFilePaths,
-                onUpdateIsVisibleFolders = onUpdateIsVisibleFolders,
-                onUpsertFolderEblanApplicationInfoPopupEntry = onUpsertFolderEblanApplicationInfoPopupEntry,
                 onLongPressFolderEblanApplicationInfoGridItem = onLongPressFolderEblanApplicationInfoGridItem,
+                onTapFolderEblanApplicationInfoItem = onTapFolderEblanApplicationInfoItem,
             )
         }
     }
@@ -461,8 +456,6 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
     iconSize: Dp,
     isVisibleFolder: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
-    onUpdateIsVisibleFolders: (Boolean) -> Unit,
-    onUpsertFolderEblanApplicationInfoPopupEntry: (FolderEntry) -> Unit,
     onLongPressFolderEblanApplicationInfoGridItem: (
         folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
         imageBitmap: ImageBitmap,
@@ -470,6 +463,7 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
         intSize: IntSize,
         sharedElementKey: SharedElementKey,
     ) -> Unit,
+    onTapFolderEblanApplicationInfoItem: (FolderEntry) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -505,9 +499,7 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
                 detectTapGestures(
                     onTap = if (!isVisibleOverlay && !isInProgress) {
                         {
-                            onUpdateIsVisibleFolders(true)
-
-                            onUpsertFolderEblanApplicationInfoPopupEntry(
+                            onTapFolderEblanApplicationInfoItem(
                                 FolderEntry(
                                     id = folderEblanApplicationInfoGridItem.id,
                                     x = intOffset.x,
