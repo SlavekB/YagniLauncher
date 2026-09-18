@@ -77,7 +77,7 @@ internal fun FolderGridItemPopup(
     hasShortcutHostPermission: Boolean,
     popupIntOffset: IntOffset?,
     popupIntSize: IntSize?,
-    folderGridItem: GridItem,
+    folderGridItem: GridItem?,
     isVisibleOverlay: Boolean,
     paddingValues: PaddingValues,
     isCloseFolderGridItemPopup: Boolean,
@@ -95,6 +95,8 @@ internal fun FolderGridItemPopup(
         sharedElementKey: SharedElementKey,
     ) -> Unit,
 ) {
+    requireNotNull(folderGridItem)
+
     requireNotNull(popupIntOffset)
 
     requireNotNull(popupIntSize)

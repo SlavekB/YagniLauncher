@@ -72,7 +72,7 @@ internal fun GridItemPopup(
     modifier: Modifier = Modifier,
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
-    gridItem: GridItem,
+    gridItem: GridItem?,
     gridItemSettings: GridItemSettings,
     hasShortcutHostPermission: Boolean,
     popupIntOffset: IntOffset?,
@@ -95,6 +95,8 @@ internal fun GridItemPopup(
         sharedElementKey: SharedElementKey,
     ) -> Unit,
 ) {
+    requireNotNull(gridItem)
+
     requireNotNull(popupIntOffset)
 
     requireNotNull(popupIntSize)

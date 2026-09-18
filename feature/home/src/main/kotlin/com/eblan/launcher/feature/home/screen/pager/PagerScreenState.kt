@@ -342,6 +342,12 @@ internal class PagerScreenState(
     var isCloseEblanApplicationInfoMenu by mutableStateOf(false)
         private set
 
+    var selectedGridItem by mutableStateOf<GridItem?>(null)
+        private set
+
+    var selectedFolderEblanApplicationInfoGridItem by mutableStateOf<FolderEblanApplicationInfoGridItem?>(null)
+        private set
+
     private val touchSlop = with(density) {
         50.dp.toPx()
     }
@@ -438,6 +444,8 @@ internal class PagerScreenState(
 
         menuIntSize = null
 
+        selectedGridItem = null
+
         showGridItemMenu = false
 
         isCloseGridItemMenu = false
@@ -447,6 +455,8 @@ internal class PagerScreenState(
         menuIntOffset = null
 
         menuIntSize = null
+
+        selectedGridItem = null
 
         showFolderGridItemMenu = false
 
@@ -458,6 +468,8 @@ internal class PagerScreenState(
 
         menuIntSize = null
 
+        selectedFolderEblanApplicationInfo = null
+
         showFolderEblanApplicationInfoMenu = false
 
         isCloseFolderEblanApplicationInfoMenu = false
@@ -468,6 +480,8 @@ internal class PagerScreenState(
 
         menuIntSize = null
 
+        selectedFolderEblanApplicationInfoGridItem = null
+
         showFolderEblanApplicationInfoGridItemMenu = false
 
         isCloseFolderEblanApplicationInfoGridItemMenu = false
@@ -477,6 +491,8 @@ internal class PagerScreenState(
         menuIntOffset = null
 
         menuIntSize = null
+
+        selectedEblanApplicationInfo = null
 
         showEblanApplicationInfoMenu = false
 
@@ -1343,6 +1359,8 @@ internal class PagerScreenState(
 
         menuIntSize = intSize
 
+        selectedGridItem = gridItem
+
         showGridItemMenu = true
 
         onUpdateIsVisibleOverlay(true)
@@ -1412,6 +1430,8 @@ internal class PagerScreenState(
         menuIntOffset = intOffset
 
         menuIntSize = intSize
+
+        selectedGridItem = gridItem
 
         showFolderGridItemMenu = true
 
@@ -1672,6 +1692,8 @@ internal class PagerScreenState(
         menuIntOffset = intOffset
 
         menuIntSize = intSize
+
+        selectedFolderEblanApplicationInfoGridItem = folderEblanApplicationInfoGridItem
 
         showFolderEblanApplicationInfoGridItemMenu = true
 

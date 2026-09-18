@@ -510,13 +510,12 @@ internal fun PagerScreen(
         }
     }
 
-    val isVisibleGridItemPopup = gridItemSource != null &&
+    val isVisibleGridItemMenu = pagerScreenState.selectedGridItem != null &&
         pagerScreenState.showGridItemMenu &&
         pagerScreenState.menuIntOffset != null &&
-        pagerScreenState.menuIntSize != null &&
-        moveGridItemResult != null
+        pagerScreenState.menuIntSize != null
 
-    val isVisibleSettingsPopup =
+    val isVisibleSettingsMenu =
         pagerScreenState.showSettingsMenu && pagerScreenState.settingsMenuIntOffset != null
 
     val isVisibleFolderGridItems =
@@ -526,18 +525,20 @@ internal fun PagerScreen(
         pagerScreenState.isVisibleFolderEblanApplicationInfos &&
             folderEblanApplicationInfoPopups.isNotEmpty()
 
-    val isVisibleFolderGridItemPopup = pagerScreenState.showFolderGridItemMenu &&
-        pagerScreenState.menuIntOffset != null &&
-        pagerScreenState.menuIntSize != null &&
-        moveGridItemResult != null
+    val isVisibleFolderGridItemMenu =
+        pagerScreenState.selectedGridItem != null &&
+            pagerScreenState.showFolderGridItemMenu &&
+            pagerScreenState.menuIntOffset != null &&
+            pagerScreenState.menuIntSize != null &&
+            moveGridItemResult != null
 
     val isResizing = pagerScreenState.isResizing && resizeGridItem != null
 
     val shouldLockScreenOrientation = homeSettings.lockScreenOrientation ||
-        isVisibleGridItemPopup ||
-        isVisibleSettingsPopup ||
+        isVisibleGridItemMenu ||
+        isVisibleSettingsMenu ||
         isVisibleFolderGridItems ||
-        isVisibleFolderGridItemPopup ||
+        isVisibleFolderGridItemMenu ||
         isResizing ||
         pagerScreenState.showApplicationScreen ||
         pagerScreenState.showWidgetScreen ||
@@ -546,7 +547,7 @@ internal fun PagerScreen(
 
     val statusBarNotifications by rememberStatusBarNotifications()
 
-    val isVisibleFolderEblanApplicationInfoGridItemPopup =
+    val isVisibleFolderEblanApplicationInfoGridItemMenu =
         pagerScreenState.showFolderEblanApplicationInfoGridItemMenu &&
             pagerScreenState.menuIntOffset != null &&
             pagerScreenState.menuIntSize != null &&
@@ -1057,11 +1058,11 @@ internal fun PagerScreen(
             }
         }
 
-        if (isVisibleGridItemPopup) {
+        if (isVisibleGridItemMenu) {
             GridItemPopup(
                 eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
-                gridItem = moveGridItemResult.movingGridItem,
+                gridItem = pagerScreenState.selectedGridItem,
                 gridItemSettings = homeSettings.gridItemSettings,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 popupIntOffset = pagerScreenState.menuIntOffset,
@@ -1097,7 +1098,7 @@ internal fun PagerScreen(
             )
         }
 
-        if (isVisibleSettingsPopup) {
+        if (isVisibleSettingsMenu) {
             SettingsPopup(
                 gridItems = gridItems,
                 hasSystemFeatureAppWidgets = hasSystemFeatureAppWidgets,
@@ -1180,7 +1181,7 @@ internal fun PagerScreen(
             }
         }
 
-        if (isVisibleFolderGridItemPopup) {
+        if (isVisibleFolderGridItemMenu) {
             FolderGridItemPopup(
                 eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
@@ -1188,7 +1189,7 @@ internal fun PagerScreen(
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 popupIntOffset = pagerScreenState.menuIntOffset,
                 popupIntSize = pagerScreenState.menuIntSize,
-                folderGridItem = moveGridItemResult.movingGridItem,
+                folderGridItem = pagerScreenState.selectedGridItem,
                 isVisibleOverlay = isVisibleOverlay,
                 paddingValues = paddingValues,
                 isCloseFolderGridItemPopup = pagerScreenState.isCloseFolderGridItemMenu,
@@ -1558,9 +1559,9 @@ internal fun PagerScreen(
             )
         }
 
-        if (isVisibleFolderEblanApplicationInfoGridItemPopup) {
+        if (isVisibleFolderEblanApplicationInfoGridItemMenu) {
             FolderApplicationInfoGridItemPopup(
-                folderEblanApplicationInfoGridItem = moveFolderEblanApplicationInfoGridItemResult.folderEblanApplicationInfoGridItem,
+                folderEblanApplicationInfoGridItem = pagerScreenState.selectedFolderEblanApplicationInfoGridItem,
                 popupIntOffset = pagerScreenState.menuIntOffset,
                 popupIntSize = pagerScreenState.menuIntSize,
                 paddingValues = paddingValues,
