@@ -484,7 +484,7 @@ private fun EblanApplicationInfos(
     )
 
     val privateIsQuiteModeEnabled by rememberIsPrivateQuietModeEnabled(eblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser)
-
+    println("privateIsQuiteModeEnabled: $privateIsQuiteModeEnabled")
     LaunchedEffect(key1 = swipeY) {
         if (swipeY.toInt() == screenHeight) {
             lazyGridState.scrollToItem(0)

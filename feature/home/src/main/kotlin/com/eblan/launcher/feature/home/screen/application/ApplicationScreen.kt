@@ -533,14 +533,16 @@ internal fun rememberIsQuietModeEnabled(userHandle: UserHandle?): State<Boolean>
     ) {
         if (userHandle == null) return@produceState
 
-        value = userManager.isQuietModeEnabled(userHandle = userHandle)
+        value = userManager.isQuietModeEnabled(
+            userHandle = userHandle,
+        )
 
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(
                 context: Context,
                 intent: Intent,
             ) {
-                val changedUserHandle: UserHandle? =
+                val changedUserHandle =
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         intent.getParcelableExtra(
                             Intent.EXTRA_USER,
@@ -551,19 +553,11 @@ internal fun rememberIsQuietModeEnabled(userHandle: UserHandle?): State<Boolean>
                         intent.getParcelableExtra(Intent.EXTRA_USER)
                     }
 
-                if (changedUserHandle == userHandle) {
-                    value = if (
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
-                        intent.hasExtra(Intent.EXTRA_QUIET_MODE)
-                    ) {
-                        intent.getBooleanExtra(
-                            Intent.EXTRA_QUIET_MODE,
-                            false,
-                        )
-                    } else {
-                        userManager.isQuietModeEnabled(userHandle = userHandle)
-                    }
-                }
+                if (changedUserHandle != userHandle) return
+
+                value = userManager.isQuietModeEnabled(
+                    userHandle = userHandle,
+                )
             }
         }
 
@@ -585,10 +579,9 @@ internal fun rememberIsQuietModeEnabled(userHandle: UserHandle?): State<Boolean>
 }
 
 @Composable
-internal fun rememberIsPrivateQuietModeEnabled(
-    eblanUser: EblanUser?,
-): State<Boolean> {
+internal fun rememberIsPrivateQuietModeEnabled(eblanUser: EblanUser?): State<Boolean> {
     val context = LocalContext.current
+
     val userManager = LocalUserManager.current
 
     return produceState(
@@ -597,18 +590,20 @@ internal fun rememberIsPrivateQuietModeEnabled(
     ) {
         if (eblanUser == null) return@produceState
 
-        val initialUserHandle = userManager.getUserForSerialNumber(
+        val userHandle = userManager.getUserForSerialNumber(
             serialNumber = eblanUser.serialNumber,
         ) ?: return@produceState
 
-        value = userManager.isQuietModeEnabled(userHandle = initialUserHandle)
+        value = userManager.isQuietModeEnabled(
+            userHandle = userHandle,
+        )
 
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(
                 context: Context,
                 intent: Intent,
             ) {
-                val userHandle: UserHandle? =
+                val changedUserHandle =
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         intent.getParcelableExtra(
                             Intent.EXTRA_USER,
@@ -620,22 +615,16 @@ internal fun rememberIsPrivateQuietModeEnabled(
                     }
 
                 if (
-                    userHandle != null &&
-                    userManager.getSerialNumberForUser(userHandle) ==
+                    changedUserHandle == null ||
+                    userManager.getSerialNumberForUser(changedUserHandle) !=
                     eblanUser.serialNumber
                 ) {
-                    value = if (
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
-                        intent.hasExtra(Intent.EXTRA_QUIET_MODE)
-                    ) {
-                        intent.getBooleanExtra(
-                            Intent.EXTRA_QUIET_MODE,
-                            false,
-                        )
-                    } else {
-                        userManager.isQuietModeEnabled(userHandle = userHandle)
-                    }
+                    return
                 }
+
+                value = userManager.isQuietModeEnabled(
+                    userHandle = changedUserHandle,
+                )
             }
         }
 
@@ -646,6 +635,11 @@ internal fun rememberIsPrivateQuietModeEnabled(
                 addAction(Intent.ACTION_MANAGED_PROFILE_AVAILABLE)
                 addAction(Intent.ACTION_MANAGED_PROFILE_UNAVAILABLE)
                 addAction(Intent.ACTION_MANAGED_PROFILE_UNLOCKED)
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                    addAction(Intent.ACTION_PROFILE_AVAILABLE)
+                    addAction(Intent.ACTION_PROFILE_UNAVAILABLE)
+                }
             },
             ContextCompat.RECEIVER_NOT_EXPORTED,
         )
