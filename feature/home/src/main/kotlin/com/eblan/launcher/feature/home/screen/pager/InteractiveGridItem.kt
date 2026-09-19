@@ -394,6 +394,7 @@ private fun InteractiveApplicationInfoGridItem(
     val scale = remember { Animatable(1f) }
 
     val currentOnOpenAppDrawer by rememberUpdatedState(onOpenAppDrawer)
+    val currentOnLongPressGridItem by rememberUpdatedState(onLongPressGridItem)
 
     Column(
         modifier = modifier
@@ -424,7 +425,7 @@ private fun InteractiveApplicationInfoGridItem(
                     onLongPress = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                onLongPressGridItem(
+                                currentOnLongPressGridItem(
                                     gridItem,
                                     graphicsLayer.toImageBitmap(),
                                     intOffset,
@@ -568,6 +569,8 @@ private fun InteractiveWidgetGridItem(
 
     val scale = remember { Animatable(1f) }
 
+    val currentOnLongPressGridItem by rememberUpdatedState(onLongPressGridItem)
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -617,7 +620,7 @@ private fun InteractiveWidgetGridItem(
                                     scale.animateTo(targetValue = SCALE)
                                 }
 
-                                onLongPressGridItem(
+                                currentOnLongPressGridItem(
                                     gridItem,
                                     graphicsLayer.toImageBitmap(),
                                     intOffset,
@@ -640,7 +643,7 @@ private fun InteractiveWidgetGridItem(
                         onLongPress = if (!isVisibleOverlay) {
                             {
                                 scope.launch {
-                                    onLongPressGridItem(
+                                    currentOnLongPressGridItem(
                                         gridItem,
                                         graphicsLayer.toImageBitmap(),
                                         intOffset,
@@ -721,6 +724,8 @@ private fun InteractiveShortcutInfoGridItem(
 
     val currentOnOpenAppDrawer by rememberUpdatedState(onOpenAppDrawer)
 
+    val currentOnLongPressGridItem by rememberUpdatedState(onLongPressGridItem)
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -750,7 +755,7 @@ private fun InteractiveShortcutInfoGridItem(
                     onLongPress = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                onLongPressGridItem(
+                                currentOnLongPressGridItem(
                                     gridItem,
                                     graphicsLayer.toImageBitmap(),
                                     intOffset,
@@ -931,6 +936,9 @@ private fun InteractiveFolderGridItem(
     val currentFolderGridItems =
         rememberUpdatedState(previewFolderGridItems[gridItem.id]?.folderGridItems)
     val currentOnOpenAppDrawer by rememberUpdatedState(onOpenAppDrawer)
+    val currentOnLongPressGridItem by rememberUpdatedState(onLongPressGridItem)
+    val currentOnTapFolderGridItem by rememberUpdatedState(onTapFolderGridItem)
+    val currentOnShowFolderWhenDragging by rememberUpdatedState(onShowFolderWhenDragging)
 
     val scale = remember { Animatable(1f) }
 
@@ -945,7 +953,7 @@ private fun InteractiveFolderGridItem(
             intSize = intSize,
             gridItem = currentGridItem,
             folderGridItems = currentFolderGridItems,
-            onShowFolderWhenDragging = onShowFolderWhenDragging,
+            onShowFolderWhenDragging = currentOnShowFolderWhenDragging,
         )
     }
 
@@ -978,7 +986,7 @@ private fun InteractiveFolderGridItem(
                     onLongPress = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                onLongPressGridItem(
+                                currentOnLongPressGridItem(
                                     gridItem,
                                     graphicsLayer.toImageBitmap(),
                                     intOffset,
@@ -992,7 +1000,7 @@ private fun InteractiveFolderGridItem(
                     },
                     onTap = if (!isVisibleOverlay) {
                         {
-                            onTapFolderGridItem(
+                            currentOnTapFolderGridItem(
                                 FolderEntry(
                                     id = gridItem.id,
                                     x = intOffset.x,
@@ -1168,6 +1176,7 @@ private fun InteractiveShortcutConfigGridItem(
     val scale = remember { Animatable(1f) }
 
     val currentOnOpenAppDrawer by rememberUpdatedState(onOpenAppDrawer)
+    val currentOnLongPressGridItem by rememberUpdatedState(onLongPressGridItem)
 
     Column(
         modifier = modifier
@@ -1198,7 +1207,7 @@ private fun InteractiveShortcutConfigGridItem(
                     onLongPress = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                onLongPressGridItem(
+                                currentOnLongPressGridItem(
                                     gridItem,
                                     graphicsLayer.toImageBitmap(),
                                     intOffset,
