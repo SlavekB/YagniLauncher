@@ -104,6 +104,7 @@ import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
 import com.eblan.launcher.feature.home.component.gridItemSharedElement
 import com.eblan.launcher.feature.home.component.rememberNestedScrollConnectionEffect
 import com.eblan.launcher.feature.home.model.Drag
+import com.eblan.launcher.feature.home.model.ScrollBarItemLayout
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.ApplicationScreenEffect
 import com.eblan.launcher.feature.home.screen.application.ApplicationSearchBar
