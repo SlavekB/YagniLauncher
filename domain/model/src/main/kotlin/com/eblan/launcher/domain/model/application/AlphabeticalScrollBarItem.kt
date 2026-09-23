@@ -15,8 +15,9 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.domain.model
+package com.eblan.launcher.domain.model.application
 
-import com.eblan.launcher.domain.model.grid.GridItem
-
-data class PageItem(val id: Int, val gridItems: List<GridItem>)
+data class AlphabeticalScrollBarItem(
+    val letter: Char,
+    val index: Int,
+)

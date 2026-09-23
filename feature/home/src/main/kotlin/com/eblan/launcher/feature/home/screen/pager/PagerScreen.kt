@@ -947,7 +947,16 @@ internal fun PagerScreen(
                 Box(
                     modifier = Modifier
                         .matchParentSize()
-                        .padding(homeSettings.dockPadding.dp)
+                        .padding(
+                            start = homeSettings.dockPadding.dp,
+                            top = homeSettings.dockPadding.dp,
+                            end = homeSettings.dockPadding.dp,
+                            bottom = if (homeSettings.addDockBottomPadding) {
+                                homeSettings.dockPadding.dp + paddingValues.calculateBottomPadding()
+                            } else {
+                                homeSettings.dockPadding.dp
+                            },
+                        )
                         .background(
                             color = Color(homeSettings.dockCustomBackgroundColor),
                             shape = RoundedCornerShape(

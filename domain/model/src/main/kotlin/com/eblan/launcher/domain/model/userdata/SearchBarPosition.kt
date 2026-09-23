@@ -17,21 +17,8 @@
  */
 package com.eblan.launcher.domain.model.userdata
 
-import com.eblan.launcher.domain.model.grid.GridItemSettings
-
-data class AppDrawerSettings(
-    val appDrawerColumns: Int,
-    val appDrawerRowsHeight: Int,
-    val gridItemSettings: GridItemSettings,
-    val backgroundColor: BackgroundColor,
-    val customBackgroundColor: Int,
-    val appDrawerType: AppDrawerType,
-    val horizontalAppDrawerColumns: Int,
-    val horizontalAppDrawerRows: Int,
-    val excludeTaggedApps: Boolean,
-    val showKeyboard: Boolean,
-    val fuzzySearch: Boolean,
-    val blurBehind: Boolean,
-    val searchBarPosition: SearchBarPosition,
-    val scrollBarType: ScrollBarType,
-)
+enum class SearchBarPosition {
+    Top,
+    Bottom,
+    None,
+}

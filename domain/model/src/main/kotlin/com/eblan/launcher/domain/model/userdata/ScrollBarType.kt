@@ -15,17 +15,10 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.domain.model
+package com.eblan.launcher.domain.model.userdata
 
-enum class GlobalAction {
-    Notifications,
-    QuickSettings,
-    LockScreen,
-    Recents,
-    ;
-
-    companion object {
-        const val NAME = "GlobalAction"
-        const val GLOBAL_ACTION_TYPE = "GlobalActionType"
-    }
+enum class ScrollBarType {
+    ScrollBar,
+    Alphabetical,
+    None,
 }

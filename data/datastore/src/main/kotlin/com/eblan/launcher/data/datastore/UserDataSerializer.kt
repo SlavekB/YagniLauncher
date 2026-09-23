@@ -22,6 +22,8 @@ import androidx.datastore.core.Serializer
 import com.eblan.launcher.data.datastore.proto.UserDataProto
 import com.eblan.launcher.data.datastore.proto.appdrawer.AppDrawerSettingsProto
 import com.eblan.launcher.data.datastore.proto.appdrawer.AppDrawerTypeProto
+import com.eblan.launcher.data.datastore.proto.appdrawer.ScrollBarTypeProto
+import com.eblan.launcher.data.datastore.proto.appdrawer.SearchBarPositionProto
 import com.eblan.launcher.data.datastore.proto.experimental.ExperimentalSettingsProto
 import com.eblan.launcher.data.datastore.proto.folder.FolderSettingsProto
 import com.eblan.launcher.data.datastore.proto.general.GeneralSettingsProto
@@ -76,13 +78,14 @@ class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
         dockPageCount = 1
         dockInfiniteScroll = false
         addNewAppsToHomeScreen = true
-        showPageIndicator = false
+        showPageIndicator = true
         dockCustomBackgroundColor = 0x00000000
         dockPadding = 0
         dockTopStartCornerRadius = 0
         dockTopEndCornerRadius = 0
         dockBottomStartCornerRadius = 0
         dockBottomEndCornerRadius = 0
+        addDockBottomPadding = true
     }.build()
 
     private val defaultAppDrawerSettingsProto = AppDrawerSettingsProto.newBuilder().apply {
@@ -98,6 +101,8 @@ class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
         showKeyboard = false
         fuzzySearch = false
         blurBehind = false
+        searchBarPositionProto = SearchBarPositionProto.SearchBarPositionTop
+        scrollBarTypeProto = ScrollBarTypeProto.ScrollBarTypeScrollBar
     }.build()
 
     private val defaultGestureSettingsProto = GestureSettingsProto.newBuilder().apply {
