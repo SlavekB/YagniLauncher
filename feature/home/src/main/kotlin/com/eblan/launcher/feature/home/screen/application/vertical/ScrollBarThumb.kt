@@ -23,7 +23,6 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,6 +45,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
@@ -72,8 +72,11 @@ internal fun ScrollBarThumb(
     lazyGridState: LazyGridState,
     paddingValues: PaddingValues,
     searchBarPosition: SearchBarPosition,
+    canScroll: Boolean,
     onScrollToItem: suspend (Int) -> Unit,
 ) {
+    if (!canScroll) return
+
     val density = LocalDensity.current
 
     val scope = rememberCoroutineScope()
@@ -163,56 +166,54 @@ internal fun ScrollBarThumb(
         }
     }
 
-    Row(modifier = modifier.fillMaxHeight()) {
+    Box(
+        modifier = modifier
+            .width(10.dp)
+            .fillMaxHeight()
+            .padding(bottom = bottomPadding)
+            .background(
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                shape = RoundedCornerShape(10.dp),
+            )
+            .pointerInput(lazyGridState) {
+                detectTapGestures(
+                    onTap = ::scrollToTap,
+                )
+            },
+    ) {
         Box(
             modifier = Modifier
-                .width(10.dp)
-                .fillMaxHeight()
-                .padding(bottom = bottomPadding)
+                .fillMaxWidth()
+                .height(thumbHeight)
+                .offset {
+                    IntOffset(
+                        x = 0,
+                        y = animatedThumbY.roundToInt(),
+                    )
+                }
                 .background(
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                    color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(10.dp),
                 )
-                .pointerInput(lazyGridState) {
-                    detectTapGestures(
-                        onTap = ::scrollToTap,
+                .pointerInput(key1 = lazyGridState) {
+                    detectDragGestures(
+                        onDragStart = {
+                            thumbY = viewPortThumbY
+
+                            isDraggingThumb = true
+                        },
+                        onDrag = { _, dragAmount ->
+                            scrollToDrag(deltaY = dragAmount.y)
+                        },
+                        onDragEnd = {
+                            isDraggingThumb = false
+                        },
+                        onDragCancel = {
+                            isDraggingThumb = false
+                        },
                     )
                 },
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(thumbHeight)
-                    .offset {
-                        IntOffset(
-                            x = 0,
-                            y = animatedThumbY.roundToInt(),
-                        )
-                    }
-                    .background(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = RoundedCornerShape(10.dp),
-                    )
-                    .pointerInput(key1 = lazyGridState) {
-                        detectDragGestures(
-                            onDragStart = {
-                                thumbY = viewPortThumbY
-
-                                isDraggingThumb = true
-                            },
-                            onDrag = { _, dragAmount ->
-                                scrollToDrag(deltaY = dragAmount.y)
-                            },
-                            onDragEnd = {
-                                isDraggingThumb = false
-                            },
-                            onDragCancel = {
-                                isDraggingThumb = false
-                            },
-                        )
-                    },
-            )
-        }
+        )
     }
 }
 
@@ -222,8 +223,11 @@ internal fun AlphabeticalScrollBar(
     alphabeticalScrollBarItems: List<AlphabeticalScrollBarItem>,
     paddingValues: PaddingValues,
     searchBarPosition: SearchBarPosition,
+    canScroll: Boolean,
     onScrollToItem: suspend (Int) -> Unit,
 ) {
+    if (!canScroll) return
+
     val scope = rememberCoroutineScope()
 
     val density = LocalDensity.current
@@ -271,77 +275,72 @@ internal fun AlphabeticalScrollBar(
         selectItem(alphabeticalScrollBarItems[target.index])
     }
 
-    Box(
+    LazyColumn(
+        state = listState,
         modifier = modifier
             .fillMaxHeight()
-            .width(28.dp),
+            .pointerInput(alphabeticalScrollBarItems) {
+                detectTapGestures(
+                    onTap = { selectItemAt(it.y) },
+                )
+            }
+            .pointerInput(alphabeticalScrollBarItems) {
+                detectDragGestures(
+                    onDragStart = { selectItemAt(it.y) },
+                    onDrag = { change, dragAmount ->
+                        val viewportHeight = listState.layoutInfo.viewportSize.height
+                        val edgeScroll = when {
+                            change.position.y < edgeThreshold &&
+                                dragAmount.y < 0f -> dragAmount.y
+
+                            change.position.y > viewportHeight - edgeThreshold &&
+                                dragAmount.y > 0f -> dragAmount.y
+
+                            else -> 0f
+                        }
+
+                        scope.launch {
+                            if (edgeScroll != 0f) {
+                                listState.scrollBy(edgeScroll)
+                            }
+
+                            selectItemAt(change.position.y)
+                        }
+                    },
+                )
+            },
+        contentPadding = PaddingValues(bottom = bottomPadding),
+        userScrollEnabled = false,
     ) {
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .fillMaxHeight()
-                .pointerInput(alphabeticalScrollBarItems) {
-                    detectTapGestures(
-                        onTap = { selectItemAt(it.y) },
-                    )
-                }
-                .pointerInput(alphabeticalScrollBarItems) {
-                    detectDragGestures(
-                        onDragStart = { selectItemAt(it.y) },
-                        onDrag = { change, dragAmount ->
-                            val viewportHeight = listState.layoutInfo.viewportSize.height
-                            val edgeScroll = when {
-                                change.position.y < edgeThreshold &&
-                                    dragAmount.y < 0f -> dragAmount.y
-
-                                change.position.y > viewportHeight - edgeThreshold &&
-                                    dragAmount.y > 0f -> dragAmount.y
-
-                                else -> 0f
-                            }
-
-                            scope.launch {
-                                if (edgeScroll != 0f) {
-                                    listState.scrollBy(edgeScroll)
-                                }
-
-                                selectItemAt(change.position.y)
-                            }
-                        },
-                    )
-                },
-            contentPadding = PaddingValues(bottom = bottomPadding),
-            userScrollEnabled = false,
-        ) {
-            items(
-                items = alphabeticalScrollBarItems,
-                key = { it.letter },
-            ) { item ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(28.dp)
-                        .background(
-                            color = if (selectedLetter == item.letter) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                MaterialTheme.colorScheme.surface
-                            },
-                            shape = RoundedCornerShape(14.dp),
-                        ),
-                ) {
-                    Text(
-                        text = item.letter.toString(),
-                        modifier = Modifier.fillMaxWidth(),
+        items(
+            items = alphabeticalScrollBarItems,
+            key = { it.letter },
+        ) { item ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(28.dp)
+                    .background(
                         color = if (selectedLetter == item.letter) {
-                            MaterialTheme.colorScheme.onPrimary
+                            MaterialTheme.colorScheme.primary
                         } else {
-                            MaterialTheme.colorScheme.onSurface
+                            MaterialTheme.colorScheme.surface
                         },
-                        fontSize = 12.sp,
-                        textAlign = TextAlign.Center,
-                    )
-                }
+                        shape = RoundedCornerShape(14.dp),
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = item.letter.toString(),
+                    modifier = Modifier.fillMaxWidth(),
+                    color = if (selectedLetter == item.letter) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.Center,
+                )
             }
         }
     }

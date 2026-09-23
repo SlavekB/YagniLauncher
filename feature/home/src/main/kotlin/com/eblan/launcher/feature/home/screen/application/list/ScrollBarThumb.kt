@@ -22,7 +22,6 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -58,8 +57,11 @@ internal fun ScrollBarThumb(
     lazyListState: LazyListState,
     paddingValues: PaddingValues,
     searchBarPosition: SearchBarPosition,
+    canScroll: Boolean,
     onScrollToItem: suspend (Int) -> Unit,
 ) {
+    if (!canScroll) return
+
     val density = LocalDensity.current
 
     val scope = rememberCoroutineScope()
@@ -142,55 +144,53 @@ internal fun ScrollBarThumb(
         }
     }
 
-    Row(modifier = modifier.fillMaxHeight()) {
+    Box(
+        modifier = modifier
+            .width(10.dp)
+            .fillMaxHeight()
+            .padding(bottom = bottomPadding)
+            .background(
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                shape = RoundedCornerShape(10.dp),
+            )
+            .pointerInput(lazyListState) {
+                detectTapGestures(
+                    onTap = ::scrollToTap,
+                )
+            },
+    ) {
         Box(
             modifier = Modifier
-                .width(10.dp)
-                .fillMaxHeight()
-                .padding(bottom = bottomPadding)
+                .fillMaxWidth()
+                .height(thumbHeight)
+                .offset {
+                    IntOffset(
+                        x = 0,
+                        y = animatedThumbY.roundToInt(),
+                    )
+                }
                 .background(
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                    color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(10.dp),
                 )
                 .pointerInput(lazyListState) {
-                    detectTapGestures(
-                        onTap = ::scrollToTap,
+                    detectDragGestures(
+                        onDragStart = {
+                            thumbY = viewPortThumbY
+                            isDraggingThumb = true
+                        },
+                        onDrag = { _, dragAmount ->
+                            scrollToDrag(dragAmount.y)
+                        },
+                        onDragEnd = {
+                            isDraggingThumb = false
+                        },
+                        onDragCancel = {
+                            isDraggingThumb = false
+                        },
                     )
                 },
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(thumbHeight)
-                    .offset {
-                        IntOffset(
-                            x = 0,
-                            y = animatedThumbY.roundToInt(),
-                        )
-                    }
-                    .background(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = RoundedCornerShape(10.dp),
-                    )
-                    .pointerInput(lazyListState) {
-                        detectDragGestures(
-                            onDragStart = {
-                                thumbY = viewPortThumbY
-                                isDraggingThumb = true
-                            },
-                            onDrag = { _, dragAmount ->
-                                scrollToDrag(dragAmount.y)
-                            },
-                            onDragEnd = {
-                                isDraggingThumb = false
-                            },
-                            onDragCancel = {
-                                isDraggingThumb = false
-                            },
-                        )
-                    },
-            )
-        }
+        )
     }
 }
 

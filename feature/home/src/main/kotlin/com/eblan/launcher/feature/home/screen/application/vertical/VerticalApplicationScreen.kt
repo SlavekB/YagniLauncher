@@ -25,15 +25,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -63,6 +64,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
+import com.eblan.launcher.domain.model.application.AlphabeticalScrollBarItem
 import com.eblan.launcher.domain.model.application.EblanApplicationInfo
 import com.eblan.launcher.domain.model.application.EblanApplicationInfoTag
 import com.eblan.launcher.domain.model.application.GetEblanApplicationInfosByLabelAndTag
@@ -638,31 +640,61 @@ private fun EblanApplicationInfos(
             }
         }
 
-        if (!WindowInsets.isImeVisible && canScroll) {
-            when (appDrawerSettings.scrollBarType) {
-                ScrollBarType.ScrollBar -> {
-                    ScrollBarThumb(
-                        appDrawerColumns = appDrawerSettings.appDrawerColumns,
-                        lazyGridState = lazyGridState,
+        ScrollBarType(
+            alphabeticalScrollBarItems = alphabeticalScrollBarItems,
+            appDrawerSettings = appDrawerSettings,
+            canScroll = canScroll,
+            lazyGridState = lazyGridState,
+            paddingValues = paddingValues,
+        )
+    }
+}
+
+@Composable
+private fun ScrollBarType(
+    modifier: Modifier = Modifier,
+    alphabeticalScrollBarItems: List<AlphabeticalScrollBarItem>,
+    appDrawerSettings: AppDrawerSettings,
+    canScroll: Boolean,
+    lazyGridState: LazyGridState,
+    paddingValues: PaddingValues,
+) {
+    when (appDrawerSettings.scrollBarType) {
+        ScrollBarType.ScrollBar -> {
+            Box(
+                modifier = modifier
+                    .fillMaxHeight()
+                    .width(28.dp),
+            ) {
+                ScrollBarThumb(
+                    appDrawerColumns = appDrawerSettings.appDrawerColumns,
+                    lazyGridState = lazyGridState,
+                    paddingValues = paddingValues,
+                    searchBarPosition = appDrawerSettings.searchBarPosition,
+                    canScroll = canScroll,
+                    onScrollToItem = lazyGridState::scrollToItem,
+                )
+            }
+        }
+
+        ScrollBarType.Alphabetical -> {
+            if (alphabeticalScrollBarItems.isNotEmpty()) {
+                Box(
+                    modifier = modifier
+                        .fillMaxHeight()
+                        .width(28.dp),
+                ) {
+                    AlphabeticalScrollBar(
+                        alphabeticalScrollBarItems = alphabeticalScrollBarItems,
                         paddingValues = paddingValues,
                         searchBarPosition = appDrawerSettings.searchBarPosition,
+                        canScroll = canScroll,
                         onScrollToItem = lazyGridState::scrollToItem,
                     )
                 }
-
-                ScrollBarType.Alphabetical -> {
-                    if (alphabeticalScrollBarItems.isNotEmpty()) {
-                        AlphabeticalScrollBar(
-                            alphabeticalScrollBarItems = alphabeticalScrollBarItems,
-                            paddingValues = paddingValues,
-                            searchBarPosition = appDrawerSettings.searchBarPosition,
-                            onScrollToItem = lazyGridState::scrollToItem,
-                        )
-                    }
-                }
-
-                ScrollBarType.None -> Unit
             }
         }
+
+        ScrollBarType.None -> Unit
     }
 }
