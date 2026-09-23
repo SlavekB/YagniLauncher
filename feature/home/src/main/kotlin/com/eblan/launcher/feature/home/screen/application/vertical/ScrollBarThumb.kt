@@ -58,7 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eblan.launcher.domain.model.application.AlphabeticalScrollBarItem
 import com.eblan.launcher.domain.model.userdata.SearchBarPosition
-import com.eblan.launcher.feature.home.model.GridScrollBarItemLayout
+import com.eblan.launcher.feature.home.model.ScrollBarItemLayout
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -74,7 +74,7 @@ internal fun ScrollBarThumb(
     paddingValues: PaddingValues,
     searchBarPosition: SearchBarPosition,
     canScroll: Boolean,
-    itemLayout: GridScrollBarItemLayout = GridScrollBarItemLayout.Regular,
+    scrollBarItemLayout: ScrollBarItemLayout = ScrollBarItemLayout.Regular,
     onScrollToItem: suspend (Int) -> Unit,
 ) {
     if (!canScroll) return
@@ -109,7 +109,7 @@ internal fun ScrollBarThumb(
                 density = density,
                 thumbHeight = thumbHeight,
                 bottomPadding = bottomPaddingPx,
-                itemLayout = itemLayout,
+                itemLayout = scrollBarItemLayout,
             )
         }
     }
@@ -155,7 +155,7 @@ internal fun ScrollBarThumb(
         val availableHeight = (viewportHeight - thumbHeightPx - bottomPaddingPx).coerceAtLeast(0f)
         val newThumbY = (thumbY + deltaY).coerceIn(0f, availableHeight)
         val progress = if (availableHeight > 0f) newThumbY / availableHeight else 0f
-        val headerHeight = if (itemLayout == GridScrollBarItemLayout.StickyHeader) {
+        val headerHeight = if (scrollBarItemLayout == ScrollBarItemLayout.StickyHeader) {
             visibleItems.firstOrNull { it.index == 0 }?.size?.height ?: 0
         } else {
             0
@@ -371,14 +371,14 @@ private fun getViewPortThumbY(
     density: Density,
     thumbHeight: Dp,
     bottomPadding: Int,
-    itemLayout: GridScrollBarItemLayout,
+    itemLayout: ScrollBarItemLayout,
 ): Float {
     val layoutInfo = lazyGridState.layoutInfo
     val visibleItems = layoutInfo.visibleItemsInfo
 
     val totalItems = layoutInfo.totalItemsCount
     val totalRows = (totalItems + appDrawerColumns - 1) / appDrawerColumns
-    val header = if (itemLayout == GridScrollBarItemLayout.StickyHeader) {
+    val header = if (itemLayout == ScrollBarItemLayout.StickyHeader) {
         visibleItems.firstOrNull { it.index == 0 }
     } else {
         null

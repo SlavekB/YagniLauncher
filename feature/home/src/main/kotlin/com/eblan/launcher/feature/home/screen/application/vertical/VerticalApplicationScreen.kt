@@ -83,7 +83,7 @@ import com.eblan.launcher.domain.model.userdata.SearchBarPosition
 import com.eblan.launcher.domain.model.userdata.TextColor
 import com.eblan.launcher.feature.home.component.rememberNestedScrollConnectionEffect
 import com.eblan.launcher.feature.home.model.Drag
-import com.eblan.launcher.feature.home.model.GridScrollBarItemLayout
+import com.eblan.launcher.feature.home.model.ScrollBarItemLayout
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.ApplicationScreenEffect
 import com.eblan.launcher.feature.home.screen.application.ApplicationSearchBar
@@ -652,9 +652,9 @@ private fun EblanApplicationInfos(
                 getEblanApplicationInfosByLabelAndTag.privateEblanUser
                     ?.isPrivateSpaceEntryPointHidden == false
             ) {
-                GridScrollBarItemLayout.StickyHeader
+                ScrollBarItemLayout.StickyHeader
             } else {
-                GridScrollBarItemLayout.Regular
+                ScrollBarItemLayout.Regular
             },
         )
     }
@@ -668,7 +668,7 @@ private fun ScrollBarType(
     canScroll: Boolean,
     lazyGridState: LazyGridState,
     paddingValues: PaddingValues,
-    itemLayout: GridScrollBarItemLayout,
+    itemLayout: ScrollBarItemLayout,
 ) {
     when (appDrawerSettings.scrollBarType) {
         ScrollBarType.ScrollBar -> {
@@ -683,7 +683,7 @@ private fun ScrollBarType(
                     paddingValues = paddingValues,
                     searchBarPosition = appDrawerSettings.searchBarPosition,
                     canScroll = canScroll,
-                    itemLayout = itemLayout,
+                    scrollBarItemLayout = itemLayout,
                     onScrollToItem = lazyGridState::scrollToItem,
                 )
             }

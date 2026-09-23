@@ -598,7 +598,7 @@ private fun ScrollBarType(
                     paddingValues = paddingValues,
                     searchBarPosition = appDrawerSettings.searchBarPosition,
                     canScroll = canScroll,
-                    itemLayout = itemLayout,
+                    scrollBarItemLayout = itemLayout,
                     onScrollToItem = lazyListState::scrollToItem,
                 )
             }

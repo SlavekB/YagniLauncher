@@ -49,13 +49,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.userdata.SearchBarPosition
+import com.eblan.launcher.feature.home.model.ScrollBarItemLayout
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
-
-internal enum class ScrollBarItemLayout {
-    Regular,
-    StickyHeader,
-}
 
 @Composable
 internal fun ScrollBarThumb(
@@ -64,7 +60,7 @@ internal fun ScrollBarThumb(
     paddingValues: PaddingValues,
     searchBarPosition: SearchBarPosition,
     canScroll: Boolean,
-    itemLayout: ScrollBarItemLayout = ScrollBarItemLayout.Regular,
+    scrollBarItemLayout: ScrollBarItemLayout = ScrollBarItemLayout.Regular,
     onScrollToItem: suspend (Int) -> Unit,
 ) {
     if (!canScroll) return
@@ -98,7 +94,7 @@ internal fun ScrollBarThumb(
                 density = density,
                 thumbHeight = thumbHeight,
                 bottomPadding = bottomPaddingPx,
-                itemLayout = itemLayout,
+                scrollBarItemLayout = scrollBarItemLayout,
             )
         }
     }
@@ -141,7 +137,7 @@ internal fun ScrollBarThumb(
         val availableHeight = (viewportHeight - thumbHeightPx - bottomPaddingPx).coerceAtLeast(0f)
         val newThumbY = (thumbY + deltaY).coerceIn(0f, availableHeight)
         val progress = if (availableHeight > 0f) newThumbY / availableHeight else 0f
-        val headerHeight = if (itemLayout == ScrollBarItemLayout.StickyHeader) {
+        val headerHeight = if (scrollBarItemLayout == ScrollBarItemLayout.StickyHeader) {
             visibleItems.firstOrNull { it.index == 0 }?.size ?: 0
         } else {
             0
@@ -221,13 +217,13 @@ private fun getViewPortThumbY(
     density: Density,
     thumbHeight: Dp,
     bottomPadding: Int,
-    itemLayout: ScrollBarItemLayout,
+    scrollBarItemLayout: ScrollBarItemLayout,
 ): Float {
     val layoutInfo = lazyListState.layoutInfo
     val visibleItems = layoutInfo.visibleItemsInfo
 
     val totalItems = layoutInfo.totalItemsCount
-    val header = if (itemLayout == ScrollBarItemLayout.StickyHeader) {
+    val header = if (scrollBarItemLayout == ScrollBarItemLayout.StickyHeader) {
         visibleItems.firstOrNull { it.index == 0 }
     } else {
         null

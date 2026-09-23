@@ -17,7 +17,7 @@
  */
 package com.eblan.launcher.feature.home.model
 
-internal enum class GridScrollBarItemLayout {
+internal enum class ScrollBarItemLayout {
     Regular,
     StickyHeader,
 }
