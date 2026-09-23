@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eblan.launcher.domain.model.application.AlphabeticalScrollBarItem
 import com.eblan.launcher.domain.model.userdata.SearchBarPosition
+import com.eblan.launcher.feature.home.model.GridScrollBarItemLayout
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -73,6 +74,7 @@ internal fun ScrollBarThumb(
     paddingValues: PaddingValues,
     searchBarPosition: SearchBarPosition,
     canScroll: Boolean,
+    itemLayout: GridScrollBarItemLayout = GridScrollBarItemLayout.Regular,
     onScrollToItem: suspend (Int) -> Unit,
 ) {
     if (!canScroll) return
@@ -107,6 +109,7 @@ internal fun ScrollBarThumb(
                 density = density,
                 thumbHeight = thumbHeight,
                 bottomPadding = bottomPaddingPx,
+                itemLayout = itemLayout,
             )
         }
     }
@@ -152,13 +155,28 @@ internal fun ScrollBarThumb(
         val availableHeight = (viewportHeight - thumbHeightPx - bottomPaddingPx).coerceAtLeast(0f)
         val newThumbY = (thumbY + deltaY).coerceIn(0f, availableHeight)
         val progress = if (availableHeight > 0f) newThumbY / availableHeight else 0f
-        val totalContentHeight = totalRows * avgItemHeight
-        val scrollableHeight = (totalContentHeight - viewportHeight).coerceAtLeast(0)
+        val headerHeight = if (itemLayout == GridScrollBarItemLayout.StickyHeader) {
+            visibleItems.firstOrNull { it.index == 0 }?.size?.height ?: 0
+        } else {
+            0
+        }
+        val appRows = if (headerHeight > 0) {
+            (totalItems - 1 + appDrawerColumns - 1) / appDrawerColumns
+        } else {
+            totalRows
+        }
+        val totalContentHeight = headerHeight + appRows * avgItemHeight
+        val scrollableHeight = (
+            totalContentHeight - (viewportHeight - bottomPaddingPx)
+            ).coerceAtLeast(0)
         val targetScrollY = (progress * scrollableHeight).coerceIn(0f, scrollableHeight.toFloat())
-        val targetRow = (targetScrollY / avgItemHeight)
-            .coerceIn(0f, (totalRows - 1).toFloat())
-        val targetIndex = (targetRow.toInt() * appDrawerColumns)
-            .coerceIn(0, totalItems - 1)
+        val targetIndex = if (headerHeight > 0 && targetScrollY >= headerHeight) {
+            val targetRow = ((targetScrollY - headerHeight) / avgItemHeight)
+                .coerceIn(0f, (appRows - 1).coerceAtLeast(0).toFloat())
+            (1 + targetRow.toInt() * appDrawerColumns).coerceIn(1, totalItems - 1)
+        } else {
+            0
+        }
 
         thumbY = newThumbY
         scope.launch {
@@ -180,6 +198,7 @@ internal fun ScrollBarThumb(
                     onTap = ::scrollToTap,
                 )
             },
+        contentAlignment = Alignment.TopCenter,
     ) {
         Box(
             modifier = Modifier
@@ -352,26 +371,43 @@ private fun getViewPortThumbY(
     density: Density,
     thumbHeight: Dp,
     bottomPadding: Int,
+    itemLayout: GridScrollBarItemLayout,
 ): Float {
     val layoutInfo = lazyGridState.layoutInfo
     val visibleItems = layoutInfo.visibleItemsInfo
 
-    val firstItem = visibleItems.first()
-
-    val avgItemHeight = visibleItems.sumOf { it.size.height } / visibleItems.size
-
     val totalItems = layoutInfo.totalItemsCount
     val totalRows = (totalItems + appDrawerColumns - 1) / appDrawerColumns
+    val header = if (itemLayout == GridScrollBarItemLayout.StickyHeader) {
+        visibleItems.firstOrNull { it.index == 0 }
+    } else {
+        null
+    }
+    val appItems = visibleItems.filter { it.index != 0 || header == null }
+    val avgItemHeight = appItems.map { it.size.height }.average().toFloat()
+    val appRows = if (header != null) {
+        (totalItems - 1 + appDrawerColumns - 1) / appDrawerColumns
+    } else {
+        totalRows
+    }
 
     val viewportHeight = layoutInfo.viewportSize.height.toFloat()
 
-    val totalContentHeight = totalRows * avgItemHeight
+    val totalContentHeight = (header?.size?.height ?: 0) + appRows * avgItemHeight
+    val firstItem = appItems.firstOrNull()
+    val scrollY = if (header != null && firstItem != null) {
+        header.size.height +
+            (((firstItem.index - 1) / appDrawerColumns) * avgItemHeight) -
+            firstItem.offset.y
+    } else if (firstItem != null) {
+        ((firstItem.index / appDrawerColumns) * avgItemHeight) - firstItem.offset.y
+    } else {
+        0f
+    }
 
-    val firstRow = firstItem.index / appDrawerColumns
-
-    val scrollY = (firstRow * avgItemHeight) - firstItem.offset.y
-
-    val scrollableHeight = (totalContentHeight - viewportHeight).coerceAtLeast(0f)
+    val scrollableHeight = (
+        totalContentHeight - (viewportHeight - bottomPadding)
+        ).coerceAtLeast(0f)
 
     val progress = if (scrollableHeight > 0f) {
         (scrollY / scrollableHeight).coerceIn(0f, 1f)

@@ -29,13 +29,11 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -569,6 +567,15 @@ private fun EblanApplicationInfos(
             canScroll = canScroll,
             lazyListState = lazyListState,
             paddingValues = paddingValues,
+            itemLayout = if (
+                eblanUserPageKey.eblanUser.eblanUserType == EblanUserType.Personal &&
+                getEblanApplicationInfosByLabelAndTag.privateEblanUser
+                    ?.isPrivateSpaceEntryPointHidden == false
+            ) {
+                ScrollBarItemLayout.StickyHeader
+            } else {
+                ScrollBarItemLayout.Regular
+            },
         )
     }
 }
@@ -581,6 +588,7 @@ private fun ScrollBarType(
     canScroll: Boolean,
     lazyListState: LazyListState,
     paddingValues: PaddingValues,
+    itemLayout: ScrollBarItemLayout,
 ) {
     when (appDrawerSettings.scrollBarType) {
         ScrollBarType.ScrollBar -> {
@@ -590,6 +598,7 @@ private fun ScrollBarType(
                     paddingValues = paddingValues,
                     searchBarPosition = appDrawerSettings.searchBarPosition,
                     canScroll = canScroll,
+                    itemLayout = itemLayout,
                     onScrollToItem = lazyListState::scrollToItem,
                 )
             }
