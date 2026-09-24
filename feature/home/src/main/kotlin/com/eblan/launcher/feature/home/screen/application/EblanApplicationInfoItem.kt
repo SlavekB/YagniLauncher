@@ -39,13 +39,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -182,6 +182,8 @@ internal fun EblanApplicationInfoItem(
 
     val scale = remember { Animatable(1f) }
 
+    val currentOnLongPressApplicationInfo by rememberUpdatedState(onLongPressApplicationInfo)
+
     LaunchedEffect(
         key1 = drag,
         key2 = isLongPress,
@@ -220,18 +222,16 @@ internal fun EblanApplicationInfoItem(
                 detectTapGestures(
                     onTap = if (!isVisibleOverlay) {
                         {
-                            scope.launch {
-                                handleOnTapEblanApplicationInfoItem(
-                                    componentName = eblanApplicationInfo.componentName,
-                                    serialNumber = eblanApplicationInfo.serialNumber,
-                                    intOffset = intOffset,
-                                    intSize = intSize,
-                                    keyboardController = keyboardController,
-                                    launcherApps = launcherApps,
-                                    leftPadding = leftPadding,
-                                    topPadding = topPadding,
-                                )
-                            }
+                            handleOnTapEblanApplicationInfoItem(
+                                componentName = eblanApplicationInfo.componentName,
+                                serialNumber = eblanApplicationInfo.serialNumber,
+                                intOffset = intOffset,
+                                intSize = intSize,
+                                keyboardController = keyboardController,
+                                launcherApps = launcherApps,
+                                leftPadding = leftPadding,
+                                topPadding = topPadding,
+                            )
                         }
                     } else {
                         null
@@ -239,15 +239,16 @@ internal fun EblanApplicationInfoItem(
                     onLongPress = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                handleOnLongPressEblanApplicationInfoItem(
-                                    t = eblanApplicationInfo,
-                                    graphicsLayer = graphicsLayer,
-                                    intOffset = intOffset,
-                                    intSize = intSize,
-                                    keyboardController = keyboardController,
-                                    sharedElementKey = sharedElementKey,
-                                    onUpdateIsLongPress = { isLongPress = it },
-                                    onLongPress = onLongPressApplicationInfo,
+                                isLongPress = true
+
+                                keyboardController?.hide()
+
+                                currentOnLongPressApplicationInfo(
+                                    eblanApplicationInfo,
+                                    graphicsLayer.toImageBitmap(),
+                                    intOffset,
+                                    intSize,
+                                    sharedElementKey,
                                 )
                             }
                         }
@@ -335,6 +336,8 @@ internal fun handleOnTapEblanApplicationInfoItem(
 
     val top = intOffset.y + topPadding
 
+    keyboardController?.hide()
+
     launcherApps.startMainActivity(
         serialNumber = serialNumber,
         componentName = componentName,
@@ -345,8 +348,6 @@ internal fun handleOnTapEblanApplicationInfoItem(
             top + intSize.height,
         ),
     )
-
-    keyboardController?.hide()
 }
 
 @OptIn(ExperimentalUuidApi::class)
@@ -411,34 +412,4 @@ internal fun handleDragEblanApplicationInfoItem(
 
         else -> Unit
     }
-}
-
-@OptIn(ExperimentalUuidApi::class)
-internal suspend fun <T> handleOnLongPressEblanApplicationInfoItem(
-    t: T,
-    graphicsLayer: GraphicsLayer,
-    intOffset: IntOffset,
-    intSize: IntSize,
-    keyboardController: SoftwareKeyboardController?,
-    sharedElementKey: SharedElementKey,
-    onUpdateIsLongPress: (Boolean) -> Unit,
-    onLongPress: (
-        t: T,
-        imageBitmap: ImageBitmap,
-        intOffset: IntOffset,
-        intSize: IntSize,
-        sharedElementKey: SharedElementKey,
-    ) -> Unit,
-) {
-    onUpdateIsLongPress(true)
-
-    keyboardController?.hide()
-
-    onLongPress(
-        t,
-        graphicsLayer.toImageBitmap(),
-        intOffset,
-        intSize,
-        sharedElementKey,
-    )
 }

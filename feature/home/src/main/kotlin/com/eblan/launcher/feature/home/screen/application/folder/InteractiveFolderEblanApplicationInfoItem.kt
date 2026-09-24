@@ -68,7 +68,6 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
-import coil3.request.crossfade
 import coil3.size.Size
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfoGridItem
@@ -132,8 +131,7 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
     onTapFolderEblanApplicationInfoItem: (FolderEntry) -> Unit,
 ) {
     val isSelected =
-        moveFolderEblanApplicationInfoGridItemResult != null &&
-            moveFolderEblanApplicationInfoGridItemResult.folderEblanApplicationInfoGridItem.id == folderEblanApplicationInfoGridItem.id
+        moveFolderEblanApplicationInfoGridItemResult != null && moveFolderEblanApplicationInfoGridItemResult.folderEblanApplicationInfoGridItem.id == folderEblanApplicationInfoGridItem.id
 
     val textColor = getTextColorFromBackgroundColor(
         backgroundColor = folderBackgroundColor,
@@ -343,13 +341,11 @@ private fun InteractiveEblanApplicationInfoItem(
                 detectTapGestures(
                     onTap = if (!isVisibleOverlay && !isInProgress) {
                         {
-                            scope.launch {
-                                launcherApps.startMainActivity(
-                                    serialNumber = data.serialNumber,
-                                    componentName = data.componentName,
-                                    sourceBounds = sourceBounds,
-                                )
-                            }
+                            launcherApps.startMainActivity(
+                                serialNumber = data.serialNumber,
+                                componentName = data.componentName,
+                                sourceBounds = sourceBounds,
+                            )
                         }
                     } else {
                         null
@@ -383,11 +379,8 @@ private fun InteractiveEblanApplicationInfoItem(
         verticalArrangement = verticalArrangement,
     ) {
         AsyncImage(
-            model = Builder(context)
-                .data(icon)
-                .addLastModifiedToFileCacheKey(true)
-                .crossfade(false)
-                .build(),
+            model = Builder(context).data(icon).addLastModifiedToFileCacheKey(true)
+                .size(Size.ORIGINAL).build(),
             contentDescription = null,
             modifier = Modifier
                 .size(iconSize)
@@ -397,15 +390,15 @@ private fun InteractiveEblanApplicationInfoItem(
                     intSize = it.size
                 }
                 .gridItemScaleAnimation(
-                    enabled = animations,
+                    enabled = animations && !isInProgress,
                     isVisibleOverlay = isVisibleOverlay,
                     scale = scale,
                 )
                 .gridItemSharedElement(
-                    enabled = animations,
+                    enabled = animations && !isInProgress,
                     sharedElementKey = sharedElementKey,
                     sharedTransitionScope = sharedTransitionScope,
-                    visible = !isScrollInProgress && !hasInteraction && !isInProgress,
+                    visible = !isScrollInProgress && !hasInteraction,
                 )
                 .recordToGraphicsLayerIfNotInProgress(
                     isInProgress = isInProgress,
@@ -541,29 +534,30 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
-        val commonModifier = Modifier
-            .size(iconSize)
-            .recordBoundsIfNotInProgress(isInProgress = isInProgress) {
-                intOffset = it.positionInRoot().round()
+        val commonModifier =
+            Modifier
+                .size(iconSize)
+                .recordBoundsIfNotInProgress(isInProgress = isInProgress) {
+                    intOffset = it.positionInRoot().round()
 
-                intSize = it.size
-            }
-            .gridItemScaleAnimation(
-                enabled = animations,
-                isVisibleOverlay = isVisibleOverlay,
-                scale = scale,
-            )
-            .gridItemSharedElement(
-                enabled = animations,
-                sharedElementKey = sharedElementKey,
-                sharedTransitionScope = sharedTransitionScope,
-                visible = !isScrollInProgress && !hasInteraction && !isInProgress,
-            )
-            .recordToGraphicsLayerIfNotInProgress(
-                isInProgress = isInProgress,
-                graphicsLayer = graphicsLayer,
-            )
-            .alpha(iconAlpha)
+                    intSize = it.size
+                }
+                .gridItemScaleAnimation(
+                    enabled = animations && !isInProgress,
+                    isVisibleOverlay = isVisibleOverlay,
+                    scale = scale,
+                )
+                .gridItemSharedElement(
+                    enabled = animations && !isInProgress,
+                    sharedElementKey = sharedElementKey,
+                    sharedTransitionScope = sharedTransitionScope,
+                    visible = !isScrollInProgress && !hasInteraction,
+                )
+                .recordToGraphicsLayerIfNotInProgress(
+                    isInProgress = isInProgress,
+                    graphicsLayer = graphicsLayer,
+                )
+                .alpha(iconAlpha)
 
         if (data.icon != null) {
             AsyncImage(
@@ -652,11 +646,8 @@ private fun PreviewFolderEblanApplicationInfoItem(
                 val icon = iconPackInfoFilePaths[data.componentName] ?: data.icon
 
                 AsyncImage(
-                    model = Builder(context)
-                        .data(data.customIcon ?: icon)
-                        .addLastModifiedToFileCacheKey(true)
-                        .size(Size.ORIGINAL)
-                        .build(),
+                    model = Builder(context).data(data.customIcon ?: icon)
+                        .addLastModifiedToFileCacheKey(true).size(Size.ORIGINAL).build(),
                     contentDescription = null,
                     modifier = commonModifier,
                 )
@@ -665,11 +656,8 @@ private fun PreviewFolderEblanApplicationInfoItem(
             is FolderEblanApplicationInfoGridItemData.Folder -> {
                 if (data.icon != null) {
                     AsyncImage(
-                        model = Builder(context)
-                            .data(data.icon)
-                            .addLastModifiedToFileCacheKey(true)
-                            .size(Size.ORIGINAL)
-                            .build(),
+                        model = Builder(context).data(data.icon).addLastModifiedToFileCacheKey(true)
+                            .size(Size.ORIGINAL).build(),
                         contentDescription = null,
                         modifier = commonModifier,
                     )

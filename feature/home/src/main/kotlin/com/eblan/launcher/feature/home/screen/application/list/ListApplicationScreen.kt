@@ -58,6 +58,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -112,7 +113,6 @@ import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoTa
 import com.eblan.launcher.feature.home.screen.application.QuiteModeScreen
 import com.eblan.launcher.feature.home.screen.application.TagElevatedFilterChip
 import com.eblan.launcher.feature.home.screen.application.handleDragEblanApplicationInfoItem
-import com.eblan.launcher.feature.home.screen.application.handleOnLongPressEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.rememberIsPrivateQuietModeEnabled
 import com.eblan.launcher.feature.home.screen.application.rememberIsQuietModeEnabled
@@ -712,6 +712,8 @@ private fun EblanApplicationInfoItem(
 
     val scale = remember { Animatable(1f) }
 
+    val currentOnLongPressApplicationInfo by rememberUpdatedState(onLongPressApplicationInfo)
+
     LaunchedEffect(
         key1 = drag,
         key2 = isLongPress,
@@ -763,15 +765,16 @@ private fun EblanApplicationInfoItem(
                     onLongPress = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                handleOnLongPressEblanApplicationInfoItem(
-                                    t = eblanApplicationInfo,
-                                    graphicsLayer = graphicsLayer,
-                                    intOffset = intOffset,
-                                    intSize = intSize,
-                                    keyboardController = keyboardController,
-                                    sharedElementKey = sharedElementKey,
-                                    onUpdateIsLongPress = { isLongPress = it },
-                                    onLongPress = onLongPressApplicationInfo,
+                                isLongPress = true
+
+                                keyboardController?.hide()
+
+                                currentOnLongPressApplicationInfo(
+                                    eblanApplicationInfo,
+                                    graphicsLayer.toImageBitmap(),
+                                    intOffset,
+                                    intSize,
+                                    sharedElementKey,
                                 )
                             }
                         }

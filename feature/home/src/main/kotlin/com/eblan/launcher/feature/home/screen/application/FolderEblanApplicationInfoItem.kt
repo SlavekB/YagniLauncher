@@ -39,6 +39,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -173,6 +174,11 @@ internal fun FolderEblanApplicationInfoItem(
 
     val scale = remember { Animatable(1f) }
 
+    val currentOnTapFolderApplicationInfo by rememberUpdatedState(onTapFolderApplicationInfo)
+    val currentOnLongPressFolderApplicationInfo by rememberUpdatedState(
+        onLongPressFolderApplicationInfo,
+    )
+
     LaunchedEffect(
         key1 = drag,
         key2 = isLongPress,
@@ -205,7 +211,7 @@ internal fun FolderEblanApplicationInfoItem(
                 detectTapGestures(
                     onTap = if (!isVisibleOverlay) {
                         {
-                            onTapFolderApplicationInfo(
+                            currentOnTapFolderApplicationInfo(
                                 FolderEntry(
                                     id = folderEblanApplicationInfo.id,
                                     x = intOffset.x,
@@ -222,15 +228,16 @@ internal fun FolderEblanApplicationInfoItem(
                     onLongPress = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                handleOnLongPressEblanApplicationInfoItem(
-                                    t = folderEblanApplicationInfo,
-                                    graphicsLayer = graphicsLayer,
-                                    intOffset = intOffset,
-                                    intSize = intSize,
-                                    keyboardController = keyboardController,
-                                    sharedElementKey = sharedElementKey,
-                                    onUpdateIsLongPress = { isLongPress = it },
-                                    onLongPress = onLongPressFolderApplicationInfo,
+                                isLongPress = true
+
+                                keyboardController?.hide()
+
+                                currentOnLongPressFolderApplicationInfo(
+                                    folderEblanApplicationInfo,
+                                    graphicsLayer.toImageBitmap(),
+                                    intOffset,
+                                    intSize,
+                                    sharedElementKey,
                                 )
                             }
                         }
@@ -239,7 +246,7 @@ internal fun FolderEblanApplicationInfoItem(
                     },
                     onPress = {
                         handleOnPress(
-                            animations = true,
+                            animations = animations,
                             scale = scale,
                         )
                     },
