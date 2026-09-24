@@ -31,14 +31,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -89,7 +87,6 @@ import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
 import coil3.request.crossfade
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
-import com.eblan.launcher.domain.model.application.AlphabeticalScrollBarItem
 import com.eblan.launcher.domain.model.application.EblanApplicationInfo
 import com.eblan.launcher.domain.model.application.EblanApplicationInfoTag
 import com.eblan.launcher.domain.model.application.GetEblanApplicationInfosByLabelAndTag
@@ -98,7 +95,6 @@ import com.eblan.launcher.domain.model.launcherapps.EblanUser
 import com.eblan.launcher.domain.model.launcherapps.EblanUserPageKey
 import com.eblan.launcher.domain.model.launcherapps.EblanUserType
 import com.eblan.launcher.domain.model.userdata.AppDrawerSettings
-import com.eblan.launcher.domain.model.userdata.ScrollBarType
 import com.eblan.launcher.domain.model.userdata.SearchBarPosition
 import com.eblan.launcher.domain.model.userdata.TextColor
 import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
@@ -116,7 +112,6 @@ import com.eblan.launcher.feature.home.screen.application.handleDragEblanApplica
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.rememberIsPrivateQuietModeEnabled
 import com.eblan.launcher.feature.home.screen.application.rememberIsQuietModeEnabled
-import com.eblan.launcher.feature.home.screen.application.vertical.AlphabeticalScrollBar
 import com.eblan.launcher.feature.home.util.getTextColorFromBackgroundColor
 import com.eblan.launcher.feature.home.util.handleOnPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
@@ -578,52 +573,6 @@ private fun EblanApplicationInfos(
                 ScrollBarItemLayout.Regular
             },
         )
-    }
-}
-
-@Composable
-private fun ScrollBarType(
-    modifier: Modifier = Modifier,
-    alphabeticalScrollBarItems: List<AlphabeticalScrollBarItem>,
-    appDrawerSettings: AppDrawerSettings,
-    canScroll: Boolean,
-    lazyListState: LazyListState,
-    paddingValues: PaddingValues,
-    itemLayout: ScrollBarItemLayout,
-) {
-    when (appDrawerSettings.scrollBarType) {
-        ScrollBarType.ScrollBar -> {
-            Row(modifier = modifier.fillMaxHeight()) {
-                ScrollBarThumb(
-                    lazyListState = lazyListState,
-                    paddingValues = paddingValues,
-                    searchBarPosition = appDrawerSettings.searchBarPosition,
-                    canScroll = canScroll,
-                    scrollBarItemLayout = itemLayout,
-                    onScrollToItem = lazyListState::scrollToItem,
-                )
-            }
-        }
-
-        ScrollBarType.Alphabetical -> {
-            if (alphabeticalScrollBarItems.isNotEmpty()) {
-                Box(
-                    modifier = modifier
-                        .fillMaxHeight()
-                        .width(28.dp),
-                ) {
-                    AlphabeticalScrollBar(
-                        alphabeticalScrollBarItems = alphabeticalScrollBarItems,
-                        paddingValues = paddingValues,
-                        searchBarPosition = appDrawerSettings.searchBarPosition,
-                        canScroll = canScroll,
-                        onScrollToItem = lazyListState::scrollToItem,
-                    )
-                }
-            }
-        }
-
-        ScrollBarType.None -> Unit
     }
 }
 

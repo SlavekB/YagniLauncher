@@ -30,6 +30,7 @@ import com.eblan.launcher.domain.model.folder.FolderEblanApplicationInfo
 import com.eblan.launcher.domain.model.launcherapps.EblanUserPageKey
 import com.eblan.launcher.domain.model.launcherapps.EblanUserType
 import com.eblan.launcher.domain.model.userdata.AppDrawerType
+import com.eblan.launcher.domain.model.userdata.ScrollBarType
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.FolderEblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
@@ -96,6 +97,7 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
                     folderEblanApplicationInfos = folderEblanApplicationInfosByLabel,
                     iconPackInfoFilePaths = iconPackInfoFilePaths,
                     appDrawerType = appDrawerType,
+                    scrollBarType = userData.appDrawerSettings.scrollBarType,
                 )
 
             AppDrawerType.Horizontal ->
@@ -113,6 +115,7 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         folderEblanApplicationInfos: List<FolderEblanApplicationInfo>,
         iconPackInfoFilePaths: Map<String, String?>,
         appDrawerType: AppDrawerType,
+        scrollBarType: ScrollBarType,
     ): GetEblanApplicationInfosByLabelAndTag {
         val groupedEblanApplicationInfos = eblanApplicationInfos
             .groupBy {
@@ -156,6 +159,7 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
                 eblanApplicationInfos = groupedEblanApplicationInfosWithFolders,
                 folderEblanApplicationInfos = folderEblanApplicationInfos,
                 appDrawerType = appDrawerType,
+                scrollBarType = scrollBarType,
             ),
         )
     }
@@ -281,26 +285,32 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         eblanApplicationInfos: Map<EblanUserPageKey, List<EblanApplicationInfo>>,
         folderEblanApplicationInfos: List<FolderEblanApplicationInfo>,
         appDrawerType: AppDrawerType,
-    ): Map<EblanUserPageKey, List<AlphabeticalScrollBarItem>> = eblanApplicationInfos.mapValues { entry ->
-        val offset = if (
-            appDrawerType == AppDrawerType.Vertical &&
-            entry.key.eblanUser.eblanUserType == EblanUserType.Personal &&
-            folderEblanApplicationInfos.isNotEmpty()
-        ) {
-            folderEblanApplicationInfos.size
-        } else {
-            0
-        }
+        scrollBarType: ScrollBarType,
+    ): Map<EblanUserPageKey, List<AlphabeticalScrollBarItem>> {
+        if (scrollBarType != ScrollBarType.Alphabetical) return emptyMap()
 
-        entry.value.mapIndexedNotNull { index, application ->
-            (application.customLabel ?: application.label).firstOrNull()
-                ?.uppercaseChar()
-                ?.takeIf(Char::isLetter)
-                ?.let { letter -> letter to (offset + index) }
-        }.distinctBy { it.first }
-            .sortedBy { it.first }
-            .map { (letter, index) ->
-                AlphabeticalScrollBarItem(letter = letter, index = index)
+        return eblanApplicationInfos.mapValues { entry ->
+            val offset = if (
+                appDrawerType == AppDrawerType.Vertical &&
+                entry.key.eblanUser.eblanUserType == EblanUserType.Personal &&
+                folderEblanApplicationInfos.isNotEmpty()
+            ) {
+                folderEblanApplicationInfos.size
+            } else {
+                0
             }
+
+            entry.value.mapIndexedNotNull { index, application ->
+                (application.customLabel ?: application.label).firstOrNull()
+                    ?.uppercaseChar()
+                    ?.let { character ->
+                        (if (character.isLetter()) character else '#') to (offset + index)
+                    }
+            }.distinctBy { it.first }
+                .sortedBy { it.first }
+                .map { (letter, index) ->
+                    AlphabeticalScrollBarItem(letter = letter, index = index)
+                }
+        }
     }
 }

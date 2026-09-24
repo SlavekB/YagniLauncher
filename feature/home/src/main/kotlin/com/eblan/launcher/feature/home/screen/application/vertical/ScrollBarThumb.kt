@@ -57,6 +57,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eblan.launcher.domain.model.application.AlphabeticalScrollBarItem
+import com.eblan.launcher.domain.model.userdata.AppDrawerSettings
+import com.eblan.launcher.domain.model.userdata.ScrollBarType
 import com.eblan.launcher.domain.model.userdata.SearchBarPosition
 import com.eblan.launcher.feature.home.model.ScrollBarItemLayout
 import kotlinx.coroutines.delay
@@ -67,7 +69,181 @@ import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
-internal fun ScrollBarThumb(
+internal fun ScrollBarType(
+    modifier: Modifier = Modifier,
+    alphabeticalScrollBarItems: List<AlphabeticalScrollBarItem>,
+    appDrawerSettings: AppDrawerSettings,
+    canScroll: Boolean,
+    lazyGridState: LazyGridState,
+    paddingValues: PaddingValues,
+    itemLayout: ScrollBarItemLayout,
+) {
+    Box(
+        modifier = modifier.fillMaxHeight(),
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        when (appDrawerSettings.scrollBarType) {
+            ScrollBarType.ScrollBar -> {
+                ScrollBarThumb(
+                    appDrawerColumns = appDrawerSettings.appDrawerColumns,
+                    lazyGridState = lazyGridState,
+                    paddingValues = paddingValues,
+                    searchBarPosition = appDrawerSettings.searchBarPosition,
+                    canScroll = canScroll,
+                    scrollBarItemLayout = itemLayout,
+                    onScrollToItem = lazyGridState::scrollToItem,
+                )
+            }
+
+            ScrollBarType.Alphabetical -> {
+                if (alphabeticalScrollBarItems.isNotEmpty()) {
+                    AlphabeticalScrollBar(
+                        alphabeticalScrollBarItems = alphabeticalScrollBarItems,
+                        paddingValues = paddingValues,
+                        searchBarPosition = appDrawerSettings.searchBarPosition,
+                        canScroll = canScroll,
+                        onScrollToItem = lazyGridState::scrollToItem,
+                    )
+                }
+            }
+
+            ScrollBarType.None -> Unit
+        }
+    }
+}
+
+@Composable
+internal fun AlphabeticalScrollBar(
+    modifier: Modifier = Modifier,
+    alphabeticalScrollBarItems: List<AlphabeticalScrollBarItem>,
+    paddingValues: PaddingValues,
+    searchBarPosition: SearchBarPosition,
+    canScroll: Boolean,
+    onScrollToItem: suspend (Int) -> Unit,
+) {
+    if (!canScroll) return
+
+    val scope = rememberCoroutineScope()
+
+    val density = LocalDensity.current
+
+    val edgeThreshold = with(density) { 28.dp.toPx() }
+
+    val listState = rememberLazyListState()
+
+    var selectedLetter by remember(key1 = alphabeticalScrollBarItems) {
+        mutableStateOf<Char?>(null)
+    }
+
+    LaunchedEffect(key1 = selectedLetter) {
+        if (selectedLetter != null) {
+            delay(1000L.milliseconds)
+
+            selectedLetter = null
+        }
+    }
+
+    val bottomPadding = if (searchBarPosition == SearchBarPosition.Bottom) {
+        0.dp
+    } else {
+        paddingValues.calculateBottomPadding()
+    }
+
+    fun selectItem(item: AlphabeticalScrollBarItem) {
+        selectedLetter = item.letter
+        scope.launch {
+            onScrollToItem(item.index)
+
+            val visibleItems = listState.layoutInfo.visibleItemsInfo
+            if (visibleItems.none { it.index == alphabeticalScrollBarItems.indexOf(item) }) {
+                listState.animateScrollToItem(alphabeticalScrollBarItems.indexOf(item))
+            }
+        }
+    }
+
+    fun selectItemAt(y: Float) {
+        val visibleItems = listState.layoutInfo.visibleItemsInfo
+        val target = visibleItems.minByOrNull {
+            abs(it.offset + it.size / 2f - y)
+        } ?: return
+
+        selectItem(alphabeticalScrollBarItems[target.index])
+    }
+
+    LazyColumn(
+        state = listState,
+        modifier = modifier
+            .width(28.dp)
+            .fillMaxHeight()
+            .pointerInput(alphabeticalScrollBarItems) {
+                detectTapGestures(
+                    onTap = { selectItemAt(it.y) },
+                )
+            }
+            .pointerInput(alphabeticalScrollBarItems) {
+                detectDragGestures(
+                    onDragStart = { selectItemAt(it.y) },
+                    onDrag = { change, dragAmount ->
+                        val viewportHeight = listState.layoutInfo.viewportSize.height
+                        val edgeScroll = when {
+                            change.position.y < edgeThreshold &&
+                                dragAmount.y < 0f -> dragAmount.y
+
+                            change.position.y > viewportHeight - edgeThreshold &&
+                                dragAmount.y > 0f -> dragAmount.y
+
+                            else -> 0f
+                        }
+
+                        scope.launch {
+                            if (edgeScroll != 0f) {
+                                listState.scrollBy(edgeScroll)
+                            }
+
+                            selectItemAt(change.position.y)
+                        }
+                    },
+                )
+            },
+        contentPadding = PaddingValues(bottom = bottomPadding),
+        userScrollEnabled = false,
+    ) {
+        items(
+            items = alphabeticalScrollBarItems,
+            key = { it.letter },
+        ) { item ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(28.dp)
+                    .background(
+                        color = if (selectedLetter == item.letter) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.surface
+                        },
+                        shape = RoundedCornerShape(14.dp),
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = item.letter.toString(),
+                    modifier = Modifier.fillMaxWidth(),
+                    color = if (selectedLetter == item.letter) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.Center,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ScrollBarThumb(
     modifier: Modifier = Modifier,
     appDrawerColumns: Int,
     lazyGridState: LazyGridState,
@@ -233,135 +409,6 @@ internal fun ScrollBarThumb(
                     )
                 },
         )
-    }
-}
-
-@Composable
-internal fun AlphabeticalScrollBar(
-    modifier: Modifier = Modifier,
-    alphabeticalScrollBarItems: List<AlphabeticalScrollBarItem>,
-    paddingValues: PaddingValues,
-    searchBarPosition: SearchBarPosition,
-    canScroll: Boolean,
-    onScrollToItem: suspend (Int) -> Unit,
-) {
-    if (!canScroll) return
-
-    val scope = rememberCoroutineScope()
-
-    val density = LocalDensity.current
-
-    val edgeThreshold = with(density) { 28.dp.toPx() }
-
-    val listState = rememberLazyListState()
-
-    var selectedLetter by remember(key1 = alphabeticalScrollBarItems) {
-        mutableStateOf<Char?>(null)
-    }
-
-    LaunchedEffect(key1 = selectedLetter) {
-        if (selectedLetter != null) {
-            delay(1000L.milliseconds)
-
-            selectedLetter = null
-        }
-    }
-
-    val bottomPadding = if (searchBarPosition == SearchBarPosition.Bottom) {
-        0.dp
-    } else {
-        paddingValues.calculateBottomPadding()
-    }
-
-    fun selectItem(item: AlphabeticalScrollBarItem) {
-        selectedLetter = item.letter
-        scope.launch {
-            onScrollToItem(item.index)
-
-            val visibleItems = listState.layoutInfo.visibleItemsInfo
-            if (visibleItems.none { it.index == alphabeticalScrollBarItems.indexOf(item) }) {
-                listState.animateScrollToItem(alphabeticalScrollBarItems.indexOf(item))
-            }
-        }
-    }
-
-    fun selectItemAt(y: Float) {
-        val visibleItems = listState.layoutInfo.visibleItemsInfo
-        val target = visibleItems.minByOrNull {
-            abs(it.offset + it.size / 2f - y)
-        } ?: return
-
-        selectItem(alphabeticalScrollBarItems[target.index])
-    }
-
-    LazyColumn(
-        state = listState,
-        modifier = modifier
-            .fillMaxHeight()
-            .pointerInput(alphabeticalScrollBarItems) {
-                detectTapGestures(
-                    onTap = { selectItemAt(it.y) },
-                )
-            }
-            .pointerInput(alphabeticalScrollBarItems) {
-                detectDragGestures(
-                    onDragStart = { selectItemAt(it.y) },
-                    onDrag = { change, dragAmount ->
-                        val viewportHeight = listState.layoutInfo.viewportSize.height
-                        val edgeScroll = when {
-                            change.position.y < edgeThreshold &&
-                                dragAmount.y < 0f -> dragAmount.y
-
-                            change.position.y > viewportHeight - edgeThreshold &&
-                                dragAmount.y > 0f -> dragAmount.y
-
-                            else -> 0f
-                        }
-
-                        scope.launch {
-                            if (edgeScroll != 0f) {
-                                listState.scrollBy(edgeScroll)
-                            }
-
-                            selectItemAt(change.position.y)
-                        }
-                    },
-                )
-            },
-        contentPadding = PaddingValues(bottom = bottomPadding),
-        userScrollEnabled = false,
-    ) {
-        items(
-            items = alphabeticalScrollBarItems,
-            key = { it.letter },
-        ) { item ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(28.dp)
-                    .background(
-                        color = if (selectedLetter == item.letter) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.surface
-                        },
-                        shape = RoundedCornerShape(14.dp),
-                    ),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = item.letter.toString(),
-                    modifier = Modifier.fillMaxWidth(),
-                    color = if (selectedLetter == item.letter) {
-                        MaterialTheme.colorScheme.onPrimary
-                    } else {
-                        MaterialTheme.colorScheme.onSurface
-                    },
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Center,
-                )
-            }
-        }
     }
 }
 

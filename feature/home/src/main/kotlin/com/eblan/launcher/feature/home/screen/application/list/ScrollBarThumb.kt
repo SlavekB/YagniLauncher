@@ -22,6 +22,7 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -48,13 +49,60 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.eblan.launcher.domain.model.application.AlphabeticalScrollBarItem
+import com.eblan.launcher.domain.model.userdata.AppDrawerSettings
+import com.eblan.launcher.domain.model.userdata.ScrollBarType
 import com.eblan.launcher.domain.model.userdata.SearchBarPosition
 import com.eblan.launcher.feature.home.model.ScrollBarItemLayout
+import com.eblan.launcher.feature.home.screen.application.vertical.AlphabeticalScrollBar
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
-internal fun ScrollBarThumb(
+internal fun ScrollBarType(
+    modifier: Modifier = Modifier,
+    alphabeticalScrollBarItems: List<AlphabeticalScrollBarItem>,
+    appDrawerSettings: AppDrawerSettings,
+    canScroll: Boolean,
+    lazyListState: LazyListState,
+    paddingValues: PaddingValues,
+    itemLayout: ScrollBarItemLayout,
+) {
+    Box(
+        modifier = modifier.fillMaxHeight(),
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        when (appDrawerSettings.scrollBarType) {
+            ScrollBarType.ScrollBar -> {
+                ScrollBarThumb(
+                    lazyListState = lazyListState,
+                    paddingValues = paddingValues,
+                    searchBarPosition = appDrawerSettings.searchBarPosition,
+                    canScroll = canScroll,
+                    scrollBarItemLayout = itemLayout,
+                    onScrollToItem = lazyListState::scrollToItem,
+                )
+            }
+
+            ScrollBarType.Alphabetical -> {
+                if (alphabeticalScrollBarItems.isNotEmpty()) {
+                    AlphabeticalScrollBar(
+                        alphabeticalScrollBarItems = alphabeticalScrollBarItems,
+                        paddingValues = paddingValues,
+                        searchBarPosition = appDrawerSettings.searchBarPosition,
+                        canScroll = canScroll,
+                        onScrollToItem = lazyListState::scrollToItem,
+                    )
+                }
+            }
+
+            ScrollBarType.None -> Unit
+        }
+    }
+}
+
+@Composable
+private fun ScrollBarThumb(
     modifier: Modifier = Modifier,
     lazyListState: LazyListState,
     paddingValues: PaddingValues,
