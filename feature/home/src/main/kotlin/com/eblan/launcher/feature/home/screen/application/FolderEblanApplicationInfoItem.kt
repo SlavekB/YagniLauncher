@@ -199,7 +199,7 @@ internal fun FolderEblanApplicationInfoItem(
 
     Column(
         modifier = modifier
-            .fillMaxSize()
+            .height(appDrawerSettings.appDrawerRowsHeight.dp)
             .padding(appDrawerSettings.gridItemSettings.padding.dp)
             .background(
                 color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
