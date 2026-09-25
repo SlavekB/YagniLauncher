@@ -29,14 +29,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.layer.GraphicsLayer
-import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
@@ -199,28 +194,4 @@ internal fun Modifier.gridItemScaleAnimation(
     } else {
         this
     }
-}
-
-internal fun Modifier.recordToGraphicsLayerIfNotInProgress(
-    isInProgress: Boolean,
-    graphicsLayer: GraphicsLayer,
-): Modifier = if (!isInProgress) {
-    drawWithContent {
-        graphicsLayer.record {
-            this@drawWithContent.drawContent()
-        }
-
-        drawLayer(graphicsLayer)
-    }
-} else {
-    this
-}
-
-internal fun Modifier.recordBoundsIfNotInProgress(
-    isInProgress: Boolean,
-    onGloballyPositioned: (LayoutCoordinates) -> Unit,
-): Modifier = if (!isInProgress) {
-    onGloballyPositioned(onGloballyPositioned)
-} else {
-    this
 }

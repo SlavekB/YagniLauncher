@@ -47,10 +47,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -85,8 +88,6 @@ import com.eblan.launcher.domain.usecase.util.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
 import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
 import com.eblan.launcher.feature.home.component.gridItemSharedElement
-import com.eblan.launcher.feature.home.component.recordBoundsIfNotInProgress
-import com.eblan.launcher.feature.home.component.recordToGraphicsLayerIfNotInProgress
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
@@ -384,7 +385,7 @@ private fun InteractiveEblanApplicationInfoItem(
             contentDescription = null,
             modifier = Modifier
                 .size(iconSize)
-                .recordBoundsIfNotInProgress(isInProgress = isInProgress) {
+                .onGloballyPositioned {
                     intOffset = it.positionInRoot().round()
 
                     intSize = it.size
@@ -400,10 +401,13 @@ private fun InteractiveEblanApplicationInfoItem(
                     sharedTransitionScope = sharedTransitionScope,
                     visible = !isScrollInProgress && !hasInteraction,
                 )
-                .recordToGraphicsLayerIfNotInProgress(
-                    isInProgress = isInProgress,
-                    graphicsLayer = graphicsLayer,
-                )
+                .drawWithContent {
+                    graphicsLayer.record {
+                        this@drawWithContent.drawContent()
+                    }
+
+                    drawLayer(graphicsLayer)
+                }
                 .alpha(alpha),
         )
 
@@ -537,7 +541,7 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
         val commonModifier =
             Modifier
                 .size(iconSize)
-                .recordBoundsIfNotInProgress(isInProgress = isInProgress) {
+                .onGloballyPositioned {
                     intOffset = it.positionInRoot().round()
 
                     intSize = it.size
@@ -553,10 +557,13 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
                     sharedTransitionScope = sharedTransitionScope,
                     visible = !isScrollInProgress && !hasInteraction,
                 )
-                .recordToGraphicsLayerIfNotInProgress(
-                    isInProgress = isInProgress,
-                    graphicsLayer = graphicsLayer,
-                )
+                .drawWithContent {
+                    graphicsLayer.record {
+                        this@drawWithContent.drawContent()
+                    }
+
+                    drawLayer(graphicsLayer)
+                }
                 .alpha(iconAlpha)
 
         if (data.icon != null) {
@@ -638,6 +645,7 @@ private fun PreviewFolderEblanApplicationInfoItem(
         )
 
         val commonModifier = modifier
+            .fillMaxSize()
             .padding(1.dp)
             .alpha(alpha)
 

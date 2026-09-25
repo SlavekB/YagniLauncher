@@ -1357,6 +1357,7 @@ private fun PreviewFolderGridItem(
         )
 
         val commonModifier = modifier
+            .fillMaxSize()
             .padding(1.dp)
             .run {
                 if (!isScrollInProgress && !hasInteraction) {
