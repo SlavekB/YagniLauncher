@@ -46,23 +46,14 @@ internal fun <T> PreviewFolderGridLayout(
             previewRows,
         )
 
-        val previewGridWidth = previewCellSize * previewColumns
-
-        val previewGridHeight = previewCellSize * previewRows
-
-        val previewOffsetX = (constraints.maxWidth - previewGridWidth) / 2
-
-        val previewOffsetY = (constraints.maxHeight - previewGridHeight) / 2
-
         layout(
             width = constraints.maxWidth,
             height = constraints.maxHeight,
         ) {
             gridItems?.forEachIndexed { index, gridItem ->
                 subcompose(slotId(gridItem)) {
-                    val x = previewOffsetX + (index % previewColumns) * previewCellSize
-
-                    val y = previewOffsetY + (index / previewColumns) * previewCellSize
+                    val x = (index % previewColumns) * previewCellSize
+                    val y = (index / previewColumns) * previewCellSize
 
                     Box(
                         modifier = Modifier.folderGridItem(
