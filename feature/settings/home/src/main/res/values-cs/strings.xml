@@ -46,4 +46,6 @@
     <string name="bottom_end">Pravý dolní</string>
     <string name="bottom_end_is_not_valid">Pravý dolní není platný</string>
     <string name="set_the_radius_for_each_dock_corner">Nastavit zaoblení každého rohu dokovací oblasti</string>
+    <string name="add_bottom_padding">Přidat dolní odsazení</string>
+    <string name="add_the_bottom_padding_of_the_dock">Přidat dolní odsazení dokovací oblasti</string>
 </resources>
