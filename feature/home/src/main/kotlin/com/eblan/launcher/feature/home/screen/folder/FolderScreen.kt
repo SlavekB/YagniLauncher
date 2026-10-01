@@ -561,8 +561,8 @@ private fun handleMoveFolderGridItemOutsideFolder(
         is GridItemData.ApplicationInfo -> {
             gridItem.copy(
                 page = folderGridItemPopup.gridItem.page,
-                startColumn = folderGridItemPopup.gridItem.startColumn,
-                startRow = folderGridItemPopup.gridItem.startRow,
+                startColumn = -1,
+                startRow = -1,
                 data = data.copy(
                     index = -1,
                     folderId = null,
@@ -573,8 +573,8 @@ private fun handleMoveFolderGridItemOutsideFolder(
         is GridItemData.Folder -> {
             gridItem.copy(
                 page = folderGridItemPopup.gridItem.page,
-                startColumn = folderGridItemPopup.gridItem.startColumn,
-                startRow = folderGridItemPopup.gridItem.startRow,
+                startColumn = -1,
+                startRow = -1,
                 data = data.copy(
                     index = -1,
                     folderId = null,
@@ -585,8 +585,8 @@ private fun handleMoveFolderGridItemOutsideFolder(
         is GridItemData.ShortcutConfig -> {
             gridItem.copy(
                 page = folderGridItemPopup.gridItem.page,
-                startColumn = folderGridItemPopup.gridItem.startColumn,
-                startRow = folderGridItemPopup.gridItem.startRow,
+                startColumn = -1,
+                startRow = -1,
                 data = data.copy(
                     index = -1,
                     folderId = null,
@@ -597,8 +597,8 @@ private fun handleMoveFolderGridItemOutsideFolder(
         is GridItemData.ShortcutInfo -> {
             gridItem.copy(
                 page = folderGridItemPopup.gridItem.page,
-                startColumn = folderGridItemPopup.gridItem.startColumn,
-                startRow = folderGridItemPopup.gridItem.startRow,
+                startColumn = -1,
+                startRow = -1,
                 data = data.copy(
                     index = -1,
                     folderId = null,

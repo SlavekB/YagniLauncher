@@ -127,10 +127,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
         }
 
         gridRepository.updateGridItem(
-            gridItem = movingGridItem.copy(
-                associate = conflictingGridItem.associate,
-                data = newData,
-            ),
+            gridItem = movingGridItem.copy(data = newData),
         )
     }
 
@@ -207,10 +204,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                     ),
                 ),
                 conflictingGridItem.copy(data = conflictingData),
-                movingGridItem.copy(
-                    associate = conflictingGridItem.associate,
-                    data = movingData,
-                ),
+                movingGridItem.copy(data = movingData),
             ),
         )
     }
