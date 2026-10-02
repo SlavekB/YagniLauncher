@@ -26,115 +26,91 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.eblan.launcher.domain.model.grid.GridItemSettings
+import com.eblan.launcher.domain.model.grid.LayoutType
 
 @Composable
-internal fun TopIconBottomLabel(
-    modifier: Modifier,
-    horizontalAlignment: Alignment.Horizontal,
-    verticalArrangement: Arrangement.Vertical,
-    icon: @Composable () -> Unit,
-    label: @Composable (Modifier) -> Unit,
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = horizontalAlignment,
-        verticalArrangement = verticalArrangement,
-    ) {
-        icon()
-        label(Modifier)
-    }
-}
-
-@Composable
-internal fun TopLabelBottomIcon(
-    modifier: Modifier,
-    horizontalAlignment: Alignment.Horizontal,
-    verticalArrangement: Arrangement.Vertical,
-    icon: @Composable () -> Unit,
-    label: @Composable (Modifier) -> Unit,
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = horizontalAlignment,
-        verticalArrangement = verticalArrangement,
-    ) {
-        label(Modifier)
-        icon()
-    }
-}
-
-@Composable
-internal fun StartIconEndLabel(
-    modifier: Modifier,
-    horizontalArrangement: Arrangement.Horizontal,
-    verticalAlignment: Alignment.Vertical,
-    icon: @Composable () -> Unit,
-    label: @Composable (Modifier) -> Unit,
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = horizontalArrangement,
-        verticalAlignment = verticalAlignment,
-    ) {
-        icon()
-        label(Modifier)
-    }
-}
-
-@Composable
-internal fun StartLabelEndIcon(
-    modifier: Modifier,
-    horizontalArrangement: Arrangement.Horizontal,
-    verticalAlignment: Alignment.Vertical,
-    icon: @Composable () -> Unit,
-    label: @Composable (Modifier) -> Unit,
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = horizontalArrangement,
-        verticalAlignment = verticalAlignment,
-    ) {
-        label(Modifier)
-        icon()
-    }
-}
-
-@Composable
-internal fun IconOnly(
+internal fun GridItemLayoutType(
     modifier: Modifier = Modifier,
+    gridItemSettings: GridItemSettings,
     horizontalAlignment: Alignment.Horizontal,
-    verticalArrangement: Arrangement.Vertical,
-    icon: @Composable () -> Unit,
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = horizontalAlignment,
-        verticalArrangement = verticalArrangement,
-    ) {
-        icon()
-    }
-}
-
-@Composable
-internal fun LabelOnly(
-    modifier: Modifier = Modifier,
-    iconSize: Dp,
-    iconPadding: Dp,
+    horizontalArrangement: Arrangement.Horizontal,
     iconModifier: Modifier,
-    label: @Composable (Modifier) -> Unit,
+    verticalAlignment: Alignment.Vertical,
+    verticalArrangement: Arrangement.Vertical,
+    iconContent: @Composable (() -> Unit),
+    labelContent: @Composable ((Modifier) -> Unit),
 ) {
-    Box(modifier = modifier) {
-        Box(
-            modifier = Modifier
-                .size(iconSize)
-                .padding(iconPadding),
-        ) {
-            label(
-                Modifier
-                    .matchParentSize()
-                    .then(iconModifier),
-            )
+    when (gridItemSettings.layoutType) {
+        LayoutType.TopIconBottomLabel -> {
+            Column(
+                modifier = modifier,
+                horizontalAlignment = horizontalAlignment,
+                verticalArrangement = verticalArrangement,
+            ) {
+                iconContent()
+                labelContent(Modifier)
+            }
+        }
+
+        LayoutType.TopLabelBottomIcon -> {
+            Column(
+                modifier = modifier,
+                horizontalAlignment = horizontalAlignment,
+                verticalArrangement = verticalArrangement,
+            ) {
+                labelContent(Modifier)
+                iconContent()
+            }
+        }
+
+        LayoutType.StartIconEndLabel -> {
+            Row(
+                modifier = modifier,
+                horizontalArrangement = horizontalArrangement,
+                verticalAlignment = verticalAlignment,
+            ) {
+                iconContent()
+                labelContent(Modifier)
+            }
+        }
+
+        LayoutType.StartLabelEndIcon -> {
+            Row(
+                modifier = modifier,
+                horizontalArrangement = horizontalArrangement,
+                verticalAlignment = verticalAlignment,
+            ) {
+                labelContent(Modifier)
+                iconContent()
+            }
+        }
+
+        LayoutType.IconOnly -> {
+            Column(
+                modifier = modifier,
+                horizontalAlignment = horizontalAlignment,
+                verticalArrangement = verticalArrangement,
+            ) {
+                iconContent()
+            }
+        }
+
+        LayoutType.LabelOnly -> {
+            Box(modifier = modifier) {
+                Box(
+                    modifier = Modifier
+                        .size(size = gridItemSettings.iconSize.dp)
+                        .padding(all = gridItemSettings.iconPadding.dp),
+                ) {
+                    labelContent(
+                        Modifier
+                            .matchParentSize()
+                            .then(other = iconModifier),
+                    )
+                }
+            }
         }
     }
 }

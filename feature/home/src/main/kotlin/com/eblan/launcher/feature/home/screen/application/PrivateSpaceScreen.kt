@@ -70,18 +70,12 @@ import coil3.request.addLastModifiedToFileCacheKey
 import coil3.request.crossfade
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.application.EblanApplicationInfo
-import com.eblan.launcher.domain.model.grid.LayoutType
 import com.eblan.launcher.domain.model.launcherapps.EblanUser
 import com.eblan.launcher.domain.model.userdata.AppDrawerSettings
 import com.eblan.launcher.domain.model.userdata.BackgroundColor
 import com.eblan.launcher.domain.model.userdata.TextColor
 import com.eblan.launcher.feature.home.R
-import com.eblan.launcher.feature.home.component.IconOnly
-import com.eblan.launcher.feature.home.component.LabelOnly
-import com.eblan.launcher.feature.home.component.StartIconEndLabel
-import com.eblan.launcher.feature.home.component.StartLabelEndIcon
-import com.eblan.launcher.feature.home.component.TopIconBottomLabel
-import com.eblan.launcher.feature.home.component.TopLabelBottomIcon
+import com.eblan.launcher.feature.home.component.GridItemLayoutType
 import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
 import com.eblan.launcher.feature.home.util.getApplicationScreenTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
@@ -399,66 +393,17 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
         )
     }
 
-    when (gridItemSettings.layoutType) {
-        LayoutType.TopIconBottomLabel -> {
-            TopIconBottomLabel(
-                modifier = itemModifier,
-                horizontalAlignment = horizontalAlignment,
-                verticalArrangement = verticalArrangement,
-                icon = iconContent,
-                label = labelContent,
-            )
-        }
-
-        LayoutType.TopLabelBottomIcon -> {
-            TopLabelBottomIcon(
-                modifier = itemModifier,
-                horizontalAlignment = horizontalAlignment,
-                verticalArrangement = verticalArrangement,
-                icon = iconContent,
-                label = labelContent,
-            )
-        }
-
-        LayoutType.StartIconEndLabel -> {
-            StartIconEndLabel(
-                modifier = itemModifier,
-                horizontalArrangement = horizontalArrangement,
-                verticalAlignment = verticalAlignment,
-                icon = iconContent,
-                label = labelContent,
-            )
-        }
-
-        LayoutType.StartLabelEndIcon -> {
-            StartLabelEndIcon(
-                modifier = itemModifier,
-                horizontalArrangement = horizontalArrangement,
-                verticalAlignment = verticalAlignment,
-                icon = iconContent,
-                label = labelContent,
-            )
-        }
-
-        LayoutType.IconOnly -> {
-            IconOnly(
-                modifier = itemModifier,
-                horizontalAlignment = horizontalAlignment,
-                verticalArrangement = verticalArrangement,
-                icon = iconContent,
-            )
-        }
-
-        LayoutType.LabelOnly -> {
-            LabelOnly(
-                modifier = itemModifier,
-                iconSize = gridItemSettings.iconSize.dp,
-                iconPadding = gridItemSettings.iconPadding.dp,
-                iconModifier = iconModifier,
-                label = labelContent,
-            )
-        }
-    }
+    GridItemLayoutType(
+        modifier = itemModifier,
+        gridItemSettings = gridItemSettings,
+        horizontalAlignment = horizontalAlignment,
+        horizontalArrangement = horizontalArrangement,
+        iconModifier = iconModifier,
+        verticalAlignment = verticalAlignment,
+        verticalArrangement = verticalArrangement,
+        iconContent = iconContent,
+        labelContent = labelContent,
+    )
 }
 
 internal fun handleOnLongPressPrivateSpaceEblanApplicationInfoItem(

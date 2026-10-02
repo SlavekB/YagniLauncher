@@ -69,17 +69,11 @@ import com.eblan.launcher.domain.model.folder.PreviewFolder
 import com.eblan.launcher.domain.model.grid.GridItem
 import com.eblan.launcher.domain.model.grid.GridItemData
 import com.eblan.launcher.domain.model.grid.GridItemSettings
-import com.eblan.launcher.domain.model.grid.LayoutType
 import com.eblan.launcher.domain.model.grid.MoveGridItemResult
 import com.eblan.launcher.domain.model.userdata.BackgroundColor
 import com.eblan.launcher.domain.model.userdata.TextColor
-import com.eblan.launcher.feature.home.component.IconOnly
-import com.eblan.launcher.feature.home.component.LabelOnly
+import com.eblan.launcher.feature.home.component.GridItemLayoutType
 import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
-import com.eblan.launcher.feature.home.component.StartIconEndLabel
-import com.eblan.launcher.feature.home.component.StartLabelEndIcon
-import com.eblan.launcher.feature.home.component.TopIconBottomLabel
-import com.eblan.launcher.feature.home.component.TopLabelBottomIcon
 import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
 import com.eblan.launcher.feature.home.component.gridItemSharedElement
 import com.eblan.launcher.feature.home.component.swipeGestures
@@ -284,6 +278,7 @@ internal fun InteractiveFolderGridItem(
             .padding(gridItemSettings.iconPadding.dp)
             .then(iconModifier)
             .alpha(alpha = iconAlpha)
+
         if (data.icon != null) {
             AsyncImage(
                 model = data.icon,
@@ -345,66 +340,17 @@ internal fun InteractiveFolderGridItem(
         )
     }
 
-    when (gridItemSettings.layoutType) {
-        LayoutType.TopIconBottomLabel -> {
-            TopIconBottomLabel(
-                modifier = itemModifier,
-                horizontalAlignment = horizontalAlignment,
-                verticalArrangement = verticalArrangement,
-                icon = iconContent,
-                label = labelContent,
-            )
-        }
-
-        LayoutType.TopLabelBottomIcon -> {
-            TopLabelBottomIcon(
-                modifier = itemModifier,
-                horizontalAlignment = horizontalAlignment,
-                verticalArrangement = verticalArrangement,
-                icon = iconContent,
-                label = labelContent,
-            )
-        }
-
-        LayoutType.StartIconEndLabel -> {
-            StartIconEndLabel(
-                modifier = itemModifier,
-                horizontalArrangement = horizontalArrangement,
-                verticalAlignment = verticalAlignment,
-                icon = iconContent,
-                label = labelContent,
-            )
-        }
-
-        LayoutType.StartLabelEndIcon -> {
-            StartLabelEndIcon(
-                modifier = itemModifier,
-                horizontalArrangement = horizontalArrangement,
-                verticalAlignment = verticalAlignment,
-                icon = iconContent,
-                label = labelContent,
-            )
-        }
-
-        LayoutType.IconOnly -> {
-            IconOnly(
-                modifier = itemModifier,
-                horizontalAlignment = horizontalAlignment,
-                verticalArrangement = verticalArrangement,
-                icon = iconContent,
-            )
-        }
-
-        LayoutType.LabelOnly -> {
-            LabelOnly(
-                modifier = itemModifier,
-                iconSize = gridItemSettings.iconSize.dp,
-                iconPadding = gridItemSettings.iconPadding.dp,
-                iconModifier = iconModifier,
-                label = labelContent,
-            )
-        }
-    }
+    GridItemLayoutType(
+        modifier = itemModifier,
+        gridItemSettings = gridItemSettings,
+        horizontalAlignment = horizontalAlignment,
+        horizontalArrangement = horizontalArrangement,
+        iconModifier = iconModifier,
+        verticalAlignment = verticalAlignment,
+        verticalArrangement = verticalArrangement,
+        iconContent = iconContent,
+        labelContent = labelContent,
+    )
 }
 
 @Composable

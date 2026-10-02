@@ -66,17 +66,11 @@ import com.eblan.launcher.domain.model.application.EblanApplicationInfo
 import com.eblan.launcher.domain.model.grid.Associate
 import com.eblan.launcher.domain.model.grid.GridItem
 import com.eblan.launcher.domain.model.grid.GridItemData
-import com.eblan.launcher.domain.model.grid.LayoutType
 import com.eblan.launcher.domain.model.userdata.AppDrawerSettings
 import com.eblan.launcher.domain.model.userdata.EblanAction
 import com.eblan.launcher.domain.model.userdata.EblanActionType
 import com.eblan.launcher.domain.model.userdata.TextColor
-import com.eblan.launcher.feature.home.component.IconOnly
-import com.eblan.launcher.feature.home.component.LabelOnly
-import com.eblan.launcher.feature.home.component.StartIconEndLabel
-import com.eblan.launcher.feature.home.component.StartLabelEndIcon
-import com.eblan.launcher.feature.home.component.TopIconBottomLabel
-import com.eblan.launcher.feature.home.component.TopLabelBottomIcon
+import com.eblan.launcher.feature.home.component.GridItemLayoutType
 import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
 import com.eblan.launcher.feature.home.component.gridItemSharedElement
 import com.eblan.launcher.feature.home.model.Drag
@@ -256,8 +250,6 @@ internal fun EblanApplicationInfoItem(
         }
 
     val iconModifier = Modifier
-        .size(gridItemSettings.iconSize.dp)
-        .padding(gridItemSettings.iconPadding.dp)
         .onGloballyPositioned {
             intOffset = it.positionInRoot().round()
             intSize = it.size
@@ -282,7 +274,6 @@ internal fun EblanApplicationInfoItem(
             }
             drawLayer(graphicsLayer)
         }
-        .alpha(alpha)
 
     val iconContent: @Composable () -> Unit = {
         AsyncImage(
@@ -293,7 +284,11 @@ internal fun EblanApplicationInfoItem(
                 .crossfade(false)
                 .build(),
             contentDescription = null,
-            modifier = iconModifier,
+            modifier = Modifier
+                .size(gridItemSettings.iconSize.dp)
+                .padding(gridItemSettings.iconPadding.dp)
+                .then(iconModifier)
+                .alpha(alpha),
         )
     }
 
@@ -312,66 +307,17 @@ internal fun EblanApplicationInfoItem(
         )
     }
 
-    when (gridItemSettings.layoutType) {
-        LayoutType.TopIconBottomLabel -> {
-            TopIconBottomLabel(
-                modifier = itemModifier,
-                horizontalAlignment = horizontalAlignment,
-                verticalArrangement = verticalArrangement,
-                icon = iconContent,
-                label = labelContent,
-            )
-        }
-
-        LayoutType.TopLabelBottomIcon -> {
-            TopLabelBottomIcon(
-                modifier = itemModifier,
-                horizontalAlignment = horizontalAlignment,
-                verticalArrangement = verticalArrangement,
-                icon = iconContent,
-                label = labelContent,
-            )
-        }
-
-        LayoutType.StartIconEndLabel -> {
-            StartIconEndLabel(
-                modifier = itemModifier,
-                horizontalArrangement = horizontalArrangement,
-                verticalAlignment = verticalAlignment,
-                icon = iconContent,
-                label = labelContent,
-            )
-        }
-
-        LayoutType.StartLabelEndIcon -> {
-            StartLabelEndIcon(
-                modifier = itemModifier,
-                horizontalArrangement = horizontalArrangement,
-                verticalAlignment = verticalAlignment,
-                icon = iconContent,
-                label = labelContent,
-            )
-        }
-
-        LayoutType.IconOnly -> {
-            IconOnly(
-                modifier = itemModifier,
-                horizontalAlignment = horizontalAlignment,
-                verticalArrangement = verticalArrangement,
-                icon = iconContent,
-            )
-        }
-
-        LayoutType.LabelOnly -> {
-            LabelOnly(
-                modifier = itemModifier,
-                iconSize = gridItemSettings.iconSize.dp,
-                iconPadding = gridItemSettings.iconPadding.dp,
-                iconModifier = iconModifier,
-                label = labelContent,
-            )
-        }
-    }
+    GridItemLayoutType(
+        modifier = itemModifier,
+        gridItemSettings = gridItemSettings,
+        horizontalAlignment = horizontalAlignment,
+        horizontalArrangement = horizontalArrangement,
+        iconModifier = iconModifier,
+        verticalAlignment = verticalAlignment,
+        verticalArrangement = verticalArrangement,
+        iconContent = iconContent,
+        labelContent = labelContent,
+    )
 }
 
 internal fun handleOnTapEblanApplicationInfoItem(
