@@ -60,9 +60,6 @@ internal fun ShortcutInfoGridItem(
 ) {
     val context = LocalContext.current
 
-    val customIcon = data.customIcon ?: data.icon
-    val customShortLabel = data.customShortLabel ?: data.shortLabel
-
     val alpha = if (hasShortcutHostPermission && data.isEnabled) 1f else 0.3f
 
     val itemModifier = modifier
@@ -72,22 +69,21 @@ internal fun ShortcutInfoGridItem(
             color = Color(gridItemSettings.customBackgroundColor),
             shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
         )
-    val iconModifier = Modifier
+    val commonModifier = Modifier
         .size(gridItemSettings.iconSize.dp)
         .padding(gridItemSettings.iconPadding.dp)
+        .alpha(alpha)
 
     val iconContent: @Composable () -> Unit = {
-        Box(modifier = iconModifier) {
+        Box(modifier = commonModifier) {
             AsyncImage(
                 model = Builder(context)
-                    .data(customIcon)
+                    .data(data.customIcon ?: data.icon)
                     .addLastModifiedToFileCacheKey(true)
                     .size(Size.ORIGINAL)
                     .build(),
                 contentDescription = null,
-                modifier = Modifier
-                    .matchParentSize()
-                    .alpha(alpha),
+                modifier = Modifier.matchParentSize(),
             )
 
             AsyncImage(
@@ -98,19 +94,16 @@ internal fun ShortcutInfoGridItem(
                     .build(),
                 modifier = Modifier
                     .size((gridItemSettings.iconSize * 0.25).dp)
-                    .align(Alignment.BottomEnd)
-                    .alpha(alpha),
+                    .align(Alignment.BottomEnd),
                 contentDescription = null,
             )
         }
     }
 
-    val labelContent: @Composable (Modifier) -> Unit = { labelModifier ->
+    val labelContent: @Composable () -> Unit = {
         Text(
-            modifier = labelModifier
-                .padding(gridItemSettings.textPadding.dp)
-                .alpha(alpha),
-            text = customShortLabel,
+            modifier = commonModifier,
+            text = data.customShortLabel ?: data.shortLabel,
             color = textColor,
             textAlign = TextAlign.Center,
             maxLines = maxLines,
@@ -124,10 +117,10 @@ internal fun ShortcutInfoGridItem(
         gridItemSettings = gridItemSettings,
         horizontalAlignment = horizontalAlignment,
         horizontalArrangement = horizontalArrangement,
-        iconModifier = iconModifier,
         verticalAlignment = verticalAlignment,
         verticalArrangement = verticalArrangement,
         iconContent = iconContent,
         labelContent = labelContent,
+        labelOnlyContent = labelContent,
     )
 }

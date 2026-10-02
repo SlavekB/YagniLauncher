@@ -380,9 +380,9 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
         )
     }
 
-    val labelContent: @Composable (Modifier) -> Unit = { labelModifier ->
+    val labelContent: @Composable () -> Unit = {
         Text(
-            modifier = labelModifier.padding(gridItemSettings.textPadding.dp),
+            modifier = Modifier.padding(gridItemSettings.textPadding.dp),
             text = eblanApplicationInfo.customLabel
                 ?: eblanApplicationInfo.label,
             color = textColor,
@@ -398,11 +398,11 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
         gridItemSettings = gridItemSettings,
         horizontalAlignment = horizontalAlignment,
         horizontalArrangement = horizontalArrangement,
-        iconModifier = iconModifier,
         verticalAlignment = verticalAlignment,
         verticalArrangement = verticalArrangement,
         iconContent = iconContent,
         labelContent = labelContent,
+        labelOnlyContent = labelContent,
     )
 }
 

@@ -334,10 +334,25 @@ internal fun FolderEblanApplicationInfoItem(
         }
     }
 
-    val labelContent: @Composable (Modifier) -> Unit = { labelModifier ->
+    val labelContent: @Composable () -> Unit = {
         Text(
-            modifier = labelModifier
+            modifier = Modifier
                 .padding(gridItemSettings.textPadding.dp)
+                .alpha(alpha = textAlpha),
+            text = folderEblanApplicationInfo.label,
+            color = textColor,
+            textAlign = TextAlign.Center,
+            maxLines = maxLines,
+            fontSize = appDrawerSettings.gridItemSettings.textSize.sp,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+
+    val labelOnlyContent: @Composable () -> Unit = {
+        Text(
+            modifier = Modifier
+                .padding(gridItemSettings.textPadding.dp)
+                .then(iconModifier)
                 .alpha(alpha = textAlpha),
             text = folderEblanApplicationInfo.label,
             color = textColor,
@@ -353,11 +368,11 @@ internal fun FolderEblanApplicationInfoItem(
         gridItemSettings = gridItemSettings,
         horizontalAlignment = horizontalAlignment,
         horizontalArrangement = horizontalArrangement,
-        iconModifier = iconModifier,
         verticalAlignment = verticalAlignment,
         verticalArrangement = verticalArrangement,
         iconContent = iconContent,
         labelContent = labelContent,
+        labelOnlyContent = labelOnlyContent,
     )
 }
 

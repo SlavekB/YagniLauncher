@@ -258,10 +258,25 @@ internal fun InteractiveApplicationInfoGridItem(
         }
     }
 
-    val labelContent: @Composable (Modifier) -> Unit = { labelModifier ->
+    val labelContent: @Composable () -> Unit = {
         Text(
-            modifier = labelModifier
+            modifier = Modifier
                 .padding(gridItemSettings.textPadding.dp)
+                .alpha(alpha = alpha),
+            text = data.customLabel ?: data.label,
+            color = textColor,
+            textAlign = TextAlign.Center,
+            maxLines = maxLines,
+            fontSize = gridItemSettings.textSize.sp,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+
+    val labelOnlyContent: @Composable () -> Unit = {
+        Text(
+            modifier = Modifier
+                .padding(gridItemSettings.textPadding.dp)
+                .then(iconModifier)
                 .alpha(alpha = alpha),
             text = data.customLabel ?: data.label,
             color = textColor,
@@ -277,10 +292,10 @@ internal fun InteractiveApplicationInfoGridItem(
         gridItemSettings = gridItemSettings,
         horizontalAlignment = horizontalAlignment,
         horizontalArrangement = horizontalArrangement,
-        iconModifier = iconModifier,
         verticalAlignment = verticalAlignment,
         verticalArrangement = verticalArrangement,
         iconContent = iconContent,
         labelContent = labelContent,
+        labelOnlyContent = labelOnlyContent,
     )
 }

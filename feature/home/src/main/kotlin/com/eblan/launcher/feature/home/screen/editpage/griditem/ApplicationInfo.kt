@@ -72,12 +72,12 @@ internal fun ApplicationInfoGridItem(
             shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
         )
 
-    val iconModifier = Modifier
+    val commonModifier = Modifier
         .size(gridItemSettings.iconSize.dp)
         .padding(gridItemSettings.iconPadding.dp)
 
     val iconContent: @Composable () -> Unit = {
-        Box(modifier = iconModifier) {
+        Box(modifier = commonModifier) {
             AsyncImage(
                 model = Builder(context)
                     .data(data.customIcon ?: icon)
@@ -104,9 +104,9 @@ internal fun ApplicationInfoGridItem(
         }
     }
 
-    val labelContent: @Composable (Modifier) -> Unit = { labelModifier ->
+    val labelContent: @Composable () -> Unit = {
         Text(
-            modifier = labelModifier.padding(gridItemSettings.textPadding.dp),
+            modifier = commonModifier,
             text = data.customLabel ?: data.label,
             color = textColor,
             textAlign = TextAlign.Center,
@@ -121,10 +121,10 @@ internal fun ApplicationInfoGridItem(
         gridItemSettings = gridItemSettings,
         horizontalAlignment = horizontalAlignment,
         horizontalArrangement = horizontalArrangement,
-        iconModifier = iconModifier,
         verticalAlignment = verticalAlignment,
         verticalArrangement = verticalArrangement,
         iconContent = iconContent,
         labelContent = labelContent,
+        labelOnlyContent = labelContent,
     )
 }

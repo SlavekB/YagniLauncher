@@ -104,13 +104,20 @@ internal fun InteractiveShortcutConfigGridItem(
     ) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
+
     val context = LocalContext.current
+
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
     var intSize by remember { mutableStateOf(IntSize.Zero) }
+
     val graphicsLayer = rememberGraphicsLayer()
+
     val scope = rememberCoroutineScope()
+
     val alpha = if (hasInteraction) 0f else 1f
+
     val scale = remember { Animatable(1f) }
+
     val currentOnOpenAppDrawer by rememberUpdatedState(onOpenAppDrawer)
     val currentOnLongPressGridItem by rememberUpdatedState(onLongPressGridItem)
 
@@ -231,10 +238,25 @@ internal fun InteractiveShortcutConfigGridItem(
         )
     }
 
-    val labelContent: @Composable (Modifier) -> Unit = { labelModifier ->
+    val labelContent: @Composable () -> Unit = {
         Text(
-            modifier = labelModifier
+            modifier = Modifier
                 .padding(gridItemSettings.textPadding.dp)
+                .alpha(alpha = alpha),
+            text = label.toString(),
+            color = textColor,
+            textAlign = TextAlign.Center,
+            maxLines = maxLines,
+            fontSize = gridItemSettings.textSize.sp,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+
+    val labelOnlyContent: @Composable () -> Unit = {
+        Text(
+            modifier = Modifier
+                .padding(gridItemSettings.textPadding.dp)
+                .then(iconModifier)
                 .alpha(alpha = alpha),
             text = label.toString(),
             color = textColor,
@@ -250,10 +272,10 @@ internal fun InteractiveShortcutConfigGridItem(
         gridItemSettings = gridItemSettings,
         horizontalAlignment = horizontalAlignment,
         horizontalArrangement = horizontalArrangement,
-        iconModifier = iconModifier,
         verticalAlignment = verticalAlignment,
         verticalArrangement = verticalArrangement,
         iconContent = iconContent,
         labelContent = labelContent,
+        labelOnlyContent = labelOnlyContent,
     )
 }

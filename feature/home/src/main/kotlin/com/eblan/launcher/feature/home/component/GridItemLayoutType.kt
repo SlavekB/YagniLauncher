@@ -18,15 +18,11 @@
 package com.eblan.launcher.feature.home.component
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.grid.GridItemSettings
 import com.eblan.launcher.domain.model.grid.LayoutType
 
@@ -36,11 +32,11 @@ internal fun GridItemLayoutType(
     gridItemSettings: GridItemSettings,
     horizontalAlignment: Alignment.Horizontal,
     horizontalArrangement: Arrangement.Horizontal,
-    iconModifier: Modifier,
     verticalAlignment: Alignment.Vertical,
     verticalArrangement: Arrangement.Vertical,
-    iconContent: @Composable (() -> Unit),
-    labelContent: @Composable ((Modifier) -> Unit),
+    iconContent: @Composable () -> Unit,
+    labelContent: @Composable () -> Unit,
+    labelOnlyContent: @Composable () -> Unit,
 ) {
     when (gridItemSettings.layoutType) {
         LayoutType.TopIconBottomLabel -> {
@@ -50,7 +46,7 @@ internal fun GridItemLayoutType(
                 verticalArrangement = verticalArrangement,
             ) {
                 iconContent()
-                labelContent(Modifier)
+                labelContent()
             }
         }
 
@@ -60,7 +56,7 @@ internal fun GridItemLayoutType(
                 horizontalAlignment = horizontalAlignment,
                 verticalArrangement = verticalArrangement,
             ) {
-                labelContent(Modifier)
+                labelContent()
                 iconContent()
             }
         }
@@ -72,7 +68,7 @@ internal fun GridItemLayoutType(
                 verticalAlignment = verticalAlignment,
             ) {
                 iconContent()
-                labelContent(Modifier)
+                labelContent()
             }
         }
 
@@ -82,7 +78,7 @@ internal fun GridItemLayoutType(
                 horizontalArrangement = horizontalArrangement,
                 verticalAlignment = verticalAlignment,
             ) {
-                labelContent(Modifier)
+                labelContent()
                 iconContent()
             }
         }
@@ -98,18 +94,12 @@ internal fun GridItemLayoutType(
         }
 
         LayoutType.LabelOnly -> {
-            Box(modifier = modifier) {
-                Box(
-                    modifier = Modifier
-                        .size(size = gridItemSettings.iconSize.dp)
-                        .padding(all = gridItemSettings.iconPadding.dp),
-                ) {
-                    labelContent(
-                        Modifier
-                            .matchParentSize()
-                            .then(other = iconModifier),
-                    )
-                }
+            Column(
+                modifier = modifier,
+                horizontalAlignment = horizontalAlignment,
+                verticalArrangement = verticalArrangement,
+            ) {
+                labelOnlyContent()
             }
         }
     }

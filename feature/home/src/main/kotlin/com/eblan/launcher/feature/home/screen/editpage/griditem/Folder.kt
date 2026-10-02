@@ -86,7 +86,7 @@ internal fun FolderGridItem(
             shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
         )
 
-    val iconModifier = Modifier
+    val commonModifier = Modifier
         .size(gridItemSettings.iconSize.dp)
         .padding(gridItemSettings.iconPadding.dp)
 
@@ -99,11 +99,11 @@ internal fun FolderGridItem(
                     .size(Size.ORIGINAL)
                     .build(),
                 contentDescription = null,
-                modifier = iconModifier,
+                modifier = commonModifier,
             )
         } else {
             Surface(
-                modifier = iconModifier,
+                modifier = commonModifier,
                 shape = RoundedCornerShape(folderCornerRadius.dp),
                 color = when (folderBackgroundColor) {
                     BackgroundColor.System -> MaterialTheme.colorScheme.surface
@@ -133,9 +133,9 @@ internal fun FolderGridItem(
         }
     }
 
-    val labelContent: @Composable (Modifier) -> Unit = { labelModifier ->
+    val labelContent: @Composable () -> Unit = {
         Text(
-            modifier = labelModifier.padding(gridItemSettings.textPadding.dp),
+            modifier = commonModifier,
             text = data.label,
             color = textColor,
             textAlign = TextAlign.Center,
@@ -150,11 +150,11 @@ internal fun FolderGridItem(
         gridItemSettings = gridItemSettings,
         horizontalAlignment = horizontalAlignment,
         horizontalArrangement = horizontalArrangement,
-        iconModifier = iconModifier,
         verticalAlignment = verticalAlignment,
         verticalArrangement = verticalArrangement,
         iconContent = iconContent,
         labelContent = labelContent,
+        labelOnlyContent = labelContent,
     )
 }
 
