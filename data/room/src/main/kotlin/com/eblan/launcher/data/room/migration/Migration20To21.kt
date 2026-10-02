@@ -22,15 +22,21 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 class Migration20To21 : Migration(20, 21) {
     override fun migrate(db: SupportSQLiteDatabase) {
-        listOf(
-            "ApplicationInfoGridItemEntity",
-            "FolderGridItemEntity",
-            "ShortcutConfigGridItemEntity",
-            "ShortcutInfoGridItemEntity",
-            "WidgetGridItemEntity",
-        ).forEach { table ->
-            db.execSQL("CREATE TABLE `${table}_backup` AS SELECT * FROM `$table`")
-        }
+        db.execSQL(
+            "CREATE TABLE `ApplicationInfoGridItemEntity_backup` AS SELECT * FROM `ApplicationInfoGridItemEntity`",
+        )
+        db.execSQL(
+            "CREATE TABLE `FolderGridItemEntity_backup` AS SELECT * FROM `FolderGridItemEntity`",
+        )
+        db.execSQL(
+            "CREATE TABLE `ShortcutConfigGridItemEntity_backup` AS SELECT * FROM `ShortcutConfigGridItemEntity`",
+        )
+        db.execSQL(
+            "CREATE TABLE `ShortcutInfoGridItemEntity_backup` AS SELECT * FROM `ShortcutInfoGridItemEntity`",
+        )
+        db.execSQL(
+            "CREATE TABLE `WidgetGridItemEntity_backup` AS SELECT * FROM `WidgetGridItemEntity`",
+        )
 
         db.execSQL("DROP TABLE `ApplicationInfoGridItemEntity`")
         db.execSQL("DROP TABLE `ShortcutConfigGridItemEntity`")
@@ -474,14 +480,10 @@ class Migration20To21 : Migration(20, 21) {
             """.trimIndent(),
         )
 
-        listOf(
-            "ApplicationInfoGridItemEntity",
-            "FolderGridItemEntity",
-            "ShortcutConfigGridItemEntity",
-            "ShortcutInfoGridItemEntity",
-            "WidgetGridItemEntity",
-        ).forEach { table ->
-            db.execSQL("DROP TABLE `${table}_backup`")
-        }
+        db.execSQL("DROP TABLE `ApplicationInfoGridItemEntity_backup`")
+        db.execSQL("DROP TABLE `FolderGridItemEntity_backup`")
+        db.execSQL("DROP TABLE `ShortcutConfigGridItemEntity_backup`")
+        db.execSQL("DROP TABLE `ShortcutInfoGridItemEntity_backup`")
+        db.execSQL("DROP TABLE `WidgetGridItemEntity_backup`")
     }
 }
