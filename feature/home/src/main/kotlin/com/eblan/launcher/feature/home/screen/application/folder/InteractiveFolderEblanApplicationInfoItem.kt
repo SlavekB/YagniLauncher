@@ -148,13 +148,13 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
     }
 
     val iconPadding = if (animations) {
-        lerp(1.dp, appDrawerSettings.gridItemSettings.iconPadding.dp, progress)
+        lerp(0.dp, appDrawerSettings.gridItemSettings.iconPadding.dp, progress)
     } else {
         appDrawerSettings.gridItemSettings.iconPadding.dp
     }
 
     val textPadding = if (animations) {
-        lerp(1.dp, appDrawerSettings.gridItemSettings.textPadding.dp, progress)
+        lerp(0.dp, appDrawerSettings.gridItemSettings.textPadding.dp, progress)
     } else {
         appDrawerSettings.gridItemSettings.textPadding.dp
     }
