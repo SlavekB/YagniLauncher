@@ -120,21 +120,32 @@ internal fun EblanApplicationInfoItem(
     ) -> Unit,
 ) {
     val density = LocalDensity.current
+
     val layoutDirection = LocalLayoutDirection.current
-    val gridItemSettings = appDrawerSettings.gridItemSettings
+
     val context = LocalContext.current
+
     val launcherApps = LocalLauncherApps.current
+
     val keyboardController = LocalSoftwareKeyboardController.current
+
     val graphicsLayer = rememberGraphicsLayer()
+
     val scope = rememberCoroutineScope()
 
     var isLongPress by remember { mutableStateOf(false) }
+
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
     var intSize by remember { mutableStateOf(IntSize.Zero) }
 
     val alpha = if (isLongPress) 0f else 1f
+
     val scale = remember { Animatable(1f) }
+
     val currentOnLongPressApplicationInfo by rememberUpdatedState(onLongPressApplicationInfo)
+
+    val gridItemSettings = appDrawerSettings.gridItemSettings
+
     val textColor = getTextColorFromBackgroundColor(
         backgroundColor = appDrawerSettings.backgroundColor,
         customBackgroundColor = appDrawerSettings.customBackgroundColor,
@@ -143,26 +154,36 @@ internal fun EblanApplicationInfoItem(
         systemTextColor = systemTextColor,
         systemCustomTextColor = systemCustomTextColor,
     )
+
     val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
+
     val icon = iconPackInfoFilePaths[eblanApplicationInfo.componentName]
         ?: eblanApplicationInfo.icon
+
     val horizontalAlignment =
         getHorizontalAlignment(horizontalAlignment = gridItemSettings.horizontalAlignment)
+
     val verticalArrangement =
         getVerticalArrangement(verticalArrangement = gridItemSettings.verticalArrangement)
+
     val horizontalArrangement =
         getHorizontalArrangement(horizontalArrangement = gridItemSettings.horizontalArrangement)
+
     val verticalAlignment =
         getVerticalAlignment(verticalAlignment = gridItemSettings.verticalAlignment)
+
     val leftPadding = with(density) {
         paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
+
     val topPadding = with(density) {
         paddingValues.calculateTopPadding().roundToPx()
     }
+
     val iconSizePx = with(density) {
         gridItemSettings.iconSize.dp.roundToPx()
     }
+
     val sharedElementKey = SharedElementKey(
         id = "${eblanApplicationInfo.serialNumber} ${eblanApplicationInfo.packageName} ${eblanApplicationInfo.componentName}",
         parent = SharedElementKey.Parent.SwipeY,

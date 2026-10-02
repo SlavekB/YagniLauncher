@@ -21,8 +21,6 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -75,18 +73,27 @@ import com.eblan.launcher.domain.model.grid.Associate
 import com.eblan.launcher.domain.model.grid.GridItem
 import com.eblan.launcher.domain.model.grid.GridItemData
 import com.eblan.launcher.domain.model.grid.GridItemSettings
+import com.eblan.launcher.domain.model.grid.LayoutType
 import com.eblan.launcher.domain.model.userdata.AppDrawerSettings
 import com.eblan.launcher.domain.model.userdata.BackgroundColor
 import com.eblan.launcher.domain.model.userdata.EblanAction
 import com.eblan.launcher.domain.model.userdata.EblanActionType
 import com.eblan.launcher.domain.model.userdata.TextColor
+import com.eblan.launcher.feature.home.component.IconOnly
+import com.eblan.launcher.feature.home.component.LabelOnly
 import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
+import com.eblan.launcher.feature.home.component.StartIconEndLabel
+import com.eblan.launcher.feature.home.component.StartLabelEndIcon
+import com.eblan.launcher.feature.home.component.TopIconBottomLabel
+import com.eblan.launcher.feature.home.component.TopLabelBottomIcon
 import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
 import com.eblan.launcher.feature.home.component.gridItemSharedElement
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
+import com.eblan.launcher.feature.home.util.getHorizontalArrangement
 import com.eblan.launcher.feature.home.util.getTextColorFromBackgroundColor
+import com.eblan.launcher.feature.home.util.getVerticalAlignment
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.handleOnPress
 import kotlinx.coroutines.launch
@@ -137,22 +144,30 @@ internal fun FolderEblanApplicationInfoItem(
 
     val graphicsLayer = rememberGraphicsLayer()
 
+    val gridItemSettings = appDrawerSettings.gridItemSettings
+
     val textColor = getTextColorFromBackgroundColor(
         backgroundColor = appDrawerSettings.backgroundColor,
         customBackgroundColor = appDrawerSettings.customBackgroundColor,
-        textColor = appDrawerSettings.gridItemSettings.textColor,
-        customTextColor = appDrawerSettings.gridItemSettings.customTextColor,
+        textColor = gridItemSettings.textColor,
+        customTextColor = gridItemSettings.customTextColor,
         systemTextColor = systemTextColor,
         systemCustomTextColor = systemCustomTextColor,
     )
 
-    val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
+    val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
     val horizontalAlignment =
-        getHorizontalAlignment(horizontalAlignment = appDrawerSettings.gridItemSettings.horizontalAlignment)
+        getHorizontalAlignment(horizontalAlignment = gridItemSettings.horizontalAlignment)
 
     val verticalArrangement =
-        getVerticalArrangement(verticalArrangement = appDrawerSettings.gridItemSettings.verticalArrangement)
+        getVerticalArrangement(verticalArrangement = gridItemSettings.verticalArrangement)
+
+    val horizontalArrangement =
+        getHorizontalArrangement(horizontalArrangement = gridItemSettings.horizontalArrangement)
+
+    val verticalAlignment =
+        getVerticalAlignment(verticalAlignment = gridItemSettings.verticalAlignment)
 
     var isLongPress by remember { mutableStateOf(false) }
 
@@ -197,93 +212,96 @@ internal fun FolderEblanApplicationInfoItem(
         )
     }
 
-    Column(
-        modifier = modifier
-            .height(appDrawerSettings.appDrawerRowsHeight.dp)
-            .padding(appDrawerSettings.gridItemSettings.padding.dp)
-            .background(
-                color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(
-                    size = appDrawerSettings.gridItemSettings.cornerRadius.dp,
-                ),
-            )
-            .pointerInput(key1 = isVisibleOverlay) {
-                detectTapGestures(
-                    onTap = if (!isVisibleOverlay) {
-                        {
-                            currentOnTapFolderApplicationInfo(
-                                FolderEntry(
-                                    id = folderEblanApplicationInfo.id,
-                                    x = intOffset.x,
-                                    y = intOffset.y,
-                                    width = intSize.width,
-                                    height = intSize.height,
-                                    isCloseFolder = false,
-                                ),
+    val itemModifier = modifier
+        .height(appDrawerSettings.appDrawerRowsHeight.dp)
+        .padding(appDrawerSettings.gridItemSettings.padding.dp)
+        .background(
+            color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
+            shape = RoundedCornerShape(
+                size = appDrawerSettings.gridItemSettings.cornerRadius.dp,
+            ),
+        )
+        .pointerInput(key1 = isVisibleOverlay) {
+            detectTapGestures(
+                onTap = if (!isVisibleOverlay) {
+                    {
+                        currentOnTapFolderApplicationInfo(
+                            FolderEntry(
+                                id = folderEblanApplicationInfo.id,
+                                x = intOffset.x,
+                                y = intOffset.y,
+                                width = intSize.width,
+                                height = intSize.height,
+                                isCloseFolder = false,
+                            ),
+                        )
+                    }
+                } else {
+                    null
+                },
+                onLongPress = if (!isVisibleOverlay) {
+                    {
+                        scope.launch {
+                            isLongPress = true
+
+                            keyboardController?.hide()
+
+                            currentOnLongPressFolderApplicationInfo(
+                                folderEblanApplicationInfo,
+                                graphicsLayer.toImageBitmap(),
+                                intOffset,
+                                intSize,
+                                sharedElementKey,
                             )
                         }
-                    } else {
-                        null
-                    },
-                    onLongPress = if (!isVisibleOverlay) {
-                        {
-                            scope.launch {
-                                isLongPress = true
+                    }
+                } else {
+                    null
+                },
+                onPress = {
+                    handleOnPress(
+                        animations = animations,
+                        scale = scale,
+                    )
+                },
+            )
+        }
 
-                                keyboardController?.hide()
-
-                                currentOnLongPressFolderApplicationInfo(
-                                    folderEblanApplicationInfo,
-                                    graphicsLayer.toImageBitmap(),
-                                    intOffset,
-                                    intSize,
-                                    sharedElementKey,
-                                )
-                            }
-                        }
-                    } else {
-                        null
-                    },
-                    onPress = {
-                        handleOnPress(
-                            animations = animations,
-                            scale = scale,
-                        )
-                    },
-                )
-            },
-        horizontalAlignment = horizontalAlignment,
-        verticalArrangement = verticalArrangement,
-    ) {
-        val commonModifier = Modifier
-            .size(appDrawerSettings.gridItemSettings.iconSize.dp)
-            .onGloballyPositioned {
+    val iconModifier = Modifier
+        .onGloballyPositioned(
+            onGloballyPositioned = {
                 intOffset = it.positionInRoot().round()
-
                 intSize = it.size
+            },
+        )
+        .gridItemScaleAnimation(
+            enabled = animations,
+            isVisibleOverlay = isVisibleOverlay,
+            scale = scale,
+        )
+        .gridItemSharedElement(
+            enabled = animations,
+            sharedElementKey = sharedElementKey,
+            sharedTransitionScope = sharedTransitionScope,
+            visible = !isSwiping &&
+                !isScrollInProgress &&
+                !isLongPress &&
+                !isVisibleOverlay,
+        )
+        .drawWithContent {
+            graphicsLayer.record {
+                this@drawWithContent.drawContent()
             }
-            .gridItemScaleAnimation(
-                enabled = animations,
-                isVisibleOverlay = isVisibleOverlay,
-                scale = scale,
-            )
-            .gridItemSharedElement(
-                enabled = animations,
-                sharedElementKey = sharedElementKey,
-                sharedTransitionScope = sharedTransitionScope,
-                visible = !isSwiping &&
-                    !isScrollInProgress &&
-                    !isLongPress &&
-                    !isVisibleOverlay,
-            )
-            .drawWithContent {
-                graphicsLayer.record {
-                    this@drawWithContent.drawContent()
-                }
 
-                drawLayer(graphicsLayer)
-            }
-            .alpha(iconAlpha)
+            drawLayer(graphicsLayer)
+        }
+
+    val iconContent: @Composable () -> Unit = {
+        val commonModifier = Modifier
+            .size(gridItemSettings.iconSize.dp)
+            .padding(gridItemSettings.iconPadding.dp)
+            .then(iconModifier)
+            .alpha(alpha = iconAlpha)
 
         if (folderEblanApplicationInfo.icon != null) {
             AsyncImage(
@@ -320,11 +338,13 @@ internal fun FolderEblanApplicationInfoItem(
                 )
             }
         }
+    }
 
-        Spacer(modifier = Modifier.height(10.dp))
-
+    val labelContent: @Composable (Modifier) -> Unit = { labelModifier ->
         Text(
-            modifier = Modifier.alpha(textAlpha),
+            modifier = labelModifier
+                .padding(gridItemSettings.textPadding.dp)
+                .alpha(alpha = textAlpha),
             text = folderEblanApplicationInfo.label,
             color = textColor,
             textAlign = TextAlign.Center,
@@ -332,6 +352,67 @@ internal fun FolderEblanApplicationInfoItem(
             fontSize = appDrawerSettings.gridItemSettings.textSize.sp,
             overflow = TextOverflow.Ellipsis,
         )
+    }
+
+    when (gridItemSettings.layoutType) {
+        LayoutType.TopIconBottomLabel -> {
+            TopIconBottomLabel(
+                modifier = itemModifier,
+                horizontalAlignment = horizontalAlignment,
+                verticalArrangement = verticalArrangement,
+                icon = iconContent,
+                label = labelContent,
+            )
+        }
+
+        LayoutType.TopLabelBottomIcon -> {
+            TopLabelBottomIcon(
+                modifier = itemModifier,
+                horizontalAlignment = horizontalAlignment,
+                verticalArrangement = verticalArrangement,
+                icon = iconContent,
+                label = labelContent,
+            )
+        }
+
+        LayoutType.StartIconEndLabel -> {
+            StartIconEndLabel(
+                modifier = itemModifier,
+                horizontalArrangement = horizontalArrangement,
+                verticalAlignment = verticalAlignment,
+                icon = iconContent,
+                label = labelContent,
+            )
+        }
+
+        LayoutType.StartLabelEndIcon -> {
+            StartLabelEndIcon(
+                modifier = itemModifier,
+                horizontalArrangement = horizontalArrangement,
+                verticalAlignment = verticalAlignment,
+                icon = iconContent,
+                label = labelContent,
+            )
+        }
+
+        LayoutType.IconOnly -> {
+            IconOnly(
+                modifier = itemModifier,
+                horizontalAlignment = horizontalAlignment,
+                verticalArrangement = verticalArrangement,
+                icon = iconContent,
+            )
+        }
+
+        LayoutType.LabelOnly -> {
+            LabelOnly(
+                modifier = itemModifier,
+                iconSize = gridItemSettings.iconSize.dp,
+                iconPadding = gridItemSettings.iconPadding.dp,
+                iconModifier = iconModifier,
+                label = labelContent,
+            )
+        }
     }
 }
 
