@@ -170,6 +170,18 @@ internal fun InteractiveFolderGridItem(
         currentGridItemSettings.padding.dp
     }
 
+    val iconPadding = if (animations) {
+        lerp(1.dp, currentGridItemSettings.iconPadding.dp, progress)
+    } else {
+        currentGridItemSettings.iconPadding.dp
+    }
+
+    val textPadding = if (animations) {
+        lerp(1.dp, currentGridItemSettings.textPadding.dp, progress)
+    } else {
+        currentGridItemSettings.textPadding.dp
+    }
+
     val iconSize = if (animations) {
         lerp(
             currentGridItemSettings.iconSize.dp / maxOf(
@@ -243,6 +255,8 @@ internal fun InteractiveFolderGridItem(
                 horizontalAlignment = horizontalAlignment,
                 verticalArrangement = verticalArrangement,
                 maxLines = maxLines,
+                iconPadding = iconPadding,
+                textPadding = textPadding,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onLongPressFolderGridItem = onLongPressFolderGridItem,
             )
@@ -269,6 +283,8 @@ internal fun InteractiveFolderGridItem(
                 horizontalAlignment = horizontalAlignment,
                 verticalArrangement = verticalArrangement,
                 maxLines = maxLines,
+                iconPadding = iconPadding,
+                textPadding = textPadding,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onLongPressFolderGridItem = onLongPressFolderGridItem,
             )
@@ -293,6 +309,8 @@ internal fun InteractiveFolderGridItem(
                 horizontalAlignment = horizontalAlignment,
                 verticalArrangement = verticalArrangement,
                 maxLines = maxLines,
+                iconPadding = iconPadding,
+                textPadding = textPadding,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onLongPressFolderGridItem = onLongPressFolderGridItem,
             )
@@ -326,6 +344,8 @@ internal fun InteractiveFolderGridItem(
                 systemTextColor = systemTextColor,
                 systemCustomTextColor = systemCustomTextColor,
                 isVisibleFolder = isVisibleFolder,
+                iconPadding = iconPadding,
+                textPadding = textPadding,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onUpsertFolderGridItemPopupEntry = onUpsertFolderGridItemPopupEntry,
                 onLongPressFolderGridItem = onLongPressFolderGridItem,
@@ -359,6 +379,8 @@ private fun InteractiveApplicationInfoGridItem(
     horizontalAlignment: Alignment.Horizontal,
     verticalArrangement: Arrangement.Vertical,
     maxLines: Int,
+    iconPadding: Dp,
+    textPadding: Dp,
     onOpenAppDrawer: () -> Unit,
     onLongPressFolderGridItem: (
         gridItem: GridItem,
@@ -474,6 +496,7 @@ private fun InteractiveApplicationInfoGridItem(
                 contentDescription = null,
                 modifier = Modifier
                     .matchParentSize()
+                    .padding(iconPadding)
                     .onGloballyPositioned {
                         intOffset = it.positionInRoot().round()
 
@@ -512,17 +535,17 @@ private fun InteractiveApplicationInfoGridItem(
             }
         }
 
-        if (gridItemSettings.showLabel) {
-            Text(
-                modifier = Modifier.alpha(alpha),
-                text = data.customLabel ?: data.label,
-                color = textColor,
-                textAlign = TextAlign.Center,
-                maxLines = maxLines,
-                fontSize = gridItemSettings.textSize.sp,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
+        Text(
+            modifier = Modifier
+                .padding(textPadding)
+                .alpha(alpha),
+            text = data.customLabel ?: data.label,
+            color = textColor,
+            textAlign = TextAlign.Center,
+            maxLines = maxLines,
+            fontSize = gridItemSettings.textSize.sp,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
@@ -548,6 +571,8 @@ private fun InteractiveShortcutInfoGridItem(
     horizontalAlignment: Alignment.Horizontal,
     verticalArrangement: Arrangement.Vertical,
     maxLines: Int,
+    iconPadding: Dp,
+    textPadding: Dp,
     onOpenAppDrawer: () -> Unit,
     onLongPressFolderGridItem: (
         gridItem: GridItem,
@@ -668,6 +693,7 @@ private fun InteractiveShortcutInfoGridItem(
                     .size(Size.ORIGINAL).build(),
                 modifier = Modifier
                     .matchParentSize()
+                    .padding(iconPadding)
                     .onGloballyPositioned {
                         intOffset = it.positionInRoot().round()
 
@@ -709,17 +735,17 @@ private fun InteractiveShortcutInfoGridItem(
             )
         }
 
-        if (gridItemSettings.showLabel) {
-            Text(
-                modifier = Modifier.alpha(alpha),
-                text = customShortLabel,
-                color = textColor,
-                textAlign = TextAlign.Center,
-                maxLines = maxLines,
-                fontSize = gridItemSettings.textSize.sp,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
+        Text(
+            modifier = Modifier
+                .padding(textPadding)
+                .alpha(alpha),
+            text = customShortLabel,
+            color = textColor,
+            textAlign = TextAlign.Center,
+            maxLines = maxLines,
+            fontSize = gridItemSettings.textSize.sp,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
@@ -743,6 +769,8 @@ private fun InteractiveShortcutConfigGridItem(
     horizontalAlignment: Alignment.Horizontal,
     verticalArrangement: Arrangement.Vertical,
     maxLines: Int,
+    iconPadding: Dp,
+    textPadding: Dp,
     onOpenAppDrawer: () -> Unit,
     onLongPressFolderGridItem: (
         gridItem: GridItem,
@@ -856,6 +884,7 @@ private fun InteractiveShortcutConfigGridItem(
             contentDescription = null,
             modifier = Modifier
                 .size(iconSize)
+                .padding(iconPadding)
                 .onGloballyPositioned {
                     intOffset = it.positionInRoot().round()
 
@@ -882,17 +911,17 @@ private fun InteractiveShortcutConfigGridItem(
                 .alpha(alpha),
         )
 
-        if (gridItemSettings.showLabel) {
-            Text(
-                modifier = Modifier.alpha(alpha),
-                text = label.toString(),
-                color = textColor,
-                textAlign = TextAlign.Center,
-                maxLines = maxLines,
-                fontSize = gridItemSettings.textSize.sp,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
+        Text(
+            modifier = Modifier
+                .padding(textPadding)
+                .alpha(alpha),
+            text = label.toString(),
+            color = textColor,
+            textAlign = TextAlign.Center,
+            maxLines = maxLines,
+            fontSize = gridItemSettings.textSize.sp,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
@@ -925,6 +954,8 @@ private fun InteractiveNestedFolderGridItem(
     systemTextColor: TextColor,
     systemCustomTextColor: Int,
     isVisibleFolder: Boolean,
+    iconPadding: Dp,
+    textPadding: Dp,
     onOpenAppDrawer: () -> Unit,
     onUpsertFolderGridItemPopupEntry: (FolderEntry) -> Unit,
     onLongPressFolderGridItem: (
@@ -1029,6 +1060,7 @@ private fun InteractiveNestedFolderGridItem(
     ) {
         val commonModifier = Modifier
             .size(iconSize)
+            .padding(iconPadding)
             .onGloballyPositioned {
                 intOffset = it.positionInRoot().round()
 
@@ -1092,17 +1124,17 @@ private fun InteractiveNestedFolderGridItem(
             }
         }
 
-        if (gridItemSettings.showLabel) {
-            Text(
-                modifier = Modifier.alpha(textAlpha),
-                text = data.label,
-                color = textColor,
-                textAlign = TextAlign.Center,
-                maxLines = maxLines,
-                fontSize = gridItemSettings.textSize.sp,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
+        Text(
+            modifier = Modifier
+                .padding(textPadding)
+                .alpha(textAlpha),
+            text = data.label,
+            color = textColor,
+            textAlign = TextAlign.Center,
+            maxLines = maxLines,
+            fontSize = gridItemSettings.textSize.sp,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 

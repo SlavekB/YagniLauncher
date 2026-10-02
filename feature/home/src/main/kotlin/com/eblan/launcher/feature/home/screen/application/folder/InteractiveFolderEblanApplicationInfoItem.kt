@@ -26,9 +26,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -149,6 +147,18 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
         appDrawerSettings.gridItemSettings.padding.dp
     }
 
+    val iconPadding = if (animations) {
+        lerp(1.dp, appDrawerSettings.gridItemSettings.iconPadding.dp, progress)
+    } else {
+        appDrawerSettings.gridItemSettings.iconPadding.dp
+    }
+
+    val textPadding = if (animations) {
+        lerp(1.dp, appDrawerSettings.gridItemSettings.textPadding.dp, progress)
+    } else {
+        appDrawerSettings.gridItemSettings.textPadding.dp
+    }
+
     val iconSize = if (animations) {
         lerp(
             appDrawerSettings.gridItemSettings.iconSize.dp / maxOf(
@@ -216,6 +226,8 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
                 padding = padding,
                 iconSize = iconSize,
                 iconPackInfoFilePaths = iconPackInfoFilePaths,
+                iconPadding = iconPadding,
+                textPadding = textPadding,
                 onLongPressFolderEblanApplicationInfoGridItem = onLongPressFolderEblanApplicationInfoGridItem,
             )
         }
@@ -246,6 +258,8 @@ internal fun InteractiveFolderEblanApplicationInfoItem(
                 iconSize = iconSize,
                 isVisibleFolder = isVisibleFolder,
                 iconPackInfoFilePaths = iconPackInfoFilePaths,
+                iconPadding = iconPadding,
+                textPadding = textPadding,
                 onLongPressFolderEblanApplicationInfoGridItem = onLongPressFolderEblanApplicationInfoGridItem,
                 onTapFolderEblanApplicationInfoItem = onTapFolderEblanApplicationInfoItem,
             )
@@ -274,6 +288,8 @@ private fun InteractiveEblanApplicationInfoItem(
     padding: Dp,
     iconSize: Dp,
     iconPackInfoFilePaths: Map<String, String?>,
+    iconPadding: Dp,
+    textPadding: Dp,
     onLongPressFolderEblanApplicationInfoGridItem: (
         folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
         imageBitmap: ImageBitmap,
@@ -385,6 +401,7 @@ private fun InteractiveEblanApplicationInfoItem(
             contentDescription = null,
             modifier = Modifier
                 .size(iconSize)
+                .padding(iconPadding)
                 .onGloballyPositioned {
                     intOffset = it.positionInRoot().round()
 
@@ -411,19 +428,17 @@ private fun InteractiveEblanApplicationInfoItem(
                 .alpha(alpha),
         )
 
-        if (appDrawerSettings.gridItemSettings.showLabel) {
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Text(
-                modifier = Modifier.alpha(alpha),
-                text = data.label,
-                color = textColor,
-                textAlign = TextAlign.Center,
-                maxLines = maxLines,
-                fontSize = appDrawerSettings.gridItemSettings.textSize.sp,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
+        Text(
+            modifier = Modifier
+                .padding(textPadding)
+                .alpha(alpha),
+            text = data.label,
+            color = textColor,
+            textAlign = TextAlign.Center,
+            maxLines = maxLines,
+            fontSize = appDrawerSettings.gridItemSettings.textSize.sp,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
@@ -453,6 +468,8 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
     iconSize: Dp,
     isVisibleFolder: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
+    iconPadding: Dp,
+    textPadding: Dp,
     onLongPressFolderEblanApplicationInfoGridItem: (
         folderEblanApplicationInfoGridItem: FolderEblanApplicationInfoGridItem,
         imageBitmap: ImageBitmap,
@@ -541,6 +558,7 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
         val commonModifier =
             Modifier
                 .size(iconSize)
+                .padding(iconPadding)
                 .onGloballyPositioned {
                     intOffset = it.positionInRoot().round()
 
@@ -603,19 +621,17 @@ private fun InteractiveNestedFolderEblanApplicationInfoItem(
             }
         }
 
-        if (appDrawerSettings.gridItemSettings.showLabel) {
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Text(
-                modifier = Modifier.alpha(textAlpha),
-                text = data.label,
-                color = textColor,
-                textAlign = TextAlign.Center,
-                maxLines = maxLines,
-                fontSize = appDrawerSettings.gridItemSettings.textSize.sp,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
+        Text(
+            modifier = Modifier
+                .padding(textPadding)
+                .alpha(textAlpha),
+            text = data.label,
+            color = textColor,
+            textAlign = TextAlign.Center,
+            maxLines = maxLines,
+            fontSize = appDrawerSettings.gridItemSettings.textSize.sp,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 

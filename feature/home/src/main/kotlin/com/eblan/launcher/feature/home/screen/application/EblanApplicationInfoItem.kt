@@ -23,12 +23,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -71,17 +66,25 @@ import com.eblan.launcher.domain.model.application.EblanApplicationInfo
 import com.eblan.launcher.domain.model.grid.Associate
 import com.eblan.launcher.domain.model.grid.GridItem
 import com.eblan.launcher.domain.model.grid.GridItemData
+import com.eblan.launcher.domain.model.grid.LayoutType
 import com.eblan.launcher.domain.model.userdata.AppDrawerSettings
-import com.eblan.launcher.domain.model.userdata.AppDrawerType
 import com.eblan.launcher.domain.model.userdata.EblanAction
 import com.eblan.launcher.domain.model.userdata.EblanActionType
 import com.eblan.launcher.domain.model.userdata.TextColor
+import com.eblan.launcher.feature.home.component.IconOnly
+import com.eblan.launcher.feature.home.component.LabelOnly
+import com.eblan.launcher.feature.home.component.StartIconEndLabel
+import com.eblan.launcher.feature.home.component.StartLabelEndIcon
+import com.eblan.launcher.feature.home.component.TopIconBottomLabel
+import com.eblan.launcher.feature.home.component.TopLabelBottomIcon
 import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
 import com.eblan.launcher.feature.home.component.gridItemSharedElement
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
+import com.eblan.launcher.feature.home.util.getHorizontalArrangement
 import com.eblan.launcher.feature.home.util.getTextColorFromBackgroundColor
+import com.eblan.launcher.feature.home.util.getVerticalAlignment
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.handleOnPress
 import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
@@ -90,11 +93,7 @@ import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(
-    ExperimentalUuidApi::class,
-    ExperimentalSharedTransitionApi::class,
-    ExperimentalLayoutApi::class,
-)
+@OptIn(ExperimentalUuidApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun EblanApplicationInfoItem(
     modifier: Modifier = Modifier,
@@ -104,7 +103,6 @@ internal fun EblanApplicationInfoItem(
     eblanApplicationInfo: EblanApplicationInfo,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
-    appDrawerType: AppDrawerType,
     isScrollInProgress: Boolean,
     isSwiping: Boolean,
     systemTextColor: TextColor,
@@ -121,68 +119,54 @@ internal fun EblanApplicationInfoItem(
         sharedElementKey: SharedElementKey,
     ) -> Unit,
 ) {
+    val density = LocalDensity.current
+    val layoutDirection = LocalLayoutDirection.current
+    val gridItemSettings = appDrawerSettings.gridItemSettings
+    val context = LocalContext.current
+    val launcherApps = LocalLauncherApps.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     val graphicsLayer = rememberGraphicsLayer()
-
     val scope = rememberCoroutineScope()
 
-    val context = LocalContext.current
+    var isLongPress by remember { mutableStateOf(false) }
+    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
+    var intSize by remember { mutableStateOf(IntSize.Zero) }
 
-    val density = LocalDensity.current
-
-    val launcherApps = LocalLauncherApps.current
-
-    val layoutDirection = LocalLayoutDirection.current
-
-    val keyboardController = LocalSoftwareKeyboardController.current
-
+    val alpha = if (isLongPress) 0f else 1f
+    val scale = remember { Animatable(1f) }
+    val currentOnLongPressApplicationInfo by rememberUpdatedState(onLongPressApplicationInfo)
     val textColor = getTextColorFromBackgroundColor(
         backgroundColor = appDrawerSettings.backgroundColor,
         customBackgroundColor = appDrawerSettings.customBackgroundColor,
-        textColor = appDrawerSettings.gridItemSettings.textColor,
-        customTextColor = appDrawerSettings.gridItemSettings.customTextColor,
+        textColor = gridItemSettings.textColor,
+        customTextColor = gridItemSettings.customTextColor,
         systemTextColor = systemTextColor,
         systemCustomTextColor = systemCustomTextColor,
     )
-
-    val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
-
+    val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
     val icon = iconPackInfoFilePaths[eblanApplicationInfo.componentName]
         ?: eblanApplicationInfo.icon
-
     val horizontalAlignment =
-        getHorizontalAlignment(horizontalAlignment = appDrawerSettings.gridItemSettings.horizontalAlignment)
-
+        getHorizontalAlignment(horizontalAlignment = gridItemSettings.horizontalAlignment)
     val verticalArrangement =
-        getVerticalArrangement(verticalArrangement = appDrawerSettings.gridItemSettings.verticalArrangement)
-
+        getVerticalArrangement(verticalArrangement = gridItemSettings.verticalArrangement)
+    val horizontalArrangement =
+        getHorizontalArrangement(horizontalArrangement = gridItemSettings.horizontalArrangement)
+    val verticalAlignment =
+        getVerticalAlignment(verticalAlignment = gridItemSettings.verticalAlignment)
     val leftPadding = with(density) {
         paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
-
     val topPadding = with(density) {
         paddingValues.calculateTopPadding().roundToPx()
     }
-
-    var isLongPress by remember { mutableStateOf(false) }
-
-    val alpha = if (isLongPress) 0f else 1f
-
-    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
-
-    var intSize by remember { mutableStateOf(IntSize.Zero) }
-
     val iconSizePx = with(density) {
-        appDrawerSettings.gridItemSettings.iconSize.dp.roundToPx()
+        gridItemSettings.iconSize.dp.roundToPx()
     }
-
     val sharedElementKey = SharedElementKey(
         id = "${eblanApplicationInfo.serialNumber} ${eblanApplicationInfo.packageName} ${eblanApplicationInfo.componentName}",
         parent = SharedElementKey.Parent.SwipeY,
     )
-
-    val scale = remember { Animatable(1f) }
-
-    val currentOnLongPressApplicationInfo by rememberUpdatedState(onLongPressApplicationInfo)
 
     LaunchedEffect(
         key1 = drag,
@@ -194,78 +178,92 @@ internal fun EblanApplicationInfoItem(
             eblanApplicationInfo = eblanApplicationInfo,
             isLongPress = isLongPress,
             isSwiping = isSwiping,
-            onUpdateIsLongPress = {
-                isLongPress = it
-            },
+            onUpdateIsLongPress = { isLongPress = it },
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             onDragApplicationInfo = onDragApplicationInfo,
         )
     }
 
-    Column(
-        modifier = modifier
-            .run {
-                if (appDrawerType == AppDrawerType.Vertical) {
-                    height(appDrawerSettings.appDrawerRowsHeight.dp)
+    val itemModifier = modifier
+        .padding(gridItemSettings.padding.dp)
+        .background(
+            color = Color(gridItemSettings.customBackgroundColor),
+            shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
+        )
+        .pointerInput(key1 = isVisibleOverlay) {
+            detectTapGestures(
+                onTap = if (!isVisibleOverlay) {
+                    {
+                        handleOnTapEblanApplicationInfoItem(
+                            componentName = eblanApplicationInfo.componentName,
+                            serialNumber = eblanApplicationInfo.serialNumber,
+                            intOffset = intOffset,
+                            intSize = intSize,
+                            keyboardController = keyboardController,
+                            launcherApps = launcherApps,
+                            leftPadding = leftPadding,
+                            topPadding = topPadding,
+                        )
+                    }
                 } else {
-                    fillMaxSize()
-                }
-            }
-            .padding(appDrawerSettings.gridItemSettings.padding.dp)
-            .background(
-                color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(
-                    size = appDrawerSettings.gridItemSettings.cornerRadius.dp,
-                ),
-            )
-            .pointerInput(key1 = isVisibleOverlay) {
-                detectTapGestures(
-                    onTap = if (!isVisibleOverlay) {
-                        {
-                            handleOnTapEblanApplicationInfoItem(
-                                componentName = eblanApplicationInfo.componentName,
-                                serialNumber = eblanApplicationInfo.serialNumber,
-                                intOffset = intOffset,
-                                intSize = intSize,
-                                keyboardController = keyboardController,
-                                launcherApps = launcherApps,
-                                leftPadding = leftPadding,
-                                topPadding = topPadding,
+                    null
+                },
+                onLongPress = if (!isVisibleOverlay) {
+                    {
+                        scope.launch {
+                            isLongPress = true
+                            keyboardController?.hide()
+                            currentOnLongPressApplicationInfo(
+                                eblanApplicationInfo,
+                                graphicsLayer.toImageBitmap(),
+                                intOffset,
+                                intSize,
+                                sharedElementKey,
                             )
                         }
-                    } else {
-                        null
-                    },
-                    onLongPress = if (!isVisibleOverlay) {
-                        {
-                            scope.launch {
-                                isLongPress = true
+                    }
+                } else {
+                    null
+                },
+                onPress = {
+                    handleOnPress(
+                        animations = animations,
+                        scale = scale,
+                    )
+                },
+            )
+        }
 
-                                keyboardController?.hide()
+    val iconModifier = Modifier
+        .size(gridItemSettings.iconSize.dp)
+        .padding(gridItemSettings.iconPadding.dp)
+        .onGloballyPositioned {
+            intOffset = it.positionInRoot().round()
+            intSize = it.size
+        }
+        .gridItemScaleAnimation(
+            enabled = animations,
+            isVisibleOverlay = isVisibleOverlay,
+            scale = scale,
+        )
+        .gridItemSharedElement(
+            enabled = animations,
+            sharedElementKey = sharedElementKey,
+            sharedTransitionScope = sharedTransitionScope,
+            visible = !isSwiping &&
+                !isScrollInProgress &&
+                !isLongPress &&
+                !isVisibleOverlay,
+        )
+        .drawWithContent {
+            graphicsLayer.record {
+                this@drawWithContent.drawContent()
+            }
+            drawLayer(graphicsLayer)
+        }
+        .alpha(alpha)
 
-                                currentOnLongPressApplicationInfo(
-                                    eblanApplicationInfo,
-                                    graphicsLayer.toImageBitmap(),
-                                    intOffset,
-                                    intSize,
-                                    sharedElementKey,
-                                )
-                            }
-                        }
-                    } else {
-                        null
-                    },
-                    onPress = {
-                        handleOnPress(
-                            animations = animations,
-                            scale = scale,
-                        )
-                    },
-                )
-            },
-        horizontalAlignment = horizontalAlignment,
-        verticalArrangement = verticalArrangement,
-    ) {
+    val iconContent: @Composable () -> Unit = {
         AsyncImage(
             model = ImageRequest.Builder(context)
                 .data(eblanApplicationInfo.customIcon ?: icon)
@@ -274,49 +272,82 @@ internal fun EblanApplicationInfoItem(
                 .crossfade(false)
                 .build(),
             contentDescription = null,
-            modifier = Modifier
-                .size(appDrawerSettings.gridItemSettings.iconSize.dp)
-                .onGloballyPositioned {
-                    intOffset = it.positionInRoot().round()
-
-                    intSize = it.size
-                }
-                .gridItemScaleAnimation(
-                    enabled = animations,
-                    isVisibleOverlay = isVisibleOverlay,
-                    scale = scale,
-                )
-                .gridItemSharedElement(
-                    enabled = animations,
-                    sharedElementKey = sharedElementKey,
-                    sharedTransitionScope = sharedTransitionScope,
-                    visible = !isSwiping &&
-                        !isScrollInProgress &&
-                        !isLongPress &&
-                        !isVisibleOverlay,
-                )
-                .drawWithContent {
-                    graphicsLayer.record {
-                        this@drawWithContent.drawContent()
-                    }
-
-                    drawLayer(graphicsLayer)
-                }
-                .alpha(alpha),
+            modifier = iconModifier,
         )
+    }
 
-        if (appDrawerSettings.gridItemSettings.showLabel) {
-            Spacer(modifier = Modifier.height(10.dp))
+    val labelContent: @Composable (Modifier) -> Unit = { labelModifier ->
+        Text(
+            modifier = labelModifier
+                .padding(gridItemSettings.textPadding.dp)
+                .alpha(alpha),
+            text = eblanApplicationInfo.customLabel
+                ?: eblanApplicationInfo.label,
+            color = textColor,
+            textAlign = TextAlign.Center,
+            maxLines = maxLines,
+            fontSize = gridItemSettings.textSize.sp,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
 
-            Text(
-                modifier = Modifier.alpha(alpha),
-                text = eblanApplicationInfo.customLabel
-                    ?: eblanApplicationInfo.label,
-                color = textColor,
-                textAlign = TextAlign.Center,
-                maxLines = maxLines,
-                fontSize = appDrawerSettings.gridItemSettings.textSize.sp,
-                overflow = TextOverflow.Ellipsis,
+    when (gridItemSettings.layoutType) {
+        LayoutType.TopIconBottomLabel -> {
+            TopIconBottomLabel(
+                modifier = itemModifier,
+                horizontalAlignment = horizontalAlignment,
+                verticalArrangement = verticalArrangement,
+                icon = iconContent,
+                label = labelContent,
+            )
+        }
+
+        LayoutType.TopLabelBottomIcon -> {
+            TopLabelBottomIcon(
+                modifier = itemModifier,
+                horizontalAlignment = horizontalAlignment,
+                verticalArrangement = verticalArrangement,
+                icon = iconContent,
+                label = labelContent,
+            )
+        }
+
+        LayoutType.StartIconEndLabel -> {
+            StartIconEndLabel(
+                modifier = itemModifier,
+                horizontalArrangement = horizontalArrangement,
+                verticalAlignment = verticalAlignment,
+                icon = iconContent,
+                label = labelContent,
+            )
+        }
+
+        LayoutType.StartLabelEndIcon -> {
+            StartLabelEndIcon(
+                modifier = itemModifier,
+                horizontalArrangement = horizontalArrangement,
+                verticalAlignment = verticalAlignment,
+                icon = iconContent,
+                label = labelContent,
+            )
+        }
+
+        LayoutType.IconOnly -> {
+            IconOnly(
+                modifier = itemModifier,
+                horizontalAlignment = horizontalAlignment,
+                verticalArrangement = verticalArrangement,
+                icon = iconContent,
+            )
+        }
+
+        LayoutType.LabelOnly -> {
+            LabelOnly(
+                modifier = itemModifier,
+                iconSize = gridItemSettings.iconSize.dp,
+                iconPadding = gridItemSettings.iconPadding.dp,
+                iconModifier = iconModifier,
+                label = labelContent,
             )
         }
     }
@@ -333,7 +364,6 @@ internal fun handleOnTapEblanApplicationInfoItem(
     topPadding: Int,
 ) {
     val left = intOffset.x + leftPadding
-
     val top = intOffset.y + topPadding
 
     keyboardController?.hide()
@@ -404,7 +434,6 @@ internal fun handleDragEblanApplicationInfoItem(
 
         Drag.Cancel, Drag.End -> {
             onUpdateIsLongPress(false)
-
             if (!isSwiping) {
                 onUpdateIsVisibleOverlay(false)
             }

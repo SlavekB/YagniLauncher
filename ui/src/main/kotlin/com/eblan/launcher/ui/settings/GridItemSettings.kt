@@ -41,6 +41,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.grid.GridItemSettings
 import com.eblan.launcher.domain.model.grid.HorizontalAlignment
+import com.eblan.launcher.domain.model.grid.HorizontalArrangement
+import com.eblan.launcher.domain.model.grid.LayoutType
+import com.eblan.launcher.domain.model.grid.VerticalAlignment
 import com.eblan.launcher.domain.model.grid.VerticalArrangement
 import com.eblan.launcher.domain.model.userdata.TextColor
 import com.eblan.launcher.ui.R
@@ -61,20 +64,18 @@ fun GridItemSettings(
     onUpdateGridItemSettings: (GridItemSettings) -> Unit,
 ) {
     var showIconSizeDialog by remember { mutableStateOf(false) }
-
     var showTextColorDialog by remember { mutableStateOf(false) }
-
     var showTextSizeDialog by remember { mutableStateOf(false) }
-
     var showBackgroundColorDialog by remember { mutableStateOf(false) }
-
     var showPaddingDialog by remember { mutableStateOf(false) }
-
     var showCornerRadiusDialog by remember { mutableStateOf(false) }
-
     var showHorizontalAlignment by remember { mutableStateOf(false) }
-
     var showVerticalArrangement by remember { mutableStateOf(false) }
+    var showHorizontalArrangement by remember { mutableStateOf(false) }
+    var showVerticalAlignment by remember { mutableStateOf(false) }
+    var showLayoutType by remember { mutableStateOf(false) }
+    var showIconPaddingDialog by remember { mutableStateOf(false) }
+    var showTextPaddingDialog by remember { mutableStateOf(false) }
 
     val items = buildGridItemSettingsItems(
         gridItemSettings = gridItemSettings,
@@ -102,7 +103,22 @@ fun GridItemSettings(
         onVerticalArrangementClick = {
             showVerticalArrangement = true
         },
+        onHorizontalArrangementClick = {
+            showHorizontalArrangement = true
+        },
+        onVerticalAlignmentClick = {
+            showVerticalAlignment = true
+        },
+        onLayoutTypeClick = {
+            showLayoutType = true
+        },
         onUpdateGridItemSettings = onUpdateGridItemSettings,
+        onIconPaddingClick = {
+            showIconPaddingDialog = true
+        },
+        onTextPaddingClick = {
+            showTextPaddingDialog = true
+        },
     )
 
     Column(
@@ -180,6 +196,7 @@ fun GridItemSettings(
 
     if (showPaddingDialog) {
         EditPaddingDialog(
+            title = stringResource(R.string.padding),
             padding = gridItemSettings.padding,
             onDismissRequest = {
                 showPaddingDialog = false
@@ -240,6 +257,91 @@ fun GridItemSettings(
             },
             onUpdateClick = {
                 onUpdateGridItemSettings(gridItemSettings.copy(verticalArrangement = it))
+            },
+        )
+    }
+
+    if (showHorizontalArrangement) {
+        RadioOptionsDialog(
+            title = "Horizontal Arrangement",
+            options = HorizontalArrangement.entries,
+            selected = gridItemSettings.horizontalArrangement,
+            label = {
+                it.getHorizontalArrangementTitle()
+            },
+            onDismissRequest = {
+                showHorizontalArrangement = false
+            },
+            onUpdateClick = {
+                onUpdateGridItemSettings(gridItemSettings.copy(horizontalArrangement = it))
+            },
+        )
+    }
+
+    if (showVerticalAlignment) {
+        RadioOptionsDialog(
+            title = "Vertical Alignment",
+            options = VerticalAlignment.entries,
+            selected = gridItemSettings.verticalAlignment,
+            label = {
+                it.getVerticalAlignmentTitle()
+            },
+            onDismissRequest = {
+                showVerticalAlignment = false
+            },
+            onUpdateClick = {
+                onUpdateGridItemSettings(gridItemSettings.copy(verticalAlignment = it))
+            },
+        )
+    }
+
+    if (showLayoutType) {
+        RadioOptionsDialog(
+            title = "Layout Type",
+            options = LayoutType.entries,
+            selected = gridItemSettings.layoutType,
+            label = {
+                it.getLayoutTypeTitle()
+            },
+            onDismissRequest = {
+                showLayoutType = false
+            },
+            onUpdateClick = {
+                onUpdateGridItemSettings(gridItemSettings.copy(layoutType = it))
+            },
+        )
+    }
+
+    if (showIconPaddingDialog) {
+        EditPaddingDialog(
+            title = "Icon Padding",
+            padding = gridItemSettings.iconPadding,
+            onDismissRequest = {
+                showIconPaddingDialog = false
+            },
+            onUpdatePadding = {
+                onUpdateGridItemSettings(
+                    gridItemSettings.copy(
+                        iconPadding = it,
+                    ),
+                )
+            },
+        )
+    }
+
+    if (showTextPaddingDialog) {
+        EditPaddingDialog(
+            title = "Text Padding",
+            padding = gridItemSettings.textPadding,
+            onDismissRequest = {
+                showTextPaddingDialog = false
+            },
+            onUpdatePadding = {
+                onUpdateGridItemSettings(
+                    gridItemSettings.copy(
+                        textPadding = it,
+                    ),
+                )
             },
         )
     }
@@ -305,8 +407,21 @@ private fun buildGridItemSettingsItems(
     onCornerRadiusClick: () -> Unit,
     onHorizontalAlignmentClick: () -> Unit,
     onVerticalArrangementClick: () -> Unit,
+    onHorizontalArrangementClick: () -> Unit,
+    onVerticalAlignmentClick: () -> Unit,
+    onLayoutTypeClick: () -> Unit,
     onUpdateGridItemSettings: (GridItemSettings) -> Unit,
+    onIconPaddingClick: () -> Unit,
+    onTextPaddingClick: () -> Unit,
 ): List<SettingsItem> = buildList {
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.layout_type),
+            subtitle = gridItemSettings.layoutType.getLayoutTypeTitle(),
+            onClick = onLayoutTypeClick,
+        ),
+    )
+
     add(
         SettingsItem.Column(
             title = stringResource(R.string.icon_size),
@@ -357,24 +472,6 @@ private fun buildGridItemSettingsItems(
 
     add(
         SettingsItem.Switch(
-            checked = gridItemSettings.showLabel,
-            title = stringResource(R.string.show_label),
-            subtitle = stringResource(R.string.display_app_names_below_icons),
-            onClick = {
-                onUpdateGridItemSettings(
-                    gridItemSettings.copy(showLabel = !gridItemSettings.showLabel),
-                )
-            },
-            onCheckedChange = {
-                onUpdateGridItemSettings(
-                    gridItemSettings.copy(showLabel = it),
-                )
-            },
-        ),
-    )
-
-    add(
-        SettingsItem.Switch(
             checked = gridItemSettings.singleLineLabel,
             title = stringResource(R.string.single_line_label),
             subtitle = stringResource(R.string.limit_app_names_to_one_line),
@@ -406,6 +503,38 @@ private fun buildGridItemSettingsItems(
             onClick = onVerticalArrangementClick,
         ),
     )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.horizontal_arrangement),
+            subtitle = gridItemSettings.horizontalArrangement.getHorizontalArrangementTitle(),
+            onClick = onHorizontalArrangementClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.vertical_alignment),
+            subtitle = gridItemSettings.verticalAlignment.getVerticalAlignmentTitle(),
+            onClick = onVerticalAlignmentClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.icon_padding),
+            subtitle = "${gridItemSettings.iconPadding}",
+            onClick = onIconPaddingClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.text_padding),
+            subtitle = "${gridItemSettings.textPadding}",
+            onClick = onTextPaddingClick,
+        ),
+    )
 }
 
 @Composable
@@ -420,4 +549,28 @@ private fun VerticalArrangement.getVerticalArrangementTitle(): String = when (th
     VerticalArrangement.Top -> stringResource(R.string.top)
     VerticalArrangement.Center -> stringResource(R.string.center)
     VerticalArrangement.Bottom -> stringResource(R.string.bottom)
+}
+
+@Composable
+private fun HorizontalArrangement.getHorizontalArrangementTitle(): String = when (this) {
+    HorizontalArrangement.Start -> stringResource(R.string.start)
+    HorizontalArrangement.Center -> stringResource(R.string.center)
+    HorizontalArrangement.End -> stringResource(R.string.end)
+}
+
+@Composable
+private fun VerticalAlignment.getVerticalAlignmentTitle(): String = when (this) {
+    VerticalAlignment.Top -> stringResource(R.string.top)
+    VerticalAlignment.CenterVertically -> stringResource(R.string.center_vertically)
+    VerticalAlignment.Bottom -> stringResource(R.string.bottom)
+}
+
+@Composable
+private fun LayoutType.getLayoutTypeTitle(): String = when (this) {
+    LayoutType.TopIconBottomLabel -> stringResource(R.string.top_icon_bottom_label)
+    LayoutType.TopLabelBottomIcon -> stringResource(R.string.top_label_bottom_icon)
+    LayoutType.StartIconEndLabel -> stringResource(R.string.start_icon_end_label)
+    LayoutType.StartLabelEndIcon -> stringResource(R.string.start_label_end_icon)
+    LayoutType.IconOnly -> stringResource(R.string.icon_only)
+    LayoutType.LabelOnly -> stringResource(R.string.label_only)
 }

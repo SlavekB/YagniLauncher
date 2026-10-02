@@ -9,7 +9,6 @@ message GridItemSettingsProto {
   optional int32 iconSize = 1;
   optional TextColorProto textColorProto = 2;
   optional int32 textSize = 3;
-  optional bool showLabel = 4;
   optional bool singleLineLabel = 5;
   optional HorizontalAlignmentProto horizontalAlignmentProto = 6;
   optional VerticalArrangementProto verticalArrangementProto = 7;
@@ -17,16 +16,42 @@ message GridItemSettingsProto {
   optional int32 customBackgroundColor = 9;
   optional int32 padding = 10;
   optional int32 cornerRadius = 11;
+  optional LayoutTypeProto layoutTypeProto = 12;
+  optional HorizontalArrangementProto horizontalArrangementProto = 13;
+  optional VerticalAlignmentProto verticalAlignmentProto = 14;
+  optional int32 iconPadding = 15;
+  optional int32 textPadding = 16;
 }
 
 enum HorizontalAlignmentProto {
-  Start = 0;
-  CenterHorizontally = 1;
-  End = 2;
+  HorizontalAlignmentStart = 0;
+  HorizontalAlignmentCenterHorizontally = 1;
+  HorizontalAlignmentEnd = 2;
 }
 
 enum VerticalArrangementProto {
-  Top = 0;
-  Center = 1;
-  Bottom = 2;
+  VerticalArrangementTop = 0;
+  VerticalArrangementCenter = 1;
+  VerticalArrangementBottom = 2;
+}
+
+enum HorizontalArrangementProto {
+  HorizontalArrangementStart = 0;
+  HorizontalArrangementCenter = 1;
+  HorizontalArrangementEnd = 2;
+}
+
+enum VerticalAlignmentProto {
+  VerticalAlignmentTop = 0;
+  VerticalAlignmentCenterVertically= 1;
+  VerticalAlignmentBottom = 2;
+}
+
+enum LayoutTypeProto {
+  LayoutTypeTopIconBottomLabel = 0;
+  LayoutTypeTopLabelBottomIcon = 1;
+  LayoutTypeStartIconEndLabel = 2;
+  LayoutTypeStartLabelEndIcon = 3;
+  LayoutTypeIconOnly = 4;
+  LayoutTypeLabelOnly = 5;
 }

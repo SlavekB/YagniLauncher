@@ -31,11 +31,17 @@ import com.eblan.launcher.data.datastore.proto.gesture.GestureSettingsProto
 import com.eblan.launcher.data.datastore.proto.home.GridItemSettingsProto
 import com.eblan.launcher.data.datastore.proto.home.HomeSettingsProto
 import com.eblan.launcher.data.datastore.proto.home.HorizontalAlignmentProto
+import com.eblan.launcher.data.datastore.proto.home.HorizontalArrangementProto
+import com.eblan.launcher.data.datastore.proto.home.LayoutTypeProto
 import com.eblan.launcher.data.datastore.proto.home.TextColorProto
+import com.eblan.launcher.data.datastore.proto.home.VerticalAlignmentProto
 import com.eblan.launcher.data.datastore.proto.home.VerticalArrangementProto
 import com.eblan.launcher.data.datastore.proto.model.BackgroundColorProto
 import com.eblan.launcher.domain.model.grid.GridItemSettings
 import com.eblan.launcher.domain.model.grid.HorizontalAlignment
+import com.eblan.launcher.domain.model.grid.HorizontalArrangement
+import com.eblan.launcher.domain.model.grid.LayoutType
+import com.eblan.launcher.domain.model.grid.VerticalAlignment
 import com.eblan.launcher.domain.model.grid.VerticalArrangement
 import com.eblan.launcher.domain.model.userdata.AppDrawerSettings
 import com.eblan.launcher.domain.model.userdata.AppDrawerType
@@ -99,7 +105,6 @@ internal fun GridItemSettingsProto.toGridItemSettings(): GridItemSettings = Grid
     iconSize = iconSize,
     textColor = textColorProto.toTextColor(),
     textSize = textSize,
-    showLabel = showLabel,
     singleLineLabel = singleLineLabel,
     horizontalAlignment = horizontalAlignmentProto.toHorizontalAlignment(),
     verticalArrangement = verticalArrangementProto.toVerticalArrangement(),
@@ -107,6 +112,11 @@ internal fun GridItemSettingsProto.toGridItemSettings(): GridItemSettings = Grid
     customBackgroundColor = customBackgroundColor,
     padding = padding,
     cornerRadius = cornerRadius,
+    layoutType = layoutTypeProto.toLayoutType(),
+    horizontalArrangement = horizontalArrangementProto.toHorizontalArrangement(),
+    verticalAlignment = verticalAlignmentProto.toVerticalAlignment(),
+    iconPadding = iconPadding,
+    textPadding = textPadding,
 )
 
 internal fun GeneralSettingsProto.toGeneralSettings(): GeneralSettings = GeneralSettings(
@@ -119,7 +129,6 @@ internal fun GridItemSettings.toGridItemSettingsProto(): GridItemSettingsProto =
     builder.iconSize = iconSize
     builder.textColorProto = textColor.toTextColorProto()
     builder.textSize = textSize
-    builder.showLabel = showLabel
     builder.singleLineLabel = singleLineLabel
     builder.horizontalAlignmentProto = horizontalAlignment.toHorizontalAlignmentProto()
     builder.verticalArrangementProto = verticalArrangement.toVerticalArrangementProto()
@@ -127,6 +136,11 @@ internal fun GridItemSettings.toGridItemSettingsProto(): GridItemSettingsProto =
     builder.customBackgroundColor = customBackgroundColor
     builder.padding = padding
     builder.cornerRadius = cornerRadius
+    builder.layoutTypeProto = layoutType.toLayoutTypeProto()
+    builder.horizontalArrangementProto = horizontalArrangement.toHorizontalAlignmentProto()
+    builder.verticalAlignmentProto = verticalAlignment.toVerticalArrangementProto()
+    builder.iconPadding = iconPadding
+    builder.textPadding = textPadding
 }.build()
 
 internal fun HomeSettings.toHomeSettingsProto(): HomeSettingsProto = HomeSettingsProto.newBuilder().also { builder ->
@@ -297,39 +311,37 @@ private fun BackgroundColorProto.toBackgroundColor(): BackgroundColor = when (th
 }
 
 private fun HorizontalAlignment.toHorizontalAlignmentProto(): HorizontalAlignmentProto = when (this) {
-    HorizontalAlignment.Start -> HorizontalAlignmentProto.Start
-    HorizontalAlignment.CenterHorizontally -> HorizontalAlignmentProto.CenterHorizontally
-    HorizontalAlignment.End -> HorizontalAlignmentProto.End
+    HorizontalAlignment.Start -> HorizontalAlignmentProto.HorizontalAlignmentStart
+    HorizontalAlignment.CenterHorizontally -> HorizontalAlignmentProto.HorizontalAlignmentCenterHorizontally
+    HorizontalAlignment.End -> HorizontalAlignmentProto.HorizontalAlignmentEnd
 }
 
 private fun HorizontalAlignmentProto.toHorizontalAlignment(): HorizontalAlignment = when (this) {
-    HorizontalAlignmentProto.Start -> HorizontalAlignment.Start
-    HorizontalAlignmentProto.CenterHorizontally, HorizontalAlignmentProto.UNRECOGNIZED -> HorizontalAlignment.CenterHorizontally
-    HorizontalAlignmentProto.End -> HorizontalAlignment.End
+    HorizontalAlignmentProto.HorizontalAlignmentStart -> HorizontalAlignment.Start
+    HorizontalAlignmentProto.HorizontalAlignmentCenterHorizontally, HorizontalAlignmentProto.UNRECOGNIZED -> HorizontalAlignment.CenterHorizontally
+    HorizontalAlignmentProto.HorizontalAlignmentEnd -> HorizontalAlignment.End
 }
 
 private fun VerticalArrangement.toVerticalArrangementProto(): VerticalArrangementProto = when (this) {
-    VerticalArrangement.Top -> VerticalArrangementProto.Top
-    VerticalArrangement.Center -> VerticalArrangementProto.Center
-    VerticalArrangement.Bottom -> VerticalArrangementProto.Bottom
+    VerticalArrangement.Top -> VerticalArrangementProto.VerticalArrangementTop
+    VerticalArrangement.Center -> VerticalArrangementProto.VerticalArrangementCenter
+    VerticalArrangement.Bottom -> VerticalArrangementProto.VerticalArrangementBottom
 }
 
 private fun VerticalArrangementProto.toVerticalArrangement(): VerticalArrangement = when (this) {
-    VerticalArrangementProto.Top -> VerticalArrangement.Top
-    VerticalArrangementProto.Center, VerticalArrangementProto.UNRECOGNIZED -> VerticalArrangement.Center
-    VerticalArrangementProto.Bottom -> VerticalArrangement.Bottom
+    VerticalArrangementProto.VerticalArrangementTop -> VerticalArrangement.Top
+    VerticalArrangementProto.VerticalArrangementCenter, VerticalArrangementProto.UNRECOGNIZED -> VerticalArrangement.Center
+    VerticalArrangementProto.VerticalArrangementBottom -> VerticalArrangement.Bottom
 }
 
 private fun AppDrawerType.toAppDrawerTypeProto(): AppDrawerTypeProto = when (this) {
     AppDrawerType.Vertical -> AppDrawerTypeProto.Vertical
     AppDrawerType.Horizontal -> AppDrawerTypeProto.Horizontal
-    AppDrawerType.List -> AppDrawerTypeProto.List
 }
 
 private fun AppDrawerTypeProto.toAppDrawerType(): AppDrawerType = when (this) {
     AppDrawerTypeProto.Vertical, AppDrawerTypeProto.UNRECOGNIZED -> AppDrawerType.Vertical
     AppDrawerTypeProto.Horizontal -> AppDrawerType.Horizontal
-    AppDrawerTypeProto.List -> AppDrawerType.List
 }
 
 private fun SearchBarPositionProto.toSearchBarPosition(): SearchBarPosition = when (this) {
@@ -354,4 +366,46 @@ private fun ScrollBarType.toScrollBarTypeProto(): ScrollBarTypeProto = when (thi
     ScrollBarType.ScrollBar -> ScrollBarTypeProto.ScrollBarTypeScrollBar
     ScrollBarType.Alphabetical -> ScrollBarTypeProto.ScrollBarTypeAlphabetical
     ScrollBarType.None -> ScrollBarTypeProto.ScrollBarTypeNone
+}
+
+private fun LayoutType.toLayoutTypeProto(): LayoutTypeProto = when (this) {
+    LayoutType.TopIconBottomLabel -> LayoutTypeProto.LayoutTypeTopIconBottomLabel
+    LayoutType.TopLabelBottomIcon -> LayoutTypeProto.LayoutTypeTopLabelBottomIcon
+    LayoutType.StartIconEndLabel -> LayoutTypeProto.LayoutTypeStartIconEndLabel
+    LayoutType.StartLabelEndIcon -> LayoutTypeProto.LayoutTypeStartLabelEndIcon
+    LayoutType.IconOnly -> LayoutTypeProto.LayoutTypeIconOnly
+    LayoutType.LabelOnly -> LayoutTypeProto.LayoutTypeLabelOnly
+}
+
+private fun LayoutTypeProto.toLayoutType(): LayoutType = when (this) {
+    LayoutTypeProto.LayoutTypeTopIconBottomLabel, LayoutTypeProto.UNRECOGNIZED -> LayoutType.TopIconBottomLabel
+    LayoutTypeProto.LayoutTypeTopLabelBottomIcon -> LayoutType.TopLabelBottomIcon
+    LayoutTypeProto.LayoutTypeStartIconEndLabel -> LayoutType.StartIconEndLabel
+    LayoutTypeProto.LayoutTypeStartLabelEndIcon -> LayoutType.StartLabelEndIcon
+    LayoutTypeProto.LayoutTypeIconOnly -> LayoutType.IconOnly
+    LayoutTypeProto.LayoutTypeLabelOnly -> LayoutType.LabelOnly
+}
+
+private fun HorizontalArrangement.toHorizontalAlignmentProto(): HorizontalArrangementProto = when (this) {
+    HorizontalArrangement.Start -> HorizontalArrangementProto.HorizontalArrangementStart
+    HorizontalArrangement.Center -> HorizontalArrangementProto.HorizontalArrangementCenter
+    HorizontalArrangement.End -> HorizontalArrangementProto.HorizontalArrangementEnd
+}
+
+private fun HorizontalArrangementProto.toHorizontalArrangement(): HorizontalArrangement = when (this) {
+    HorizontalArrangementProto.HorizontalArrangementStart, HorizontalArrangementProto.UNRECOGNIZED -> HorizontalArrangement.Start
+    HorizontalArrangementProto.HorizontalArrangementCenter -> HorizontalArrangement.Center
+    HorizontalArrangementProto.HorizontalArrangementEnd -> HorizontalArrangement.End
+}
+
+private fun VerticalAlignment.toVerticalArrangementProto(): VerticalAlignmentProto = when (this) {
+    VerticalAlignment.Top -> VerticalAlignmentProto.VerticalAlignmentTop
+    VerticalAlignment.CenterVertically -> VerticalAlignmentProto.VerticalAlignmentCenterVertically
+    VerticalAlignment.Bottom -> VerticalAlignmentProto.VerticalAlignmentBottom
+}
+
+private fun VerticalAlignmentProto.toVerticalAlignment(): VerticalAlignment = when (this) {
+    VerticalAlignmentProto.VerticalAlignmentTop, VerticalAlignmentProto.UNRECOGNIZED -> VerticalAlignment.Top
+    VerticalAlignmentProto.VerticalAlignmentCenterVertically -> VerticalAlignment.CenterVertically
+    VerticalAlignmentProto.VerticalAlignmentBottom -> VerticalAlignment.Bottom
 }
