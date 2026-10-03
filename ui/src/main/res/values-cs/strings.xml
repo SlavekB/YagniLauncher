@@ -55,4 +55,16 @@
     <string name="custom">Vlastní</string>
     <string name="add_folder">Přidat složku</string>
     <string name="folder_is_not_valid">Složka není platná</string>
+    <string name="center_vertically">Uprostřed</string>
+    <string name="top_icon_bottom_label">Nahoře ikona, dole název</string>
+    <string name="top_label_bottom_icon">Nahoře název, dole ikona</string>
+    <string name="start_icon_end_label">Nejdříve ikona, potom název</string>
+    <string name="start_label_end_icon">Nejdříve název, potom ikona</string>
+    <string name="icon_only">Pouze ikona</string>
+    <string name="label_only">Pouze název</string>
+    <string name="text_padding">Odsazení textu</string>
+    <string name="icon_padding">Odsazení ikony</string>
+    <string name="layout_type">Typ rozvržení</string>
+    <string name="vertical_alignment">Svislé zarovnání</string>
+    <string name="horizontal_arrangement">Vodorovné uspořádání</string>
 </resources>
